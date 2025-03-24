@@ -1,2 +1,1 @@
-# ArtFinder
-CS546 Final Project
+Here is the Readme of our project. 
