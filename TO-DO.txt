@@ -3,4 +3,4 @@
 - [ ] Go to office hours to see where to start on JS
 - [ ] Get layout to HTML
 - [ ] Plan out color scheme with Mel
-- [ ] Make a file full of useful helper functions
+- [X] Make a file full of useful helper functions
