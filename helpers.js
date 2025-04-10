@@ -28,7 +28,7 @@ export const checkString = (str, name) => {
     return str;
 }
 
-
+// checks a mongodb ObjectId
 export const checkId = (id) => {
     /* Functionality:
     1. Pass the id to checkString function
