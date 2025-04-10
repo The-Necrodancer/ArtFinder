@@ -1,0 +1,3 @@
+Hey, this is your friendly reminder to delete the Node Modules Folder. 
+
+Not dealing with an extremely high rate of upload / download.
