@@ -67,3 +67,21 @@ export const validateEmail = (email) => {
     );
     // This regex is from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
   };
+
+export const validateTag = (tag) => {
+    /* We'll discuss this more after our Database proposal*/ 
+    tag = checkString(tag, 'Tag');
+
+    /*
+    * Should the tags be all lowercase? Or should there be a mix of cases?
+    * - Owen
+    */
+    tag = tag.toLowerCase(); // Convert to lowercase
+
+    // A valid tag can only be a string of letters, numbers, and underscores
+    const specialCharRegex = /[^a-zA-Z0-9\s]/;
+    if (specialCharRegex.test(tag)) {
+        throw 'Tag can only contain letters, numbers, and underscores!';
+    }
+    return tag;
+}
