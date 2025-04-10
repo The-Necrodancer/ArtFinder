@@ -40,3 +40,30 @@ export const checkId = (id) => {
     }
     return id;
 }
+
+// Basically checkString but also checks if the string is a number
+export const checkStringNaN = (str, name) => {
+    /* Functionality:
+    1. Check if the input is given
+    2. Check if the input is a string
+    3. TRIM the string
+    4. Check if the input is not an empty string or a string with just spaces
+    5. Check if the input is a number (NaN)
+    */
+
+    str = checkString(str, name);
+    if (!isNaN(str)) {
+        throw `${name} must NOT be a number!`;
+    }
+    return str;
+}
+
+export const validateEmail = (email) => {
+    /* Functionality:
+    * Returns true if the email is valid, false otherwise
+    */
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+    // This regex is from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+  };
