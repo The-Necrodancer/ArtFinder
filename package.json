@@ -1,0 +1,26 @@
+{
+  "name": "artfinder",
+  "version": "1.0.0",
+  "description": "The source code for ArtFinder, a website / database for commissions to find artists they wish to commission and artists to advertise their commissions. Guaranteed to be AI Free.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/The-Necrodancer/ArtFinder.git"
+  },
+  "author": "Owen Krupa, Nicole Young, Suprith Reddy, Aaren Patel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/The-Necrodancer/ArtFinder/issues"
+  },
+  "homepage": "https://github.com/The-Necrodancer/ArtFinder#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-handlebars": "^7.1.2",
+    "mongodb": "^6.15.0"
+  }
+}
