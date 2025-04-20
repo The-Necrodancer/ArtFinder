@@ -1,0 +1,183 @@
+/* General Page Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f7fa;
+  color: #333;
+}
+
+header {
+  background-color: #222;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+}
+
+/* Search Form */
+form#search-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+}
+
+form#search-form input,
+form#search-form select,
+form#search-form button {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form#search-form button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+form#search-form button:hover {
+  background-color: #4338ca;
+}
+
+/* Artist Grid */
+#featured-artists,
+#artist-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Artist Card Styles */
+.artist-card {
+  background-color: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.artist-card:hover {
+  transform: scale(1.02);
+}
+
+.artist-card img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.artist-card h2 {
+  margin: 10px 0 5px;
+  font-size: 20px;
+}
+
+.artist-card p {
+  font-size: 14px;
+  color: #666;
+}
+
+.artist-card .sample-art {
+  margin-top: 10px;
+  max-height: 160px;
+  object-fit: cover;
+}
+
+.artist-card a {
+  display: inline-block;
+  margin-top: 12px;
+  text-decoration: none;
+  color: #4f46e5;
+  font-weight: bold;
+}
+
+.artist-card a:hover {
+  text-decoration: underline;
+}
+
+/* Artist Profile Page */
+
+.profile-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 100px;
+  border: 3px solid #4f46e5;
+}
+
+.profile-header h2 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.tags {
+  color: #666;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.availability {
+  color: green;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.rating {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.commission-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.commission-btn:hover {
+  background: #3730a3;
+}
+
+.bio-tos,
+.artwork-gallery,
+.commission-info {
+  margin-top: 30px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gallery-grid img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}

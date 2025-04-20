@@ -1,0 +1,73 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>{{artist.name}}'s Profile</title>
+  </head>
+  <body>
+    <header>
+      <h1>{{artist.name}}'s Profile</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/browse">Browse</a></li>
+          <li><a href="/add">Add Artist</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main class="profile-container">
+      <section class="profile-header">
+        <img
+          src="{{artist.profilePicture}}"
+          alt="{{artist.name}}'s photo"
+          class="profile-pic"
+        />
+        <div>
+          <h2>{{artist.name}}</h2>
+          <p class="tags">{{artist.tags}}</p>
+          <p class="availability">{{#if artist.available}}Available for
+              commissions{{else}}Currently unavailable{{/if}}</p>
+          <p class="rating">⭐
+            {{artist.rating}}
+            ({{artist.reviewCount}}
+            reviews)</p>
+          <button
+            class="commission-btn"
+            onclick="requestCommission('{{artist._id}}')"
+          >Request Commission</button>
+        </div>
+      </section>
+
+      <section class="bio-tos">
+        <h3>About the Artist</h3>
+        <p>{{artist.bio}}</p>
+
+        <h3>Terms of Service</h3>
+        <p>{{artist.tos}}</p>
+      </section>
+
+      <section class="artwork-gallery">
+        <h3>Sample Artworks</h3>
+        <div class="gallery-grid">
+          {{#each artist.gallery}}
+            <img src="{{this}}" alt="Artwork sample" />
+          {{/each}}
+        </div>
+      </section>
+
+      <section class="commission-info">
+        <h3>Commission Pricing</h3>
+        <ul>
+          {{#each artist.pricing}}
+            <li><strong>{{this.type}}</strong>: ${{this.price}}</li>
+          {{/each}}
+        </ul>
+      </section>
+    </main>
+    <script>
+      function requestCommission(artistId) { window.location.href =
+      `/commission/request/${artistId}`; }
+    </script>
+  </body>
+</html>
