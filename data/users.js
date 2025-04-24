@@ -1,61 +1,69 @@
 
 
-/* 
-    isArtist -> boolean, true if an artist
-    isAdmin -> boolean, true if an admin 
+/*
     username -> string 
     email -> string 
+    password -> 
     liked -> an array of post ids that the user has liked 
-    commissionsCust -> an array of commission ids that the user has bought from someone else 
-    commissionsSell -> an array of commission ids that the user is creating/ed for someone else 
-        -> this should be uninitialized if isArtist is false 
-    reviewsMade -> an array of review ids that the user has made
-    reviewsReceived -> an array of review ids that the user has received 
-        -> this should be uninitialized if isArtist is false 
-    artistName -> name the artist uses 
-        -> this should be uninitialized if isArtist is false 
-
-    
+    requestedCommisions  -> an array of commission ids that the user has bought from someone else 
+   
+    reviewsGiven -> an array of review ids that the user has made
+    artistProfile -> obj 
+        {
+        bio -> string, artist bio 
+        portfolio -> array of img strings 
+        pricingInfo -> key-map value pair 
+        tags -> array of strings 
+        availability: -> boolean 
+        tos -> string 
+        createdCommissions -> an array of commission ids that the user is creating/ed for someone else 
+        reviewsReceived -> an array of review ids that the artist has received 
+        }
 */ 
+import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
 
-import {checkString, checkStringNaN, validateEmail, throwWrongTypeError} from '../helpers.js'; 
+import {checkString, checkStringNaN, validateEmail, throwWrongTypeError, checkId} from '../helpers.js'; 
 
 export const createUser = async ( 
-    isArtist, 
-    isAdmin, 
+    role,  
     username,
     email, 
-    artistName //optional 
+    password, 
+
 ) => {
-    if(typeof isArtist != 'boolean') {
-        throwWrongTypeError('isArtist', 'boolean', typeof(isArtist)); 
-    }
-    if(typeof isAdmin != 'boolean') {
-        throwWrongTypeError('isAdmin', 'boolean', typeof(isAdmin)); 
+    role = checkString(role); 
+    if (role !== 'user' && role !== 'artist' && role != 'admin') {
+        throw `Error: given role ${role} is not either 'user', 'admin', or 'artist.`; 
     }
     username = checkStringNaN(username, 'username'); 
-
+    password = checkStringNaN(password, 'password'); 
     email = checkString(email, 'email'); 
     if(!validateEmail(email)) {
         throw `Error: ${email} is not a valid email address.`
     }
 
     let newUser = {
-        isArtist, 
-        isAdmin, 
+        
         username, 
         email, 
+        password, 
         liked: [], 
-        commissionsCust: [], 
-        reviewsMade: []
+        requestedCommissions: [], 
+        reviewsGiven: []
     }; 
 
     if(isArtist) {
         const newFields = {
-            commissionsSell: [], 
+            bio: "", 
+            portfolio: [], 
+            pricingInfo: {}, 
+            tags: [],
+            availability: false, 
+            tos: "", 
+            createdCommissions: [], 
             reviewsReceived: [], 
-            artistName: checkStringNaN(artistName, "Artist's Name")
+            
         }; 
         Object.assign(newUser, newFields); 
     }
@@ -68,6 +76,12 @@ export const createUser = async (
     return await getUserById(insertedUser.insertedId.toString()); 
 }
 
-export const getUserById = async (id) => {
 
+export const getUserById = async (id) => {
+    id = checkId(id); 
+    const userCollection = await users(); 
+    const user = await userCollection.findOne({_id: new ObjectId(id)}); 
+    if (!user) throw `Error: user not found.`; 
+    user._id = user._id.toString(); 
+    return user; 
 }; 
