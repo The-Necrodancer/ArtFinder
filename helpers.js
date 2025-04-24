@@ -85,3 +85,7 @@ export const validateTag = (tag) => {
     }
     return tag;
 }
+
+export const wrongTypeError = (varName, expected, received) => {
+    throw `Error: ${varName} expected type ${expected} but received type ${received}.\n`
+}
