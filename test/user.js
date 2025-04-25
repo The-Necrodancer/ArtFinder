@@ -1,5 +1,5 @@
 import { createUser, getUserById, getAllUsers } from "../data/users.js";
-
+import { ObjectId } from "mongodb";
 import bcrypt from 'bcrypt'; 
 import lodash from 'lodash'; 
 import { createRandomUser } from "../helpers.js";
@@ -11,6 +11,7 @@ const testUserMethods = async () => {
     await testGetUserById(userList, totalNumUsers); 
 
     await testCreateUserBadInput(); 
+    await testGetUserByIdBadInput(); 
 }; 
 
 const testCreateUser = async (totalNumUsers) => {
@@ -137,4 +138,25 @@ const testCreateUserBadInput = async () => {
     if(!hasErrors) console.log("createUser successfully threw for all bad input test cases.");
 }
 
+const testGetUserByIdBadInput = async () => {
+    let hasErrors = false; 
+    const badInputs = [
+        undefined, 
+        null, 
+        '    ', 
+        3, 
+        ['id'], 
+        {}, 
+        'wedtysghcbj', 
+        new ObjectId()
+    ]
+    for(let i=0; i<badInputs.length; i++) {
+        try {
+            await getUserById(badInputs[i]); 
+            hasErrors = true; 
+            console.log("getUserById failed to throw for input ", badInputs[i]); 
+        } catch (e) {}
+    }
+    if(!hasErrors) console.log("getUserById successfuly threw for all bad input test cases."); 
+}
 export default testUserMethods; 
