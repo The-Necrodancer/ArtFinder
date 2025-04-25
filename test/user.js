@@ -9,6 +9,8 @@ const testUserMethods = async () => {
     let userList = await testCreateUser(totalNumUsers); 
     await testGetAllUsers(userList, totalNumUsers); 
     await testGetUserById(userList, totalNumUsers); 
+
+    await testCreateUserBadInput(); 
 }; 
 
 const testCreateUser = async (totalNumUsers) => {
@@ -96,6 +98,43 @@ const testGetUserById = async(userList, totalNumUsers) => {
     if(!hasErrors) {
         console.log("getUserById passed all test cases.")
     }
+}
+
+const testCreateUserBadInput = async () => {
+    let hasErrors = false; 
+    const badInputs = [
+        [undefined], 
+        [5, 'fake_username', 'fakeemail@gmail.com', 'passwd'], 
+        [undefined, 'fake_username', 'fakeemail@gmail.com', 'passwd'], 
+        [[5, 3], 'fake_username', 'fakeemail@gmail.com', 'passwd'], 
+        ['  ', 'fake_username', 'fakeemail@gmail.com', 'passwd'], 
+        ['corporate spy', 'fake_username', 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', undefined, 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', null, 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', {}, 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', ['username'], 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', '     ', 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', 'fake_username', undefined, 'passwd'], 
+        ['artist', 'fake_username', null, 'passwd'], 
+        ['artist', 'fake_username', ['fakeemail@gmail.com'], 'passwd'], 
+        ['artist', 'fake_username', 'email@gmail', 'passwd'],
+        ['artist', 'fake_username', '     ', 'passwd'],
+        ['artist', 'fake_username', 'fakeemail@gmail.com', undefined],  
+        ['artist', 'fake_username', 'fakeemail@gmail.com', null],  
+        ['artist', 'fake_username', 'fakeemail@gmail.com', {password: "passwd"}],  
+        ['artist', 'fake_username', 'fakeemail@gmail.com', ["password"]], 
+        ['artist', 'fake_username', 'fakeemail@gmail.com', ' ']
+    ]; 
+    for(let i=0; i<badInputs.length; i++) {
+        try { 
+            await createUser(...badInputs[i]); 
+            hasErrors = true; 
+            console.log("Failed to throw for inputs ", badInputs[i]); 
+        } catch (e) {
+            
+        }
+    }
+    if(!hasErrors) console.log("createUser successfully threw for all bad input test cases.");
 }
 
 export default testUserMethods; 
