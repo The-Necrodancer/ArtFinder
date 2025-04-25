@@ -1,11 +1,11 @@
 
 
 /*
+    role -> string, either 'user' 'artist' or 'admin' 
     username -> string 
     email -> string 
-    liked -> an array of post ids that the user has liked 
+    password -> string 
     requestedCommisions  -> an array of commission ids that the user has bought from someone else 
-   
     reviewsGiven -> an array of review ids that the user has made
     artistProfile -> obj 
         {
@@ -50,8 +50,8 @@ export const createUser = async (
         reviewsGiven: []
     }; 
 
-    if(isArtist) {
-        const newFields = {
+    if(role==='artist') {
+        let artistProfile = {
             bio: "", 
             portfolio: [], 
             pricingInfo: {}, 
@@ -62,7 +62,7 @@ export const createUser = async (
             reviewsReceived: [], 
             rating: 0
         }; 
-        Object.assign(newUser, newFields); 
+        Object.assign(newUser, {artistProfile}); 
     }
 
     const userCollection = await users(); 
