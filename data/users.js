@@ -43,6 +43,7 @@ export const createUser = async (
     }
 
     let newUser = {
+        role, 
         username, 
         email, 
         password, 
