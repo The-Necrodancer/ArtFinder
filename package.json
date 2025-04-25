@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/The-Necrodancer/ArtFinder#readme",
   "dependencies": {
+    "@faker-js/faker": "^9.7.0",
     "bcrypt": "^5.1.1",
     "express": "^5.1.0",
     "express-handlebars": "^7.1.2",
+    "lodash": "^4.17.21",
     "mongodb": "^6.15.0"
   }
 }
