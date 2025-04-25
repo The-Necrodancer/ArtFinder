@@ -29,7 +29,7 @@ import {checkString, checkStringNaN, validateEmail, throwWrongTypeError, checkId
  * Adds a user to the database. 
  * @param {string} role The role of the user, either 'user', 'admin', or 'artist'.
  * @param {string} username The username of the user.
- * @param {stirng} email The email of the user (must be in valid email format).
+ * @param {string} email The email of the user (must be in valid email format).
  * @param {string} password The HASHED password of the user.
  * @returns {obj} The user that was added. 
  */
