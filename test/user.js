@@ -15,6 +15,8 @@ const testUserMethods = async () => {
     let user2 = await createUser('artist', 'aaaaa', 'aaaa@gmail.com', password2); 
     console.log(user2); 
     console.log(await getAllUsers()); 
+    console.log(await getUserById(user1._id));
+    console.log(await getUserById(user2._id));  
     await closeConnection();
 }; 
 
