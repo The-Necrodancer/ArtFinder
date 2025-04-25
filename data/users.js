@@ -73,7 +73,6 @@ export const createUser = async (
     return await getUserById(insertedUser.insertedId.toString()); 
 }
 
-
 export const getUserById = async (id) => {
     id = checkId(id); 
     const userCollection = await users(); 
@@ -82,3 +81,15 @@ export const getUserById = async (id) => {
     user._id = user._id.toString(); 
     return user; 
 }; 
+
+
+export const getAllUsers = async() => {
+    const userCollection = await users(); 
+    let userList = await userCollection.find({}).toArray(); 
+    if(!userList) throw 'Error: Could not get all users.'; 
+    userList = userList.map((usr) => {
+        usr._id = usr._id.toString(); 
+        return usr; 
+    }); 
+    return userList; 
+};
