@@ -8,6 +8,7 @@ const testUserMethods = async () => {
     const totalNumUsers = 30; 
     let userList = await testCreateUser(totalNumUsers); 
     await testGetAllUsers(userList, totalNumUsers); 
+    await testGetUserById(userList, totalNumUsers); 
 }; 
 
 const testCreateUser = async (totalNumUsers) => {
@@ -72,6 +73,28 @@ const testGetAllUsers = async (userList, totalNumUsers) => {
     }
     if(!hasErrors) {
         console.log("getAllUsers passed test case."); 
+    }
+}
+
+const testGetUserById = async(userList, totalNumUsers) => {
+    let hasErrors = false; 
+    for(let i=0; i<totalNumUsers; i++) {
+        try {
+            const returnedUser = await getUserById(userList[i]._id); 
+            if(!lodash.isMatch(userList[i], returnedUser)) {
+                hasErrors = true; 
+                console.log("FALIURE IN GETUSERBYID");
+                console.log("Attempted to get user ", userList[i]); 
+                console.log("Received ", returnedUser); 
+            }
+        } catch (e) {
+            console.log("FALIURE IN GETUSERBYID");
+            console.log("Attempted to get user ", userList[i]); 
+            console.log("Received error ", e); 
+        }
+    }
+    if(!hasErrors) {
+        console.log("getUserById passed all test cases.")
     }
 }
 
