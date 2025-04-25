@@ -3,7 +3,6 @@
 /*
     username -> string 
     email -> string 
-    password -> 
     liked -> an array of post ids that the user has liked 
     requestedCommisions  -> an array of commission ids that the user has bought from someone else 
    
@@ -16,6 +15,7 @@
         tags -> array of strings 
         availability: -> boolean 
         tos -> string 
+        rating -> 
         createdCommissions -> an array of commission ids that the user is creating/ed for someone else 
         reviewsReceived -> an array of review ids that the artist has received 
         }
@@ -29,8 +29,7 @@ export const createUser = async (
     role,  
     username,
     email, 
-    password, 
-
+    password
 ) => {
     role = checkString(role); 
     if (role !== 'user' && role !== 'artist' && role != 'admin') {
@@ -44,11 +43,9 @@ export const createUser = async (
     }
 
     let newUser = {
-        
         username, 
         email, 
         password, 
-        liked: [], 
         requestedCommissions: [], 
         reviewsGiven: []
     }; 
@@ -63,7 +60,7 @@ export const createUser = async (
             tos: "", 
             createdCommissions: [], 
             reviewsReceived: [], 
-            
+            rating: 0
         }; 
         Object.assign(newUser, newFields); 
     }
