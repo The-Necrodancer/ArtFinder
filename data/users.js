@@ -45,13 +45,13 @@ export const createUser = async (
         throw `Error: given role ${role} is not either 'user', 'admin', or 'artist.`; 
     }
     username = checkStringNaN(username, 'username'); 
-    if(containsUsername(username)) throw `Error: username already taken.`;  
+    if(await containsUsername(username)) throw `Error: username already taken.`;  
     password = checkStringNaN(password, 'password'); 
     email = checkString(email, 'email'); 
     if(!validateEmail(email)) {
         throw `Error: ${email} is not a valid email address.`
     }
-    if(containsEmail(email)) throw `Error: email already in use.`; 
+    if(await containsEmail(email)) throw `Error: email already in use.`; 
 
     let newUser = {
         role, 
@@ -121,7 +121,7 @@ export const getAllUsers = async() => {
 export const containsUsername = async(username) => {
     username = checkString(username);
     const userCollection = await users(); 
-    return (!(await userCollection.find({username})))? false : true;  
+    return (!(await userCollection.findOne({username})))? false : true;  
 }
 
 /**
@@ -133,5 +133,5 @@ export const containsEmail = async(email) => {
     email = checkString(email); 
     if(!validateEmail(email)) throw 'Error: ${email} is not a valid email address.'; 
     const userCollection = await users(); 
-    return (!(await userCollection.find({email})))? false : true;  
+    return (!( await userCollection.findOne({email})))? false : true;  
 }
