@@ -131,10 +131,10 @@ const testCreateUserBadInput = async (userList) => {
         ['artist', 'fake_username', 'fakeemail@gmail.com', {password: "passwd"}],  
         ['artist', 'fake_username', 'fakeemail@gmail.com', ["password"]], 
         ['artist', 'fake_username', 'fakeemail@gmail.com', ' '], 
-        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email], 
-        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email], 
-        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email], 
-        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email] 
+        ['artist', 'fake_username', faker.helpers.arrayElement(userList).email, 'passwd'], 
+        ['artist', 'fake_username', faker.helpers.arrayElement(userList).email, 'passwd'], 
+        ['artist', 'fake_username', faker.helpers.arrayElement(userList).email, 'passwd'], 
+        ['artist', 'fake_username', faker.helpers.arrayElement(userList).email, 'passwd']
     ]; 
     for(let i=0; i<badInputs.length; i++) {
         try { 
