@@ -4,6 +4,9 @@ import { faker} from "@faker-js/faker";
 import lodash from 'lodash'; 
 import { createRandomUser } from "../helpers.js";
 
+/**
+ * Tests methods exported by ../data/users.js
+ */
 const testUserMethods = async () => {
     const totalNumUsers = 30; 
     let userList = await testCreateUser(totalNumUsers); 
@@ -14,6 +17,11 @@ const testUserMethods = async () => {
     await testGetUserByIdBadInput(); 
 }; 
 
+/**
+ * Tests that createUser() behaves as expected when given valid inputs. 
+ * @param {number} totalNumUsers The number of user objects in the database. 
+ * @returns An array of all users that have been added to the database. 
+ */
 const testCreateUser = async (totalNumUsers) => {
     const userList = []; 
     let hasErrors = false; 
@@ -59,6 +67,11 @@ const testCreateUser = async (totalNumUsers) => {
     return userList; 
 }
 
+/**
+ * Tests that getAllUsers behaves as expected. 
+ * @param {array} userList An array of all user objects that are in the database. 
+ * @param {number} totalNumUsers The number of user objects in the database. 
+ */
 const testGetAllUsers = async (userList, totalNumUsers) => {
     const returnedList = await getAllUsers(); 
     let hasErrors=false; 
@@ -81,6 +94,11 @@ const testGetAllUsers = async (userList, totalNumUsers) => {
     }
 }
 
+/**
+ * Tests that getUserById() correctly handles all valid id inputs. 
+ * @param {array} userList An array of all user objects that are in the database. 
+ * @param {number} totalNumUsers The number of user objects in the database. 
+ */
 const testGetUserById = async(userList, totalNumUsers) => {
     let hasErrors = false; 
     for(let i=0; i<totalNumUsers; i++) {
@@ -102,7 +120,10 @@ const testGetUserById = async(userList, totalNumUsers) => {
         console.log("getUserById passed all test cases.")
     }
 }
-
+/**
+ * Tests that createUser() correctly throws when given bad input. 
+ * @param {array} userList An array of all user objects that are in the database.
+ */
 const testCreateUserBadInput = async (userList) => {
     let hasErrors = false; 
     const badInputs = [
@@ -148,6 +169,9 @@ const testCreateUserBadInput = async (userList) => {
     if(!hasErrors) console.log("createUser successfully threw for all bad input test cases.");
 }
 
+/**
+ * Test that getUserById() correctly throws when given bad input. 
+ */
 const testGetUserByIdBadInput = async () => {
     let hasErrors = false; 
     const badInputs = [
