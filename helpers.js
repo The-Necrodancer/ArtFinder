@@ -3,6 +3,8 @@
 
 
 import {ObjectId} from 'mongodb';
+import {faker} from '@faker-js/faker'; 
+import bcrypt from 'bcrypt';
 // Note to Self: Remember to npm init and npm install mongodb
 // Note to Self: Remember to npm install express-validator
 
@@ -84,4 +86,17 @@ export const validateTag = (tag) => {
         throw 'Tag can only contain letters, numbers, and underscores!';
     }
     return tag;
+}
+
+export const throwWrongTypeError = (varName, expected, received) => {
+    throw `Error: ${varName} expected type ${expected} but received type ${received}.\n`
+}
+
+export const createRandomUser = async() => {
+    return {
+        role: faker.helpers.arrayElement(['user', 'artist', 'admin']),
+        username: faker.internet.username(),
+        email: faker.internet.email(),
+        password: await bcrypt.hash(faker.internet.password(), 10)  
+    }
 }
