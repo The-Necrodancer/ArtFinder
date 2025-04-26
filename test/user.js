@@ -1,6 +1,6 @@
 import { createUser, getUserById, getAllUsers } from "../data/users.js";
 import { ObjectId } from "mongodb";
-import bcrypt from 'bcrypt'; 
+import { faker} from "@faker-js/faker";
 import lodash from 'lodash'; 
 import { createRandomUser } from "../helpers.js";
 
@@ -10,7 +10,7 @@ const testUserMethods = async () => {
     await testGetAllUsers(userList, totalNumUsers); 
     await testGetUserById(userList, totalNumUsers); 
 
-    await testCreateUserBadInput(); 
+    await testCreateUserBadInput(userList); 
     await testGetUserByIdBadInput(); 
 }; 
 
@@ -25,7 +25,9 @@ const testCreateUser = async (totalNumUsers) => {
         } catch (e) {
             console.log("FAILURE IN CREATEUSER"); 
             console.log("Attempted to insert ", newUser); 
+            console.log("Error: ", e); 
             hasErrors = true; 
+            continue; 
         }
         newUser._id = insertedUser._id; 
         newUser.requestedCommissions = []; 
@@ -101,7 +103,7 @@ const testGetUserById = async(userList, totalNumUsers) => {
     }
 }
 
-const testCreateUserBadInput = async () => {
+const testCreateUserBadInput = async (userList) => {
     let hasErrors = false; 
     const badInputs = [
         [undefined], 
@@ -115,6 +117,10 @@ const testCreateUserBadInput = async () => {
         ['artist', {}, 'fakeemail@gmail.com', 'passwd'], 
         ['artist', ['username'], 'fakeemail@gmail.com', 'passwd'], 
         ['artist', '     ', 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', faker.helpers.arrayElement(userList).username, 'fakeemail@gmail.com', 'passwd'], 
+        ['artist', faker.helpers.arrayElement(userList).username, 'fakeemail@gmail.com', 'passwd'],
+        ['artist', faker.helpers.arrayElement(userList).username, 'fakeemail@gmail.com', 'passwd'],
+        ['artist', faker.helpers.arrayElement(userList).username, 'fakeemail@gmail.com', 'passwd'],
         ['artist', 'fake_username', undefined, 'passwd'], 
         ['artist', 'fake_username', null, 'passwd'], 
         ['artist', 'fake_username', ['fakeemail@gmail.com'], 'passwd'], 
@@ -124,7 +130,11 @@ const testCreateUserBadInput = async () => {
         ['artist', 'fake_username', 'fakeemail@gmail.com', null],  
         ['artist', 'fake_username', 'fakeemail@gmail.com', {password: "passwd"}],  
         ['artist', 'fake_username', 'fakeemail@gmail.com', ["password"]], 
-        ['artist', 'fake_username', 'fakeemail@gmail.com', ' ']
+        ['artist', 'fake_username', 'fakeemail@gmail.com', ' '], 
+        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email], 
+        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email], 
+        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email], 
+        ['artist', 'fake_username', 'fakeemail@gmail.com', faker.helpers.arrayElement(userList).email] 
     ]; 
     for(let i=0; i<badInputs.length; i++) {
         try { 
