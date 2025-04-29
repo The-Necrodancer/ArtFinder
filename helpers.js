@@ -100,3 +100,18 @@ export const createRandomUser = async() => {
         password: await bcrypt.hash(faker.internet.password(), 10)  
     }
 }
+
+export const validatePassword = (password) => {
+    password = checkStringNaN(password, "password"); 
+    if(password.length<8) 
+        throw `Error: password must be at least 8 characters in length`; 
+    if(password.match(/ /)) 
+        throw `Error: password cannot contain whitespace`; 
+    if(!password.match(/[A-Z]/))
+        throw 'Error: password must contain at least one upper case letter.'; 
+    if(!password.match(/\d/)) 
+        throw 'Error: password must contain at least one number.'; 
+    if(!password.match(/[^\w\d]|_/)) 
+        throw 'Error: password must contain at least one special character.'; 
+    return password; 
+}
