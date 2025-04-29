@@ -22,15 +22,16 @@
 */ 
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
+import bcrypt from "bcrypt"; 
 
-import {checkString, checkStringNaN, validateEmail, throwWrongTypeError, checkId} from '../helpers.js'; 
+import {checkString, checkStringNaN, validateEmail, validatePassword, checkId} from '../helpers.js'; 
 
 /**
  * Adds a user to the database. 
  * @param {string} role The role of the user, either 'user', 'admin', or 'artist'.
  * @param {string} username The username of the user.
  * @param {string} email The email of the user (must be in valid email format).
- * @param {string} password The HASHED password of the user.
+ * @param {string} password The password of the user.
  * @returns {obj} The user that was added. 
  */
 export const createUser = async ( 
@@ -46,7 +47,9 @@ export const createUser = async (
     }
     username = checkStringNaN(username, 'username'); 
     if(await containsUsername(username)) throw `Error: username already taken.`;  
-    password = checkStringNaN(password, 'password'); 
+    password = validatePassword(password); 
+    password = await bcrypt.hash(password, 10);
+
     email = checkString(email, 'email'); 
     if(!validateEmail(email)) {
         throw `Error: ${email} is not a valid email address.`
