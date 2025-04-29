@@ -104,9 +104,11 @@ export const createRandomUser = async() => {
 export const validatePassword = (password) => {
     password = checkStringNaN(password, "password"); 
     if(password.length<8) 
-        throw `Error: password must be at least 8 characters in length`; 
+        throw `Error: password must be at least 8 characters in length.`; 
+    else if (password.length > 64) 
+        throw "Error: password cannot be more than 64 characters in length."
     if(password.match(/ /)) 
-        throw `Error: password cannot contain whitespace`; 
+        throw `Error: password cannot contain whitespace.`; 
     if(!password.match(/[A-Z]/))
         throw 'Error: password must contain at least one upper case letter.'; 
     if(!password.match(/\d/)) 
@@ -114,4 +116,18 @@ export const validatePassword = (password) => {
     if(!password.match(/[^\w\d]|_/)) 
         throw 'Error: password must contain at least one special character.'; 
     return password; 
+}
+
+
+export const validateUsername = (username) => {
+    username = checkStringNaN(username); 
+    if (username.length < 5 ) 
+        throw `Error: username must contain at least 5 characters`; 
+    if (username.length > 20)
+        throw "Error: username cannot contain more than 20 characters"; 
+    if (username.match(/\s/))
+        throw "Error: username cannot contain whitespace"; 
+    if (username.match(/\W/))
+        throw "Error: username can only contain alphanumeric characters and underscores"; 
+    return username; 
 }

@@ -24,7 +24,11 @@ import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
 import bcrypt from "bcrypt"; 
 
-import {checkString, checkStringNaN, validateEmail, validatePassword, checkId} from '../helpers.js'; 
+import {checkString, 
+    checkStringNaN, 
+    validateEmail, 
+    validatePassword, 
+    checkId, validateUsername} from '../helpers.js'; 
 
 /**
  * Adds a user to the database. 
@@ -45,7 +49,7 @@ export const createUser = async (
     if (role !== 'user' && role !== 'artist' && role != 'admin') {
         throw `Error: given role ${role} is not either 'user', 'admin', or 'artist.`; 
     }
-    username = checkStringNaN(username, 'username'); 
+    username = validateUsername(username, 'username'); 
     if(await containsUsername(username)) throw `Error: username already taken.`;  
     password = validatePassword(password); 
     password = await bcrypt.hash(password, 10);
@@ -122,7 +126,7 @@ export const getAllUsers = async() => {
  * @returns {boolean} True if username is in the database, false otherwise.
  */
 export const containsUsername = async(username) => {
-    username = checkString(username);
+    username = validateUsername(username);
     const userCollection = await users(); 
     return (!(await userCollection.findOne({username})))? false : true;  
 }
@@ -138,3 +142,19 @@ export const containsEmail = async(email) => {
     const userCollection = await users(); 
     return (!( await userCollection.findOne({email})))? false : true;  
 }
+
+export const login = async (username, password) => {
+    let userCollection = await users();
+    username = validateUsername(username); 
+    let user = await userCollection.findOne({username});
+    if(!user) {
+      throw "Either the username or password is invalid";
+    }
+    let actualPassword = user.password; 
+    password = validatePassword(password); 
+    if(!(await bcrypt.compare(password, actualPassword))) {
+      throw "Either the userId or password is invalid";
+    }
+    delete user.password;
+    return user; 
+};
