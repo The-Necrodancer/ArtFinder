@@ -13,7 +13,7 @@
 */
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
-import {checkString, checkStringNaN, throwWrongTypeError, checkId, validateItemKey, validateItemValue, validateTag} from '../helpers.js'; 
+import {checkString, checkStringNaN, throwWrongTypeError, checkId, validateItemKey, checkPriceValue, validateTag} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
 
 const artistProfileKeys = [bio, portfolio, pricingInfo, tags, availability, tos, rating, createdCommissions, reviewsReceived]; 
@@ -66,7 +66,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
         validatedObj.pricingInfo = {}; 
         for (const [key, value] of Object.entries(newProfile.pricingInfo)) {
             key = validateItemKey(key);  
-            value = validateItemValue(value); 
+            value = checkPriceValue(value); 
             validatedObj.pricingInfo[`${key}`] = value; 
         }
     }
@@ -149,9 +149,14 @@ export const updateArtistProfile = async(aid, newProfile) => {
 };
 
 export const addReview = async(aid, rid) => {
-    aid = checkId(aid); 
     rid = checkId(rid); 
-
-    let artist = await getArtistById(aid); 
-    //let review = await getReviewById(rid); 
+    let reviews = artist.reviews.push(rid); 
+    return await updateArtistProfile(aid, {reviews}); 
 }
+
+export const addCommission = async(aid, cid) => {
+    cid = checkId(cid); 
+    let commissions = artist.commissions.push(cid); 
+    return await updateArtistProfile(aid, cid); 
+}
+

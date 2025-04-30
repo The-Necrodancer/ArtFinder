@@ -100,14 +100,11 @@ export const createRandomUser = async() => {
         password: await bcrypt.hash(faker.internet.password(), 10)  
     }
 }
-
+export const passwordMinLength = 8; 
+export const passwordMaxLength = 64; 
 export const validatePassword = (password) => {
-    password = checkStringNaN(password, "password"); 
-    if(password.length<8) 
-        throw `Error: password must be at least 8 characters in length.`; 
-    else if (password.length > 64) 
-        throw "Error: password cannot be more than 64 characters in length."
-    if(password.match(/ /)) 
+    password = checkStringNaNMinMax(password, 'password', passwordMinLength, passwordMaxLength);
+    if(password.match(/\s/)) 
         throw `Error: password cannot contain whitespace.`; 
     if(!password.match(/[A-Z]/))
         throw 'Error: password must contain at least one upper case letter.'; 
@@ -118,13 +115,10 @@ export const validatePassword = (password) => {
     return password; 
 }
 
-
+export const usernameMinLength = 5; 
+export const usernameMaxLength = 20; 
 export const validateUsername = (username) => {
-    username = checkStringNaN(username); 
-    if (username.length < 5 ) 
-        throw `Error: username must contain at least 5 characters`; 
-    if (username.length > 20)
-        throw "Error: username cannot contain more than 20 characters"; 
+    username = checkStringNaNMinMax(username, 'username', usernameMinLength, usernameMaxLength); 
     if (username.match(/\s/))
         throw "Error: username cannot contain whitespace"; 
     if (username.match(/\W/))
@@ -132,24 +126,60 @@ export const validateUsername = (username) => {
     return username; 
 }
 
+export const keyMinLength = 5; 
+export const keyMaxLength = 32; 
 export const validateItemKey = (key) => {
-    key = checkStringNaN(key); 
-    if(key.length < 5)
-        throw 'Error: name of item for sale must contain at least 5 characters'; 
-    if(key.length > 32 )
-        throw 'Error: name of item for sale cannot contain more than 32 characters'; 
+    key = checkStringNaNMinMax(key, 'key', keyMinLength, keyMaxLength); 
     if(key.match(/\W|_/))
         throw 'Error: name of item for sale can only contain alphanumeric characters.'; 
     return key; 
 }
 
-export const validateItemValue = (value) => {
+
+export const priceMinValue = 3; 
+export const priceMaxValue = 150; 
+export const checkPriceValue = (value) => {
     if(typeof value !== 'number') {
         throwWrongTypeError('price of item for sale', 'number', typeof value); 
     }
-    if(value < 3) 
+    if(value < priceMinValue) 
         throw `Error: the price of an item must be at least $3.`; 
-    if (value > 150) 
+    if (value > priceMaxValue) 
         throw `Error: the price of an item cannot exceed $150.`; 
     return value; 
+}
+
+export const checkRating = (rating) => {
+    if(typeof rating !== 'number') 
+        throwWrongTypeError('rating', 'number', typeof rating); 
+    if(rating<0) 
+        throw 'Error: rating cannot be less than 0.';
+    if(rating>5)
+        throw 'Error: rating cannot be greater than 5.'; 
+    return rating; 
+}
+
+export const commentMinLength = 10; 
+export const commentMaxLength = 512; 
+export const checkComment = (comment) => {
+    return checkStringNaNMinMax(comment, 'comment', commentMinLength, commentMaxLength); 
+}
+
+export const titleMinLength = 5; 
+export const titleMaxLength = 128; 
+export const checkTitle = (title) =>{
+    return checkStringNaNMinMax(title, 'title', titleMinLength, titleMaxLength); 
+}
+
+export const detailsMinLength = 32; 
+export const detailsMaxLength = 1024; 
+export const checkDetails = (details) => {
+    return checkStringNaNMinMax(details, 'details', detailsMinLength, detailsMaxLength); 
+}
+
+const checkStringNaNMinMax = (string, varName, min, max) => {
+    string = checkStringNaN(string, varName); 
+    if(string.length < min) throw `Error: ${varName} must contain at least ${min} characters.`; 
+    if(string.length > max) throw `Error: ${varName} cannot contain more than ${max} characters.`
+    return string; 
 }
