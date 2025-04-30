@@ -3,8 +3,26 @@
 
 
 import {ObjectId} from 'mongodb';
-import {faker} from '@faker-js/faker'; 
-import bcrypt from 'bcrypt';
+import { statusValues } from './data/commissions.js';
+import { 
+    bioMinLength,
+    bioMaxLength, 
+    pricingInfoItemMinLength, 
+    pricingInfoItemMaxLength, 
+    priceMinValue, 
+    priceMaxValue, 
+    tagMinLength, 
+    tagMaxLength, 
+    tosMinLength, 
+    tosMaxLength
+ } from './data/artists.js';
+
+import {
+    usernameMinLength, 
+    usernameMaxLength, 
+    passwordMinLength, 
+    passwordMaxLength
+} from './data/users.js'
 // Note to Self: Remember to npm init and npm install mongodb
 // Note to Self: Remember to npm install express-validator
 
@@ -70,9 +88,9 @@ export const validateEmail = (email) => {
     // This regex is from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 };
 
-export const validateTag = (tag) => {
+export const checkTag = (tag) => {
     /* We'll discuss this more after our Database proposal*/ 
-    tag = checkString(tag, 'Tag');
+    tag = checkStringNaNMinMax(tag, 'Tag', tagMinLength, tagMaxLength);
 
     /*
     * Should the tags be all lowercase? Or should there be a mix of cases?
@@ -92,17 +110,7 @@ export const throwWrongTypeError = (varName, expected, received) => {
     throw `Error: ${varName} expected type ${expected} but received type ${received}.\n`
 }
 
-export const createRandomUser = async() => {
-    return {
-        role: faker.helpers.arrayElement(['user', 'artist', 'admin']),
-        username: faker.internet.username(),
-        email: faker.internet.email(),
-        password: await bcrypt.hash(faker.internet.password(), 10)  
-    }
-}
-export const passwordMinLength = 8; 
-export const passwordMaxLength = 64; 
-export const validatePassword = (password) => {
+export const checkPassword = (password) => {
     password = checkStringNaNMinMax(password, 'password', passwordMinLength, passwordMaxLength);
     if(password.match(/\s/)) 
         throw `Error: password cannot contain whitespace.`; 
@@ -115,29 +123,22 @@ export const validatePassword = (password) => {
     return password; 
 }
 
-export const usernameMinLength = 5; 
-export const usernameMaxLength = 20; 
-export const validateUsername = (username) => {
+
+export const checkUsername = (username) => {
     username = checkStringNaNMinMax(username, 'username', usernameMinLength, usernameMaxLength); 
     if (username.match(/\s/))
         throw "Error: username cannot contain whitespace"; 
-    if (username.match(/\W/))
-        throw "Error: username can only contain alphanumeric characters and underscores"; 
     return username; 
 }
 
-export const keyMinLength = 5; 
-export const keyMaxLength = 32; 
-export const validateItemKey = (key) => {
-    key = checkStringNaNMinMax(key, 'key', keyMinLength, keyMaxLength); 
+
+export const checkPricingInfoItem = (key) => {
+    key = checkStringNaNMinMax(key, 'key', pricingInfoItemMinLength, pricingInfoItemMaxLength); 
     if(key.match(/\W|_/))
         throw 'Error: name of item for sale can only contain alphanumeric characters.'; 
     return key; 
 }
 
-
-export const priceMinValue = 3; 
-export const priceMaxValue = 150; 
 export const checkPriceValue = (value) => {
     if(typeof value !== 'number') {
         throwWrongTypeError('price of item for sale', 'number', typeof value); 
@@ -159,26 +160,39 @@ export const checkRating = (rating) => {
     return rating; 
 }
 
-export const commentMinLength = 10; 
-export const commentMaxLength = 512; 
 export const checkComment = (comment) => {
     return checkStringNaNMinMax(comment, 'comment', commentMinLength, commentMaxLength); 
 }
 
-export const titleMinLength = 5; 
-export const titleMaxLength = 128; 
 export const checkTitle = (title) =>{
     return checkStringNaNMinMax(title, 'title', titleMinLength, titleMaxLength); 
 }
 
-export const detailsMinLength = 32; 
-export const detailsMaxLength = 1024; 
 export const checkDetails = (details) => {
     return checkStringNaNMinMax(details, 'details', detailsMinLength, detailsMaxLength); 
 }
 
+export const checkStatus = (status) => {
+    status = checkStringNaN(status); 
+    if(!statusValues.includes(status)) throw `Error: ${status} is not a valid status.`; 
+    return status; 
+}
+
+export const checkBio = (bio) => {
+    return checkStringNaNMinMax(bio, 'bio', bioMinLength, bioMaxLength); 
+}
+
+export const checkTos = (tos) => {
+    return checkStringNaNMinMax(tos, 'tos', tosMinLength, tosMaxLength); 
+}
+
+
 const checkStringNaNMinMax = (string, varName, min, max) => {
-    string = checkStringNaN(string, varName); 
+    if (typeof string !== 'string') throw `Error: ${varName} must be a string`;
+    if (string.length !== 0) {
+        string = string.trim(); 
+        if(!isNaN(string)) throw `Error: ${varName} cannot be a number`; 
+    }
     if(string.length < min) throw `Error: ${varName} must contain at least ${min} characters.`; 
     if(string.length > max) throw `Error: ${varName} cannot contain more than ${max} characters.`
     return string; 
