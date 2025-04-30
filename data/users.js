@@ -27,8 +27,15 @@ import bcrypt from "bcrypt";
 import {checkString, 
     checkStringNaN, 
     validateEmail, 
-    validatePassword, 
-    checkId, validateUsername} from '../helpers.js'; 
+    checkPassword, 
+    checkId, checkUsername} from '../helpers.js'; 
+
+/* exported const */
+export const usernameMinLength = 3; 
+export const usernameMaxLength = 32; 
+
+export const passwordMinLength = 8; 
+export const passwordMaxLength = 64; 
 
 /**
  * Adds a user to the database. 
@@ -49,9 +56,9 @@ export const createUser = async (
     if (role !== 'user' && role !== 'artist' && role != 'admin') {
         throw `Error: given role ${role} is not either 'user', 'admin', or 'artist.`; 
     }
-    username = validateUsername(username, 'username'); 
+    username = checkUsername(username, 'username'); 
     if(await containsUsername(username)) throw `Error: username already taken.`;  
-    password = validatePassword(password); 
+    password = checkPassword(password); 
     password = await bcrypt.hash(password, 10);
 
     email = checkString(email, 'email'); 
@@ -88,7 +95,9 @@ export const createUser = async (
     if(insertedUser.acknowledged != true || !insertedUser.insertedId) {
         throw `Error: could not create user ${username}.`
     }
-    return await getUserById(insertedUser.insertedId.toString()); 
+    let usr =  await getUserById(insertedUser.insertedId.toString()); 
+    delete usr.password; 
+    return usr; 
 }
 
 /**
@@ -101,6 +110,7 @@ export const getUserById = async (id) => {
     const userCollection = await users(); 
     const user = await userCollection.findOne({_id: new ObjectId(id)}); 
     if (!user) throw `Error: user not found.`; 
+    delete user.password; 
     user._id = user._id.toString(); 
     return user; 
 }; 
@@ -115,6 +125,7 @@ export const getAllUsers = async() => {
     if(!userList) throw 'Error: Could not get all users.'; 
     userList = userList.map((usr) => {
         usr._id = usr._id.toString(); 
+        delete usr.password; 
         return usr; 
     }); 
     return userList; 
@@ -126,7 +137,7 @@ export const getAllUsers = async() => {
  * @returns {boolean} True if username is in the database, false otherwise.
  */
 export const containsUsername = async(username) => {
-    username = validateUsername(username);
+    username = checkUsername(username);
     const userCollection = await users(); 
     return (!(await userCollection.findOne({username})))? false : true;  
 }
@@ -145,13 +156,13 @@ export const containsEmail = async(email) => {
 
 export const login = async (username, password) => {
     let userCollection = await users();
-    username = validateUsername(username); 
+    username = checkUsername(username); 
     let user = await userCollection.findOne({username});
     if(!user) {
       throw "Either the username or password is invalid";
     }
     let actualPassword = user.password; 
-    password = validatePassword(password); 
+    password = checkPassword(password); 
     if(!(await bcrypt.compare(password, actualPassword))) {
       throw "Either the userId or password is invalid";
     }
