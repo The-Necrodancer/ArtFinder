@@ -13,14 +13,30 @@
 */
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
-import {checkString, checkStringNaN, throwWrongTypeError, checkId, validateItemKey, checkPriceValue, validateTag} from '../helpers.js'; 
+import {checkString, checkStringNaN, throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
 
-const artistProfileKeys = [bio, portfolio, pricingInfo, tags, availability, tos, rating, createdCommissions, reviewsReceived]; 
+//exported variables:
+export const bioMinLength = 0; 
+export const bioMaxLength = 512; 
+
+export const pricingInfoItemMinLength = 5; 
+export const pricingInfoItemMaxLength = 32; 
+
+export const tagMinLength = 5; 
+export const tagMaxLength = 32; 
+
+export const priceMinValue = 3; 
+export const priceMaxValue = 150; 
+
+export const tosMinLength = 0; 
+export const tosMaxLength = 1024; 
+
+ 
 
 export const getAllArtists = async() => {
     let users = await getAllUsers(); 
-    users.filter((user) => user.role === 'artist'); 
+    uesrs = users.filter((user) => user.role === 'artist'); 
     return users; 
 }; 
 
@@ -38,6 +54,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
     if (!newProfile || newProfile.constructor !== Object) {
         throwWrongTypeError('artist profile', 'object', typeof newProfile); 
     }
+    const artistProfileKeys = ['bio', 'portfolio', 'pricingInfo', 'tags', 'availability', 'tos', 'rating'];
     for(const k of Object.keys(newProfile)) {
         if (!artistProfileKeys.includes(k)) {
             throw `Error: ${k} is not a valid artist profile key.`; 
@@ -49,12 +66,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
 
     validatedObj = {}; 
     if('bio' in newProfile) {
-        if(typeof newProfile.bio !== 'string') 
-            throwWrongTypeError('bio', 'string', typeof newProfile.bio); 
-        if(newProfile.bio !== '')
-            validatedObj.bio = newProfile.bio.trim(); 
-        else 
-            validatedObj.bio = ''; 
+        validatedObj.bio = checkBio(newProfile.bio); 
     }
     if('portfolio' in newProfile) {
         //validate images here 
@@ -65,9 +77,9 @@ export const updateArtistProfile = async(aid, newProfile) => {
         }
         validatedObj.pricingInfo = {}; 
         for (const [key, value] of Object.entries(newProfile.pricingInfo)) {
-            key = validateItemKey(key);  
+            key = checkPricingInfoItem(key);  
             value = checkPriceValue(value); 
-            validatedObj.pricingInfo[`${key}`] = value; 
+            validatedObj.pricingInfo[key] = value; 
         }
     }
 
@@ -77,7 +89,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
         }
         validatedObj.tags = []; 
         for(const t of newProfile.tags) {
-            validatedObj.tags.push(validateTag(t)); 
+            validatedObj.tags.push(checkTag(t)); 
         }
     }
 
@@ -92,48 +104,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
         if(typeof newProfile.tos !== 'string') {
             throwWrongTypeError('TOS', 'string', typeof newProfile.tos); 
         }
-        if(newProfile.tos.length > 256) 
-            throw 'Error: TOS cannot exceed 256 characters in length.'; 
-        validatedObj.tos = newProfile.tos; 
-    }
-
-    if('createdCommissions' in newProfile) {
-        if(!Array.isArray(newProfile.createdCommissions)) {
-            throwWrongTypeError("created comissions", 'array', typeof newProfile.createdCommissions); 
-        }
-        validatedObj.createdCommissions = []; 
-        for (let cid of newProfile.createdCommissions) {
-            cid = checkId(cid); 
-            /* 
-            if(!(await getCommissionById(cid))) {
-                throw 'Error: no commission exists with given ID.';
-            
-            }
-            */
-            validatedObj.createdCommissions.push(cid); 
-        }
-    }
-
-    if('reviewsReceived' in newProfile) {
-        if(!Array.isArray(newProfile.reviewsReceived)) {
-            throwWrongTypeError("created comissions", 'array', typeof newProfile.reviewsReceived); 
-        }
-        validatedObj.reviewsReceived = []; 
-        let ratingSum = 0; 
-        let numRating = 0; 
-        for (let rid of newProfile.reviewsReceived) {
-            rid = checkId(rid); 
-            /*
-            let review = await getReviewById(rid); 
-            if(!review) {
-                throw 'Error: no review exists with given ID.';
-            }
-            ratingSum += review.rating; 
-            numRating++; 
-            */
-           validatedObj.reviewsReceived.push(cid); 
-        }
-        validatedObj.rating = (numRating != 0) ? ratingSum/numRating : 0; 
+        validatedObj.tos = checkTos(newProfile.tos);  
     }
 
     let userCollection = await users(); 
@@ -147,16 +118,3 @@ export const updateArtistProfile = async(aid, newProfile) => {
     delete updatedArtist.password; 
     return updatedArtist; 
 };
-
-export const addReview = async(aid, rid) => {
-    rid = checkId(rid); 
-    let reviews = artist.reviews.push(rid); 
-    return await updateArtistProfile(aid, {reviews}); 
-}
-
-export const addCommission = async(aid, cid) => {
-    cid = checkId(cid); 
-    let commissions = artist.commissions.push(cid); 
-    return await updateArtistProfile(aid, cid); 
-}
-
