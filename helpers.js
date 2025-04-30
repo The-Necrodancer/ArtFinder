@@ -131,3 +131,25 @@ export const validateUsername = (username) => {
         throw "Error: username can only contain alphanumeric characters and underscores"; 
     return username; 
 }
+
+export const validateItemKey = (key) => {
+    key = checkStringNaN(key); 
+    if(key.length < 5)
+        throw 'Error: name of item for sale must contain at least 5 characters'; 
+    if(key.length > 32 )
+        throw 'Error: name of item for sale cannot contain more than 32 characters'; 
+    if(key.match(/\W|_/))
+        throw 'Error: name of item for sale can only contain alphanumeric characters.'; 
+    return key; 
+}
+
+export const validateItemValue = (value) => {
+    if(typeof value !== 'number') {
+        throwWrongTypeError('price of item for sale', 'number', typeof value); 
+    }
+    if(value < 3) 
+        throw `Error: the price of an item must be at least $3.`; 
+    if (value > 150) 
+        throw `Error: the price of an item cannot exceed $150.`; 
+    return value; 
+}
