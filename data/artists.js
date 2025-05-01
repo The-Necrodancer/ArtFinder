@@ -13,7 +13,7 @@
 */
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
-import {checkString, checkStringNaN, throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
+import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
 
 //exported variables:
@@ -54,13 +54,10 @@ export const updateArtistProfile = async(aid, newProfile) => {
     if (!newProfile || newProfile.constructor !== Object) {
         throwWrongTypeError('artist profile', 'object', typeof newProfile); 
     }
-    const artistProfileKeys = ['bio', 'portfolio', 'pricingInfo', 'tags', 'availability', 'tos', 'rating'];
+    const artistProfileKeys = ['bio', 'portfolio', 'pricingInfo', 'tags', 'availability', 'tos'];
     for(const k of Object.keys(newProfile)) {
         if (!artistProfileKeys.includes(k)) {
-            throw `Error: ${k} is not a valid artist profile key.`; 
-        }
-        if(k==='rating') {
-            throw 'Error: you do not have permission to change the rating.'; 
+            throw `Error: ${k} is not a valid modifiable artist profile key.`; 
         }
     }
 
