@@ -2,7 +2,7 @@ import { createUser, getUserById, getAllUsers } from "../data/users.js";
 import { ObjectId } from "mongodb";
 import { faker} from "@faker-js/faker";
 import lodash from 'lodash'; 
-import { createRandomUser } from "helpers.js";
+import { createRandomUser } from "./helper.js";
 
 /**
  * Tests methods exported by ../data/users.js
