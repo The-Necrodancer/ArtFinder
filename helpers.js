@@ -29,6 +29,11 @@ import {
     passwordMinLength, 
     passwordMaxLength
 } from './data/users.js'
+
+import {
+    commentMinLength, 
+    commentMaxLength
+} from './data/reviews.js'; 
 // Note to Self: Remember to npm init and npm install mongodb
 // Note to Self: Remember to npm install express-validator
 
