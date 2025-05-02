@@ -137,7 +137,7 @@ const testUpdateArtistProfileBadInput = async(aid) => {
         [aid, {portfolio: undefined}], 
         [aid, {pricingInfo: undefined}],
         [aid, {pricingInfo: [6, 9, 10]}],
-        [aid, {pricingInfo: {'small sketch': 60.909}}],
+        [aid, {pricingInfo: {'small sketch': 60.009}}],
         [aid, {tags:{}}],
         [aid, {tags:{hello: 'gerjfdv'}}],
         [aid, {availability: undefined}],
