@@ -1,6 +1,6 @@
 import {faker} from '@faker-js/faker'; 
 import bcrypt from 'bcrypt';
-import { priceMaxValue, priceMinValue } from '../data/artists';
+import { priceMaxValue, priceMinValue } from '../data/artists.js';
 
 /**
  * 
@@ -19,7 +19,7 @@ export const createRandomUser = async() => {
  * 
  * @returns Randomly generated artistProfile to be used for testing. 
  */
-export const createRandomArtistProfile = async() => {
+export const createRandomArtistProfile = () => {
     let profileObj = {}; 
 
     //maybe randomly generate pricing info
