@@ -27,6 +27,11 @@ export const createReview = async(cid, rating, comment) => {
     let rid = insertedReview.insertedId.toString(); 
     let userCollection = await users(); 
 
+    //make sure review hasn't already been made by user for given commission 
+    if(user.requestedCommissions.find((e) => e._id === cid)) {
+        throw 'Error: user has already made a review for this commission.'; 
+    }
+
     //add review to artist 
     artist.artistProfile.reviewsReceived.push(rid); 
     const updatedArtist = await userCollection.updateOne(
