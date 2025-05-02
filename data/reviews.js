@@ -5,15 +5,17 @@ import { getUserById } from "./users.js";
 import {getCommissionById } from '../commissions.js'; 
 import { checkComment, checkId, checkRating } from "../helpers.js";
 
-export const createReview = async(cid, aid, uid, rating, comment) => {
-    cid = checkId(cid); 
-    aid = checkId(aid); 
-    uid = checkId(uid); 
+export const commentMinLength = 10; 
+export const commentMaxLength = 512; 
+
+export const createReview = async(cid, rating, comment) => { 
     rating = checkRating(rating); 
     comment = checkComment(comment); 
 
     //Following makes sure that all are valid and exist in databases 
-    await getCommissionById(cid); 
+    let com = await getCommissionById(cid); 
+    let aid = com.aid; 
+    let uid = com.uid; 
     let artist = await getArtistById(aid); 
     let user = await getUserById(uid);
 
@@ -26,21 +28,21 @@ export const createReview = async(cid, aid, uid, rating, comment) => {
     let userCollection = await users(); 
 
     //add review to artist 
-    let reviewsReceived = await artist.reviewsReceived.push(rid); 
+    artist.artistProfile.reviewsReceived.push(rid); 
     const updatedArtist = await userCollection.updateOne(
         {_id: new ObjectId(aid)}, 
-        {$set: {reviewsReceived}}
+        {$set: {"artistProfile.reviewsReceived": artist.artistProfile.reviewsReceived}}
     ); 
-    if(updatedArtist.matchedCount ===0 || updatedArtist.modifiedCount !== 1 || !updatedArtist.upsertedId)
+    if(updatedArtist.matchedCount ===0 || updatedArtist.modifiedCount !== 1)
         throw `Error: could not add commission to artist.`; 
 
     //add review to user 
-    let reviewsGiven = await user.reviewsGiven.push(rid); 
+    user.reviewsGiven.push(rid); 
     const updatedUser = await userCollection.updateOne(
         {_id: new ObjectId(aid)}, 
-        {$set: {reviewsGiven}}
+        {$set: {'reviewsGiven': user.reviewsGiven}}
     ); 
-    if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1 || !updatedUser.upsertedId)
+    if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1)
         throw `Error: could not add commission to artist.`; 
 
     return await getReviewById(insertedReview.insertedId.toString()); 
