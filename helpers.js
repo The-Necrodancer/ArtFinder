@@ -3,7 +3,13 @@
 
 
 import {ObjectId} from 'mongodb';
-import { statusValues } from './data/commissions.js';
+import { 
+    detailsMaxLength, 
+    detailsMinLength, 
+    titleMinLength, 
+    titleMaxLength,
+    statusValues 
+} from './data/commissions.js';
 import { 
     bioMinLength,
     bioMaxLength, 
@@ -90,7 +96,7 @@ export const validateEmail = (email) => {
 
 export const checkTag = (tag) => {
     /* We'll discuss this more after our Database proposal*/ 
-    tag = checkStringNaNMinMax(tag, 'Tag', tagMinLength, tagMaxLength);
+    tag = checkStringMinMax(tag, 'Tag', tagMinLength, tagMaxLength);
 
     /*
     * Should the tags be all lowercase? Or should there be a mix of cases?
@@ -99,9 +105,10 @@ export const checkTag = (tag) => {
     tag = tag.toLowerCase(); // Convert to lowercase
 
     // A valid tag can only be a string of letters, numbers, and underscores
-    const specialCharRegex = /[^a-zA-Z0-9\s]/;
+    const specialCharRegex = /[^a-zA-Z0-9-\s]/;
+    
     if (specialCharRegex.test(tag)) {
-        throw 'Tag can only contain letters, numbers, and underscores!';
+        throw 'Tag can only contain letters, numbers, hyphens, and underscores!';
     }
     return tag;
 }
@@ -111,7 +118,7 @@ export const throwWrongTypeError = (varName, expected, received) => {
 }
 
 export const checkPassword = (password) => {
-    password = checkStringNaNMinMax(password, 'password', passwordMinLength, passwordMaxLength);
+    password = checkStringMinMaxNaN(password, 'password', passwordMinLength, passwordMaxLength);
     if(password.match(/\s/)) 
         throw `Error: password cannot contain whitespace.`; 
     if(!password.match(/[A-Z]/))
@@ -125,17 +132,21 @@ export const checkPassword = (password) => {
 
 
 export const checkUsername = (username) => {
-    username = checkStringNaNMinMax(username, 'username', usernameMinLength, usernameMaxLength); 
+    username = checkStringMinMaxNaN(username, 'username', usernameMinLength, usernameMaxLength); 
     if (username.match(/\s/))
         throw "Error: username cannot contain whitespace"; 
+    /*
+    if (username.match(/\W/))
+        throw "Error: username can only contain alphanumeric characters and underscores"; 
+    */
     return username; 
 }
 
 
 export const checkPricingInfoItem = (key) => {
-    key = checkStringNaNMinMax(key, 'key', pricingInfoItemMinLength, pricingInfoItemMaxLength); 
-    if(key.match(/\W|_/))
-        throw 'Error: name of item for sale can only contain alphanumeric characters.'; 
+    key = checkStringMinMax(key, 'key', pricingInfoItemMinLength, pricingInfoItemMaxLength); 
+    //if(key.match(/\W|_/)) 
+        //throw 'Error: name of item for sale can only contain alphanumeric characters.'; 
     return key; 
 }
 
@@ -147,6 +158,8 @@ export const checkPriceValue = (value) => {
         throw `Error: the price of an item must be at least $3.`; 
     if (value > priceMaxValue) 
         throw `Error: the price of an item cannot exceed $150.`; 
+    if(value.toString().match(/.\d{3}$/)) 
+        throw 'Error: only two decimal digits are allowed.'; 
     return value; 
 }
 
@@ -161,15 +174,15 @@ export const checkRating = (rating) => {
 }
 
 export const checkComment = (comment) => {
-    return checkStringNaNMinMax(comment, 'comment', commentMinLength, commentMaxLength); 
+    return checkStringMinMax(comment, 'comment', commentMinLength, commentMaxLength); 
 }
 
 export const checkTitle = (title) =>{
-    return checkStringNaNMinMax(title, 'title', titleMinLength, titleMaxLength); 
+    return checkStringMinMax(title, 'title', titleMinLength, titleMaxLength); 
 }
 
 export const checkDetails = (details) => {
-    return checkStringNaNMinMax(details, 'details', detailsMinLength, detailsMaxLength); 
+    return checkStringMinMax(details, 'details', detailsMinLength, detailsMaxLength); 
 }
 
 export const checkStatus = (status) => {
@@ -179,15 +192,21 @@ export const checkStatus = (status) => {
 }
 
 export const checkBio = (bio) => {
-    return checkStringNaNMinMax(bio, 'bio', bioMinLength, bioMaxLength); 
+    return checkStringMinMax(bio, 'bio', bioMinLength, bioMaxLength); 
 }
 
 export const checkTos = (tos) => {
-    return checkStringNaNMinMax(tos, 'tos', tosMinLength, tosMaxLength); 
+    return checkStringMinMax(tos, 'tos', tosMinLength, tosMaxLength); 
 }
 
 
-const checkStringNaNMinMax = (string, varName, min, max) => {
+const checkStringMinMaxNaN = (string, varName, min, max) => {
+    string = checkStringMinMax(string, varName, min, max); 
+    if(!isNaN(string)) throw `Error: ${varName} cannot be a number`; 
+    return string;  
+}
+
+const checkStringMinMax = (string, varName, min, max) =>  {
     if (typeof string !== 'string') throw `Error: ${varName} must be a string`;
     if (string.length !== 0) {
         string = string.trim(); 
