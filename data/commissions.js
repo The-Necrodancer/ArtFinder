@@ -9,20 +9,18 @@ export const titleMaxLength = 128;
 
 export const detailsMinLength = 32; 
 export const detailsMaxLength = 1024; 
-/*
-aid 
-uid 
-title 
-details 
-price
-status 
-dateCreated
-progress updates 
-    {data, message, }
-*/
 
 export const statusValues = ['Pending', 'In Progress', 'Completed', 'Cancelled']; 
 
+/**
+ * Creates a commission
+ * @param {String} aid Id of artist being commissioned
+ * @param {String} uid Id of user commissioning
+ * @param {String} title Name of work being commissioned
+ * @param {String} details Details of commission
+ * @param {price} price Price of commission
+ * @returns {Object} Commission object added to database
+ */
 export const createCommission = async(
     aid, 
     uid, 
@@ -30,6 +28,7 @@ export const createCommission = async(
     details,
     price
 ) => {    
+    //validates user inputs
     let artist = await getArtistById(aid); 
     let user = await getUserById(uid); 
     title = checkTitle(title); 
@@ -39,12 +38,14 @@ export const createCommission = async(
     let dateCreated = new Date().toLocaleDateString(); 
     let progressUpdates = []; 
 
+    //inserts commission in database
     let commissionCollection = await commissions(); 
     let insertedCommission = await commissionCollection.insertOne({aid, uid, title, details, price, status, dateCreated, progressUpdates}); 
     if(insertedCommission.acknowledged!=true || !insertedCommission.insertedId) 
         throw `Error: could not insert commission in database`; 
 
     let cid = insertedCommission.insertedId.toString(); 
+    //modifies the requestedCommission field of the artist 
     let userCollection = await users(); 
     artist.artistProfile.createdCommissions.push(cid); 
     const updatedArtist = await userCollection.updateOne(
@@ -54,6 +55,7 @@ export const createCommission = async(
     if(updatedArtist.matchedCount ===0 || updatedArtist.modifiedCount !== 1){
         throw `Error: could not add commission to artist.`; 
     }
+    //modifies the requestedCommission field of the user
     user.requestedCommissions.push(cid); 
     const updatedUser = await userCollection.updateOne(
         {_id: new ObjectId(uid)},
@@ -64,7 +66,11 @@ export const createCommission = async(
 
     return await getCommissionById(insertedCommission.insertedId.toString()); 
 }
-
+/**
+ * Gets the commission with the given ID
+ * @param {String} id Id of commission 
+ * @returns {Object} The commission object in database with id 
+ */
 export const getCommissionById = async(id) => {
     id = checkId(id); 
     const commissionCollection = await commissions(); 

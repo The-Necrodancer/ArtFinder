@@ -122,6 +122,11 @@ export const throwWrongTypeError = (varName, expected, received) => {
     throw `Error: ${varName} expected type ${expected} but received type ${received}.\n`
 }
 
+/**
+ * Throws if the password isn't valid
+ * @param {String} password Password to be checked
+ * @returns {String} trimmed password
+ */
 export const checkPassword = (password) => {
     password = checkStringMinMaxNaN(password, 'password', passwordMinLength, passwordMaxLength);
     if(password.match(/\s/)) 
@@ -135,7 +140,11 @@ export const checkPassword = (password) => {
     return password; 
 }
 
-
+/**
+ * Throws if username isn't valid
+ * @param {String} username Username to be checked
+ * @returns {String} trimmed username
+ */
 export const checkUsername = (username) => {
     username = checkStringMinMaxNaN(username, 'username', usernameMinLength, usernameMaxLength); 
     if (username.match(/\s/))
@@ -147,7 +156,11 @@ export const checkUsername = (username) => {
     return username; 
 }
 
-
+/**
+ * Throws if item key isn't valid 
+ * @param {String} key Key to be checked
+ * @returns trimmed key
+ */
 export const checkPricingInfoItem = (key) => {
     key = checkStringMinMax(key, 'key', pricingInfoItemMinLength, pricingInfoItemMaxLength); 
     //if(key.match(/\W|_/)) 
@@ -155,6 +168,11 @@ export const checkPricingInfoItem = (key) => {
     return key; 
 }
 
+/**
+ * Throws if value isn't a valid price
+ * @param {Number} value Price of an item
+ * @returns value
+ */
 export const checkPriceValue = (value) => {
     if(typeof value !== 'number') {
         throwWrongTypeError('price of item for sale', 'number', typeof value); 
@@ -168,6 +186,11 @@ export const checkPriceValue = (value) => {
     return value; 
 }
 
+/**
+ * Throws if rating isn't a valid value
+ * @param {Number} rating Rating of a review
+ * @returns {Number} rating
+ */
 export const checkRating = (rating) => {
     if(typeof rating !== 'number') 
         throwWrongTypeError('rating', 'number', typeof rating); 
@@ -178,39 +201,84 @@ export const checkRating = (rating) => {
     return rating; 
 }
 
+/**
+ * Throws if comment isn't valid 
+ * @param {String} comment Comment of a review
+ * @returns {String} trimmed comment 
+ */
 export const checkComment = (comment) => {
     return checkStringMinMax(comment, 'comment', commentMinLength, commentMaxLength); 
 }
 
+/**
+ * Throws if title isn't valid
+ * @param {String} title Title of a commission
+ * @returns {String} trimmed title
+ */
 export const checkTitle = (title) =>{
     return checkStringMinMax(title, 'title', titleMinLength, titleMaxLength); 
 }
 
+/**
+ * Throws if details isn't valid
+ * @param {String} details Details of a commission
+ * @returns 
+ */
 export const checkDetails = (details) => {
     return checkStringMinMax(details, 'details', detailsMinLength, detailsMaxLength); 
 }
 
+/**
+ * Throws if status isn't a valid status
+ * @param {String} status Status of a commission
+ * @returns trimmed status
+ */
 export const checkStatus = (status) => {
     status = checkStringNaN(status); 
     if(!statusValues.includes(status)) throw `Error: ${status} is not a valid status.`; 
     return status; 
 }
 
+/**
+ * Throws if bio isn't valid
+ * @param {String} bio Bio of an artist's profile
+ * @returns trimmed bio
+ */
 export const checkBio = (bio) => {
     return checkStringMinMax(bio, 'bio', bioMinLength, bioMaxLength); 
 }
 
+/**
+ * Throws if tos isn't valid
+ * @param {String} tos TOS of an artist's profile
+ * @returns trimmed tos
+ */
 export const checkTos = (tos) => {
     return checkStringMinMax(tos, 'tos', tosMinLength, tosMaxLength); 
 }
 
-
+/**
+ * Throws if string isn't a string, or it's length is less than min or greater than max
+ * @param {String} string String to be checked
+ * @param {String} varName name of string variable
+ * @param {Number} min Min length of string
+ * @param {Number} max Max length of string
+ * @returns trimmed string
+ */
 const checkStringMinMaxNaN = (string, varName, min, max) => {
     string = checkStringMinMax(string, varName, min, max); 
     if(!isNaN(string)) throw `Error: ${varName} cannot be a number`; 
     return string;  
 }
 
+/**
+ * Throws if string isn't valid, it's length is less than min, it's length is greater than max, or it's a number
+ * @param {String} string String to be checked
+ * @param {String} varName name of string variable
+ * @param {Number} min Min length of string
+ * @param {Number} max Max length of string
+ * @returns trimmed string
+ */
 const checkStringMinMax = (string, varName, min, max) =>  {
     if (typeof string !== 'string') throw `Error: ${varName} must be a string`;
     if (string.length !== 0) {

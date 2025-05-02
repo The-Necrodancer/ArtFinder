@@ -8,6 +8,13 @@ import { checkComment, checkId, checkRating } from "../helpers.js";
 export const commentMinLength = 10; 
 export const commentMaxLength = 512; 
 
+/**
+ * Creates a review in database and then returns it
+ * @param {String} cid Commission that is being reviewed
+ * @param {Number} rating Rating being made
+ * @param {Comment} comment Comment being made
+ * @returns {Object} Review object that was added to database
+ */
 export const createReview = async(cid, rating, comment) => { 
     rating = checkRating(rating); 
     comment = checkComment(comment); 
@@ -64,6 +71,11 @@ export const createReview = async(cid, rating, comment) => {
     return await getReviewById(insertedReview.insertedId.toString()); 
 }
 
+/**
+ * Gets review with given ID 
+ * @param {String} id Id of review
+ * @returns {Object} Review with given ID
+ */
 export const getReviewById = async(id) => {
     id = checkId(id); 
     const reviewCollection = await reviews(); 
