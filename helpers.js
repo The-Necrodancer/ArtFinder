@@ -258,6 +258,28 @@ export const checkTos = (tos) => {
 }
 
 /**
+ * Throws if role is not 'user', 'artist', or 'admin'
+ * @param {String} role Role of user
+ * @returns trimmed role
+ */
+export const checkRole = (role) => {
+    role = checkString(role); 
+    if(role !== 'user' && role !== 'artist' & role !== 'admin') throw `Error: ${role} is not a valid role.`; 
+    return role; 
+}
+
+/**
+ * Throws if email is not a valid email address
+ * @param {String} email Email of user
+ * @returns {String} Trimmed email
+ */
+export const checkEmail = (email) => {
+    email = checkString(email); 
+    if(!validateEmail(email)) throw `Error: email is not a valid email address.`; 
+    return email; 
+}
+
+/**
  * Throws if string isn't a string, or it's length is less than min or greater than max
  * @param {String} string String to be checked
  * @param {String} varName name of string variable
