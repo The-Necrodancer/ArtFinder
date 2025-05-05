@@ -1,0 +1,23 @@
+<main>
+  <h2>Request Commission from {{artist.username}}</h2>
+  <form id="commission-form" action="/commission/request" method="POST">
+    <input type="hidden" name="artistId" value="{{artist._id}}" />
+
+    <div class="form-group">
+      <label for="title">Commission Title:</label>
+      <input type="text" id="title" name="title" required />
+    </div>
+
+    <div class="form-group">
+      <label for="details">Commission Details:</label>
+      <textarea id="details" name="details" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Budget:</label>
+      <input type="number" id="price" name="price" min="3" max="150" required />
+    </div>
+
+    <button type="submit">Submit Request</button>
+  </form>
+</main>

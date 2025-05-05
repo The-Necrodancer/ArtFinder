@@ -1,0 +1,45 @@
+<main>
+  <h2>Admin Dashboard</h2>
+
+  <section class="user-management">
+    <h3>User Management</h3>
+    <div class="user-list">
+      {{#each users}}
+        <div class="user-card">
+          <h4>{{this.username}}</h4>
+          <p>Role: {{this.role}}</p>
+          <p>Email: {{this.email}}</p>
+          <form action="/admin/user/update" method="POST">
+            <input type="hidden" name="userId" value="{{this._id}}">
+            <select name="status">
+              <option value="active" {{#if (equals this.status "active")}}selected{{/if}}>Active</option>
+              <option value="banned" {{#if (equals this.status "banned")}}selected{{/if}}>Banned</option>
+            </select>
+            <button type="submit">Update Status</button>
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+
+  <section class="reports">
+    <h3>Reports</h3>
+    {{#each reports}}
+      <div class="report-card">
+        <p>Reporter: {{this.reporter}}</p>
+        <p>Reported User: {{this.reportedUser}}</p>
+        <p>Reason: {{this.reason}}</p>
+        <p>Status: {{this.status}}</p>
+        <form action="/admin/report/update" method="POST">
+          <input type="hidden" name="reportId" value="{{this._id}}">
+          <select name="status">
+            <option value="pending" {{#if (equals this.status "pending")}}selected{{/if}}>Pending</option>
+            <option value="resolved" {{#if (equals this.status "resolved")}}selected{{/if}}>Resolved</option>
+            <option value="dismissed" {{#if (equals this.status "dismissed")}}selected{{/if}}>Dismissed</option>
+          </select>
+          <button type="submit">Update Status</button>
+        </form>
+      </div>
+    {{/each}}
+  </section>
+</main>
