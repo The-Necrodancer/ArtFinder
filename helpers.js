@@ -34,6 +34,11 @@ import {
     commentMinLength, 
     commentMaxLength
 } from './data/reviews.js'; 
+import { 
+    nameMaxLength, 
+    nameMinLength, 
+    socialMediaSites
+} from './data/cards.js';
 // Note to Self: Remember to npm init and npm install mongodb
 // Note to Self: Remember to npm install express-validator
 
@@ -277,6 +282,65 @@ export const checkEmail = (email) => {
     email = checkString(email); 
     if(!validateEmail(email)) throw `Error: email is not a valid email address.`; 
     return email; 
+}
+
+/**
+ * Throws if name is not valid
+ * @param {String} name Name of artist in card
+ * @returns {String} Trimmed name
+ */
+export const checkName = (name) => {
+    name = checkStringMinMaxNaN(name, 'artist name', nameMinLength, nameMaxLength);
+    return name; 
+}
+
+/**
+ * Checks if site is an acceptable social media site.
+ * @param {String} site Name of social media site
+ * @returns {String} trimmed site
+ */
+export const checkSocialLinkSite = (site) => {
+    site = checkString(site); 
+    if(!socialMediaSites.includes(site))
+        throw `Error: site name is not a valid social media site.`; 
+    return site; 
+}
+
+/**
+ * Checks if url is a valid url
+ * @param {String} url Url of artist's social media
+ * @returns {String} Trimmed url 
+ */
+export const checkUrl = (url) => {
+    //https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+    url = checkString(url); 
+    try {
+        new URL(url); 
+        return url; 
+    } catch {
+        throw `Error: provided link is not a valid url.`
+    }
+}
+
+/**
+ * Checks that all site names and urls are valid 
+ * @param {Array} socialsLinks An array of objects with form {site: {string}, url: {string}}
+ * @returns {Array} socialsLinks, with all strings trimeed
+ */
+export const checkSocialsLinks = (socialsLinks) => {
+    if(!Array.isArray(socialsLinks)) 
+        throwWrongTypeError('Socials Links', 'Array', typeof socialsLinks); 
+    if(socialsLinks.length === 0)
+        throw `Error: at least one social link must be provided.`; 
+    for(let i=0; i<socialsLinks.length; i++) {
+        let link = socialsLinks[i]; 
+        if(Object.keys(link).length !==2 || !link.site || !link.url) {
+            throw "Error: link object's keys must be and only be 'site' and 'url'.";
+        }
+        link.site = checkSocialLinkSite(link.site); 
+        link.url = checkUrl(link.url); 
+    }
+    return socialsLinks; 
 }
 
 /**
