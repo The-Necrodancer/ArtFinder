@@ -33,10 +33,34 @@ const constructorMethod = (app) => {
   });
 
   app.get("/artist/:id", async (req, res) => {
-    const artist = await getArtistById(req.params.id); // example DB query()
-    res.render("artistProfile", { 
-      artist 
-    });
+    let artist; 
+    try {
+      artist = await getArtistById(req.params.id); 
+    } catch (e) {
+      //what status to use here?
+      return res.status(400).render('error', {
+        pageTitle: 'Error', 
+        headerTitle: 'Error', 
+        navLink: [
+          {link: '/', text: 'home'}, 
+          {link: '/add', text: 'Add artist'}
+        ]
+      });
+    }
+    let toRender = { 
+      pageTitle: `$(artist.username)'s Profile`, 
+      headerTitle: `$(artist.username)'s Profile`, 
+      navLink: [
+        {link: '/', text: 'Home'}, 
+        {link: '/browse', text: 'Browse Artists'},
+        {link: '/add', text: 'Add artist'}
+      ], 
+      artist, 
+      isArtist: false
+    }; 
+    if(req.session && req.session.user._id === artist._id) 
+      toRender.isArtist = true; 
+    return res.render("artistProfile", toRender);
   });
 }; 
 
