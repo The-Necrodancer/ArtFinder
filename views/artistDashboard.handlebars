@@ -1,0 +1,49 @@
+<main>
+  <h2>Artist Dashboard</h2>
+  
+  <section class="profile-section">
+    <h3>My Profile</h3>
+    <form id="profile-form" action="/artist/profile/update" method="POST">
+      <div class="form-group">
+        <label for="bio">Bio:</label>
+        <textarea id="bio" name="bio">{{artist.artistProfile.bio}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="tos">Terms of Service:</label>
+        <textarea id="tos" name="tos">{{artist.artistProfile.tos}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Availability:</label>
+        <input type="checkbox" name="availability" {{#if artist.artistProfile.availability}}checked{{/if}}>
+      </div>
+
+      <button type="submit">Update Profile</button>
+    </form>
+  </section>
+
+  <section class="commissions-section">
+    <h3>Active Commissions</h3>
+    <div class="commission-list">
+      {{#each commissions}}
+        <div class="commission-card">
+          <h4>{{this.title}}</h4>
+          <p>Status: {{this.status}}</p>
+          <p>Client: {{this.client}}</p>
+          <p>Price: ${{this.price}}</p>
+          <form action="/commission/update-status" method="POST">
+            <input type="hidden" name="commissionId" value="{{this._id}}">
+            <select name="status">
+              <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
+              <option value="In Progress" {{#if (equals this.status "In Progress")}}selected{{/if}}>In Progress</option>
+              <option value="Completed" {{#if (equals this.status "Completed")}}selected{{/if}}>Completed</option>
+              <option value="Cancelled" {{#if (equals this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+            </select>
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+</main>
