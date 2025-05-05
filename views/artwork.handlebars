@@ -1,0 +1,65 @@
+<main>
+  <section class="artwork-gallery">
+    <h2>Browse Artwork</h2>
+
+    {{#if artworks}}
+      <div class="artwork-grid">
+        {{#each artworks}}
+          <div class="artwork-card">
+            <div class="artwork-image">
+              <img src="{{this.imageUrl}}" alt="{{this.title}}" />
+            </div>
+
+            <div class="artwork-info">
+              <h3>{{this.title}}</h3>
+              <p class="artwork-description">{{this.description}}</p>
+
+              <div class="artist-info">
+                <h4>Artist: {{this.artist.username}}</h4>
+                <p class="artist-bio">{{this.artist.artistProfile.bio}}</p>
+
+                <div class="tags">
+                  {{#each this.artist.artistProfile.tags}}
+                    <span class="tag">{{this}}</span>
+                  {{/each}}
+                </div>
+
+                <div class="artwork-meta">
+                  <span class="price">${{this.price}}</span>
+                  {{#if this.artist.artistProfile.availability}}
+                    <span class="status available">Available for Commission</span>
+                  {{else}}
+                    <span class="status unavailable">Currently Unavailable</span>
+                  {{/if}}
+                </div>
+
+                <div class="artist-rating">
+                  <span class="stars">
+                    {{#times this.artist.artistProfile.rating}}⭐{{/times}}
+                  </span>
+                  <span
+                    class="rating-count"
+                  >({{this.artist.artistProfile.reviewsReceived.length}}
+                    reviews)</span>
+                </div>
+              </div>
+
+              <div class="artwork-actions">
+                <a href="/artist/{{this.artist._id}}" class="view-profile">View
+                  Artist Profile</a>
+                {{#if this.artist.artistProfile.availability}}
+                  <a
+                    href="/commission/request/{{this.artist._id}}"
+                    class="request-commission"
+                  >Request Commission</a>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="no-artwork">No artwork found.</p>
+    {{/if}}
+  </section>
+</main>
