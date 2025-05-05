@@ -61,8 +61,9 @@ export const createCommission = async(
         {_id: new ObjectId(uid)},
         {$set: {"requestedCommissions": user.requestedCommissions}}
     );
-    if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1)
+    if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1) {
         throw `Error: could not add requested commission to user.`; 
+    }
 
     return await getCommissionById(insertedCommission.insertedId.toString()); 
 }

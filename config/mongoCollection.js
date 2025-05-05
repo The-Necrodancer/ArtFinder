@@ -18,3 +18,4 @@ export const users = getCollectionFn("users");
 export const commissions = getCollectionFn("commissions");
 export const reviews = getCollectionFn("reviews");
 export const reports = getCollectionFn("reports");
+export const posts = getCollectionFn("posts");
