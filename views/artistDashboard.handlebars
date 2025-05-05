@@ -23,6 +23,39 @@
     </form>
   </section>
 
+  <section class="portfolio-section">
+    <h3>My Portfolio</h3>
+    <div class="current-portfolio">
+      {{#if artist.artistProfile.portfolio.length}}
+        <div class="portfolio-grid">
+          {{#each artist.artistProfile.portfolio}}
+            <div class="portfolio-item">
+              <img src="{{this}}" alt="Portfolio piece" />
+              <form action="/artist/portfolio/remove" method="POST" class="remove-image">
+                <input type="hidden" name="imageUrl" value="{{this}}" />
+                <button type="submit" class="remove-btn">Remove</button>
+              </form>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p>No portfolio items yet. Add some artwork below!</p>
+      {{/if}}
+    </div>
+
+    <form action="/artist/portfolio/add" method="POST" enctype="multipart/form-data" class="add-portfolio">
+      <div class="form-group">
+        <label for="artwork">Add New Artwork:</label>
+        <input type="file" id="artwork" name="artwork" accept="image/*" required />
+      </div>
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required />
+      </div>
+      <button type="submit">Upload Artwork</button>
+    </form>
+  </section>
+
   <section class="commissions-section">
     <h3>Active Commissions</h3>
     <div class="commission-list">

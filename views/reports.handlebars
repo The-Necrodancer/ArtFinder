@@ -1,0 +1,41 @@
+<main>
+  <div class="reports-container">
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <div class="reports-header">
+      <h2>My Reports</h2>
+      <a href="/reports/new" class="new-report-button">Submit New Report</a>
+    </div>
+
+    <div class="reports-list">
+      {{#if reports.length}}
+        {{#each reports}}
+          <div class="report-card">
+            <div class="report-header">
+              <h3>{{this.subject}}</h3>
+              <span class="status {{this.status}}">{{this.status}}</span>
+            </div>
+
+            {{#if this.commissionId}}
+              <div class="report-type">Commission Dispute</div>
+            {{else}}
+              <div class="report-type">General Report</div>
+            {{/if}}
+
+            <p class="report-meta">
+              <span>Created: {{this.createdAt}}</span>
+            </p>
+
+            <div class="report-actions">
+              <a href="/reports/{{this._id}}" class="view-details">View Details</a>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p class="no-reports">You don't have any reports.</p>
+      {{/if}}
+    </div>
+  </div>
+</main>
