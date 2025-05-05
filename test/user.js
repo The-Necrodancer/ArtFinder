@@ -27,9 +27,9 @@ const testCreateUser = async (totalNumUsers) => {
     let hasErrors = false; 
     for(let i=0; i<totalNumUsers; i++) {
         let newUser = await createRandomUser();
-        let insertedUser; 
+        let insertedUserId; 
         try {
-            insertedUser = await createUser(newUser.role, newUser.username, newUser.email, newUser.password); 
+            insertedUserId = await createUser(newUser.role, newUser.username, newUser.email, newUser.password); 
         } catch (e) {
             console.log("FAILURE IN CREATEUSER"); 
             console.log("Attempted to insert ", newUser); 
@@ -37,6 +37,7 @@ const testCreateUser = async (totalNumUsers) => {
             hasErrors = true; 
             continue; 
         }
+        let insertedUser = getUserById(insertedUserId);
         newUser._id = insertedUser._id; 
         newUser.requestedCommissions = []; 
         newUser.reviewsGiven = []; 

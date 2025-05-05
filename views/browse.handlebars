@@ -1,45 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/styles.css" />
-    <title>Browse Artists</title>
-  </head>
-  <body>
-    <header>
-      <h1>Browse Artists</h1>
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/browse">Browse</a></li>
-          <li><a href="/add">Add Artist</a></li>
-        </ul>
-      </nav>
-      <form id="search-form" action="/search" method="GET">
-        <input
-          type="text"
-          id="search-input"
-          name="query"
-          placeholder="Search for an artist..."
-        />
-        <select name="style">
-          <option value="">Any Style</option>
-          <option value="anime">Anime</option>
-          <option value="chibi">Chibi</option>
-          <option value="realism">Realism</option>
-        </select>
-        <button type="submit">Search</button>
-      </form>
-    </header>
-    <section id="artist-list">
-      <h2>Artists</h2>
-      <ul id="artists">
-        {{#each artists}}
-          {{> artistCard this}}
-        {{/each}}
-      </ul>
-    </section>
-    <script src="/public\js\browse.js"></script>
-  </body>
-</html>
+<form id="search-form" action="/search" method="GET">
+  <input
+    type="text"
+    id="search-input"
+    name="query"
+    placeholder="Search for an artist..."
+  />
+  <select name="style">
+    <option value="">Any Style</option>
+    <option value="anime">Anime</option>
+    <option value="chibi">Chibi</option>
+    <option value="realism">Realism</option>
+  </select>
+  <button type="submit">Search</button>
+</form>
+<section id="artist-list">
+  <h2>Artists</h2>
+  <ul id="artists">
+    {{#each artists}}
+      {{> artistCard this}}
+    {{/each}}
+  </ul>
+</section>
+<script src="/public/js/browse.js"></script>

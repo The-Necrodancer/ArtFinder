@@ -1,0 +1,18 @@
+{{#if hasError}} 
+    <p class="error_message"> {{error}} </p>
+{{/if}}
+<main>
+    <form id="login_form" action="/login" method="post">
+        <div class="form_control">
+            <label id="username_label" for="username_input"> Username</label>
+            <input type="text" name="username_input" id="username_input">
+        </div>
+                <div class="form_control">
+            <label id="password_label" for="password_input"> Password </label>
+            <input type="text" name="password_input" id="password_input">
+        </div>
+        <div class="form_control">
+            <button class="submit_button" type="submit"> Log In </button>
+        </div>
+    </form>
+</main>

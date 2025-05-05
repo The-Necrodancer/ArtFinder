@@ -24,11 +24,14 @@ import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
 import bcrypt from "bcrypt"; 
 
-import {checkString, 
-    checkStringNaN, 
+import {
+    checkString, 
     validateEmail, 
     checkPassword, 
-    checkId, checkUsername} from '../helpers.js'; 
+    checkId, 
+    checkUsername,
+    checkRole
+} from '../helpers.js'; 
 
 /* exported const */
 export const usernameMinLength = 3; 
@@ -43,7 +46,7 @@ export const passwordMaxLength = 64;
  * @param {string} username The username of the user.
  * @param {string} email The email of the user (must be in valid email format).
  * @param {string} password The password of the user.
- * @returns {obj} The user that was added. 
+ * @returns {String} The id of the user that was added. 
  */
 export const createUser = async ( 
     role,  
@@ -52,10 +55,7 @@ export const createUser = async (
     password
 ) => {
     const userCollection = await users(); 
-    role = checkString(role); 
-    if (role !== 'user' && role !== 'artist' && role != 'admin') {
-        throw `Error: given role ${role} is not either 'user', 'admin', or 'artist.`; 
-    }
+    role = checkRole(role); 
     username = checkUsername(username, 'username'); 
     if(await containsUsername(username)) throw `Error: username already taken.`;  
     password = checkPassword(password); 
@@ -95,9 +95,7 @@ export const createUser = async (
     if(insertedUser.acknowledged != true || !insertedUser.insertedId) {
         throw `Error: could not create user ${username}.`
     }
-    let usr =  await getUserById(insertedUser.insertedId.toString()); 
-    delete usr.password; 
-    return usr; 
+    return insertedUser.insertedId.toString(); 
 }
 
 /**
