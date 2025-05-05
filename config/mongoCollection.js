@@ -16,4 +16,5 @@ const getCollectionFn = (collection) => {
 //TODO: Add your collection names here
 export const users = getCollectionFn("users");
 export const commissions = getCollectionFn("commissions");
-export const reviews = getCollectionFn("reviews"); 
+export const reviews = getCollectionFn("reviews");
+export const reports = getCollectionFn("reports");

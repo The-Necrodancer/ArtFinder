@@ -1,6 +1,7 @@
 import { getArtistById } from "../data/artists.js";
 import registerRoutes from "./register.js";
 import loginRoutes from "./login.js";
+import reportRoutes from "./reports.js";
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -11,13 +12,14 @@ const constructorMethod = (app) => {
       navLink: [
         { link: "/login", text: "Log In" },
         { link: "/register", text: "Register" },
+        { link: "/reports", text: "My Reports" },
       ],
     });
   });
 
   app.use("/register", registerRoutes);
-
   app.use("/login", loginRoutes);
+  app.use("/reports", reportRoutes);
 
   app.get("/browse", async (req, res) => {
     const { query, style } = req.query;

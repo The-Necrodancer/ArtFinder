@@ -1,0 +1,68 @@
+<main>
+  <div class="form-container">
+    <h2>{{#if commission}}Submit Commission Dispute{{else}}Submit Report{{/if}}</h2>
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <form id="report-form" action="/reports" method="POST">
+      {{#if commission}}
+        <input type="hidden" name="commissionId" value="{{commission._id}}" />
+        <input
+          type="hidden"
+          name="reportedUserId"
+          value="{{reportedUser._id}}"
+        />
+
+        <div class="commission-info">
+          <h3>Commission Details</h3>
+          <p><strong>Title:</strong> {{commission.title}}</p>
+          <p><strong>Price:</strong> ${{commission.price}}</p>
+          <p><strong>Status:</strong> {{commission.status}}</p>
+          <p><strong>Other Party:</strong> {{reportedUser.username}}</p>
+        </div>
+      {{else}}
+        <div class="form-group">
+          <label for="reportedUserId">Username to Report:</label>
+          <input
+            type="text"
+            id="reportedUserId"
+            name="reportedUserId"
+            required
+          />
+          <small>Enter the username of the person you want to report</small>
+        </div>
+      {{/if}}
+
+      <div class="form-group">
+        <label for="subject">Subject:</label>
+        <input
+          type="text"
+          id="subject"
+          name="subject"
+          required
+          minlength="10"
+          maxlength="100"
+        />
+        <small>Brief summary of the issue (10-100 characters)</small>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea
+          id="description"
+          name="description"
+          required
+          minlength="20"
+          maxlength="1000"
+        ></textarea>
+        <small>Please provide a detailed explanation (20-1000 characters)</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-button">Submit Report</button>
+        <a href="javascript:history.back()" class="cancel-button">Cancel</a>
+      </div>
+    </form>
+  </div>
+</main>

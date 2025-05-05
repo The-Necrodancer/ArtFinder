@@ -1,0 +1,102 @@
+<main>
+  <div class="report-container">
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <div class="report-header">
+      <div class="report-title">
+        <h2>{{report.subject}}</h2>
+        {{#if report.commissionId}}
+          <span class="report-type commission">Commission Dispute</span>
+        {{else}}
+          <span class="report-type general">General Report</span>
+        {{/if}}
+        <span class="report-status {{report.status}}">{{report.status}}</span>
+      </div>
+    </div>
+
+    <div class="report-details">
+      <div class="report-info">
+        <p><strong>Reported by:</strong> {{reporter.username}}</p>
+        <p><strong>Reported user:</strong> {{reportedUser.username}}</p>
+        <p><strong>Created on:</strong> {{report.createdAt}}</p>
+        {{#if commission}}
+          <div class="commission-info">
+            <h3>Related Commission</h3>
+            <p><strong>Title:</strong> {{commission.title}}</p>
+            <p><strong>Price:</strong> ${{commission.price}}</p>
+            <p><strong>Status:</strong> {{commission.status}}</p>
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="description-section">
+        <h3>Description</h3>
+        <div class="description-content">
+          {{report.description}}
+        </div>
+      </div>
+
+      {{#if report.resolution}}
+        <div class="resolution-section">
+          <h3>Resolution</h3>
+          <div class="resolution-content">
+            {{report.resolution}}
+          </div>
+          <p class="resolution-date"><strong>Resolved on:</strong> {{report.resolvedAt}}</p>
+        </div>
+      {{/if}}
+
+      <div class="comments-section">
+        <h3>Discussion</h3>
+        {{#each report.comments}}
+          <div class="comment">
+            <div class="comment-content">{{this.comment}}</div>
+            <div class="comment-meta">
+              By {{lookup ../usernames this.userId}} on {{this.createdAt}}
+            </div>
+          </div>
+        {{/each}}
+
+        {{#unless (eq report.status "Resolved")}}
+          <form class="comment-form" action="/reports/{{report._id}}/comment" method="POST">
+            <div class="form-group">
+              <label for="comment">Add a Comment:</label>
+              <textarea id="comment" name="comment" required minlength="1" maxlength="500"></textarea>
+            </div>
+            <button type="submit">Add Comment</button>
+          </form>
+        {{/unless}}
+      </div>
+
+      {{#if isAdmin}}
+        <div class="admin-actions">
+          <h3>Admin Actions</h3>
+          {{#unless (eq report.status "Resolved")}}
+            <form class="status-form" action="/reports/{{report._id}}/status" method="POST">
+              <div class="form-group">
+                <label for="status">Update Status:</label>
+                <select id="status" name="status">
+                  <option value="Pending" {{#if (eq report.status "Pending")}}selected{{/if}}>Pending</option>
+                  <option value="Under Review" {{#if (eq report.status "Under Review")}}selected{{/if}}>Under Review</option>
+                  <option value="Resolved" {{#if (eq report.status "Resolved")}}selected{{/if}}>Resolved</option>
+                  <option value="Dismissed" {{#if (eq report.status "Dismissed")}}selected{{/if}}>Dismissed</option>
+                </select>
+              </div>
+              <button type="submit">Update Status</button>
+            </form>
+
+            <form class="resolve-form" action="/reports/{{report._id}}/resolve" method="POST">
+              <div class="form-group">
+                <label for="resolution">Resolution:</label>
+                <textarea id="resolution" name="resolution" required minlength="20" maxlength="1000"></textarea>
+              </div>
+              <button type="submit">Resolve Report</button>
+            </form>
+          {{/unless}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</main>
