@@ -33,7 +33,6 @@ const constructorMethod = (app) => {
   });
 
   app.get("/artist/:id", async (req, res) => {
-<<<<<<< HEAD
     let artist; 
     try {
       artist = await getArtistById(req.params.id); 
@@ -62,13 +61,7 @@ const constructorMethod = (app) => {
     if(req.session && req.session.user._id === artist._id) 
       toRender.isArtist = true; 
     return res.render("artistProfile", toRender);
-=======
-    const artist = await getArtistById(req.params.id); // example DB query()
-    res.render("artistProfile", {
-      artist,
-    });
->>>>>>> 8d58b5481a26efb8bba6c99233d343b1019887a8
   });
-};
+}; 
 
 export default constructorMethod;
