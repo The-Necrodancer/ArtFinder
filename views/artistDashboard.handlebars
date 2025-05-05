@@ -1,0 +1,82 @@
+<main>
+  <h2>Artist Dashboard</h2>
+  
+  <section class="profile-section">
+    <h3>My Profile</h3>
+    <form id="profile-form" action="/artist/profile/update" method="POST">
+      <div class="form-group">
+        <label for="bio">Bio:</label>
+        <textarea id="bio" name="bio">{{artist.artistProfile.bio}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="tos">Terms of Service:</label>
+        <textarea id="tos" name="tos">{{artist.artistProfile.tos}}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Availability:</label>
+        <input type="checkbox" name="availability" {{#if artist.artistProfile.availability}}checked{{/if}}>
+      </div>
+
+      <button type="submit">Update Profile</button>
+    </form>
+  </section>
+
+  <section class="portfolio-section">
+    <h3>My Portfolio</h3>
+    <div class="current-portfolio">
+      {{#if artist.artistProfile.portfolio.length}}
+        <div class="portfolio-grid">
+          {{#each artist.artistProfile.portfolio}}
+            <div class="portfolio-item">
+              <img src="{{this}}" alt="Portfolio piece" />
+              <form action="/artist/portfolio/remove" method="POST" class="remove-image">
+                <input type="hidden" name="imageUrl" value="{{this}}" />
+                <button type="submit" class="remove-btn">Remove</button>
+              </form>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p>No portfolio items yet. Add some artwork below!</p>
+      {{/if}}
+    </div>
+
+    <form action="/artist/portfolio/add" method="POST" enctype="multipart/form-data" class="add-portfolio">
+      <div class="form-group">
+        <label for="artwork">Add New Artwork:</label>
+        <input type="file" id="artwork" name="artwork" accept="image/*" required />
+      </div>
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required />
+      </div>
+      <button type="submit">Upload Artwork</button>
+    </form>
+  </section>
+
+  <section class="commissions-section">
+    <h3>Active Commissions</h3>
+    <div class="commission-list">
+      {{#each commissions}}
+        <div class="commission-card">
+          <h4>{{this.title}}</h4>
+          <p>Status: {{this.status}}</p>
+          <p>Client: {{this.client}}</p>
+          <p>Price: ${{this.price}}</p>
+          <form action="/commission/update-status" method="POST">
+            <input type="hidden" name="commissionId" value="{{this._id}}">
+            <select name="status">
+              <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
+              <option value="In Progress" {{#if (equals this.status "In Progress")}}selected{{/if}}>In Progress</option>
+              <option value="Completed" {{#if (equals this.status "Completed")}}selected{{/if}}>Completed</option>
+              <option value="Cancelled" {{#if (equals this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+            </select>
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+</main>

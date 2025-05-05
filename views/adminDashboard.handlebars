@@ -1,0 +1,102 @@
+<main>
+  <h2>Admin Dashboard</h2>
+
+  <section class="user-management">
+    <h3>User Management</h3>
+    <div class="user-list">
+      {{#each users}}
+        <div class="user-card">
+          <h4>{{this.username}}</h4>
+          <p>Role: {{this.role}}</p>
+          <p>Email: {{this.email}}</p>
+          <form action="/admin/user/update" method="POST">
+            <input type="hidden" name="userId" value="{{this._id}}">
+            <select name="status">
+              <option value="active" {{#if (equals this.status "active")}}selected{{/if}}>Active</option>
+              <option value="banned" {{#if (equals this.status "banned")}}selected{{/if}}>Banned</option>
+            </select>
+            <button type="submit">Update Status</button>
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+
+  <section class="reports-management">
+    <h3>Reports and Disputes</h3>
+    <div class="reports-filters">
+      <button class="filter-btn" data-filter="pending">Pending</button>
+      <button class="filter-btn" data-filter="under-review">Under Review</button>
+      <button class="filter-btn" data-filter="resolved">Resolved</button>
+      <button class="filter-btn" data-filter="dismissed">Dismissed</button>
+    </div>
+
+    <div class="reports-list">
+      {{#each reports}}
+        <div class="report-card {{this.status}}">
+          <div class="report-header">
+            <h4>{{this.subject}}</h4>
+            <span class="report-type {{#if this.commissionId}}commission{{else}}general{{/if}}">
+              {{#if this.commissionId}}Commission Dispute{{else}}General Report{{/if}}
+            </span>
+          </div>
+          
+          <div class="report-details">
+            <p><strong>Reporter:</strong> {{lookup ../usernames this.reportedBy}}</p>
+            <p><strong>Reported User:</strong> {{lookup ../usernames this.reportedUser}}</p>
+            <p><strong>Created:</strong> {{formatDate this.createdAt}}</p>
+            <p><strong>Status:</strong> {{this.status}}</p>
+          </div>
+
+          <div class="report-actions">
+            <form action="/reports/{{this._id}}/status" method="POST" class="status-form">
+              <select name="status">
+                <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
+                <option value="Under Review" {{#if (equals this.status "Under Review")}}selected{{/if}}>Under Review</option>
+                <option value="Resolved" {{#if (equals this.status "Resolved")}}selected{{/if}}>Resolved</option>
+                <option value="Dismissed" {{#if (equals this.status "Dismissed")}}selected{{/if}}>Dismissed</option>
+              </select>
+              <button type="submit">Update Status</button>
+            </form>
+
+            {{#unless this.resolution}}
+              <form action="/reports/{{this._id}}/resolve" method="POST" class="resolve-form">
+                <textarea name="resolution" placeholder="Enter resolution details..." required></textarea>
+                <button type="submit">Resolve Report</button>
+              </form>
+            {{/unless}}
+
+            <a href="/reports/{{this._id}}" class="view-details">View Full Details</a>
+          </div>
+        </div>
+      {{else}}
+        <p class="no-reports">No reports found.</p>
+      {{/each}}
+    </div>
+  </section>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const reportCards = document.querySelectorAll('.report-card');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Update active button
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      // Filter reports
+      const filter = button.dataset.filter;
+      reportCards.forEach(card => {
+        if (filter === 'all' || card.classList.contains(filter)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+});
+</script>

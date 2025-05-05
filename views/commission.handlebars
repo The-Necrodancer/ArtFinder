@@ -1,0 +1,45 @@
+<main>
+  <h2>{{#if commission}}Commission Details{{else}}Request Commission from {{artist.username}}{{/if}}</h2>
+  {{#if error}}
+    <div class="error-message">{{error}}</div>
+  {{/if}}
+
+  {{#if commission}}
+    <div class="commission-details">
+      <h3>Commission Details</h3>
+      <p><strong>Title:</strong> {{commission.title}}</p>
+      <p><strong>Details:</strong> {{commission.details}}</p>
+      <p><strong>Price:</strong> ${{commission.price}}</p>
+      <p><strong>Status:</strong> {{commission.status}}</p>
+
+      {{#if (or (eq user._id commission.uid) (eq user._id commission.aid))}}
+        <div class="action-buttons">
+          {{#if (not (eq commission.status "Completed"))}}
+            <a href="/reports/new?commissionId={{commission._id}}" class="report-button">Report Issue</a>
+          {{/if}}
+        </div>
+      {{/if}}
+    </div>
+  {{else}}
+    <form id="commission-form" action="/commission/request" method="POST">
+      <input type="hidden" name="artistId" value="{{artist._id}}" />
+
+      <div class="form-group">
+        <label for="title">Commission Title:</label>
+        <input type="text" id="title" name="title" required />
+      </div>
+
+      <div class="form-group">
+        <label for="details">Commission Details:</label>
+        <textarea id="details" name="details" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Budget:</label>
+        <input type="number" id="price" name="price" min="3" max="150" required />
+      </div>
+
+      <button type="submit">Submit Request</button>
+    </form>
+  {{/if}}
+</main>
