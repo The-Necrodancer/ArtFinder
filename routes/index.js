@@ -6,15 +6,18 @@ import reportRoutes from "./reports.js";
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
     //const featuredArtists = await db.getFeaturedArtists(); // your DB call
-    res.render("home", {
+    let renderObj = {
       pageTitle: "ArtFinder - Find The Artist For You!",
       headerTitle: "ArtFinder",
       navLink: [
         { link: "/login", text: "Log In" },
-        { link: "/register", text: "Register" },
-        { link: "/reports", text: "My Reports" },
-      ],
-    });
+        { link: "/register", text: "Register" }
+      ]
+    };
+    if(req.session && req.session.user) {
+      renderObj.navLink.push({link: "/reports", text: "My Reports"});
+    }
+    res.render("home", renderObj);
   });
 
   app.use("/register", registerRoutes);
