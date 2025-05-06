@@ -32,10 +32,13 @@ export const socialMediaSites = [
     'Instagram', 
     'TikTok', 
     'X (Twitter)', 
-    'DevianArt', 
+    'DeviantArt', 
     'ArtStation', 
     'Threads', 
-    'BlueSky'
+    'BlueSky',
+    'Pillowfort',
+    'Newgrounds',
+    'Unvale'
 ]; 
 
 export const createCard = async(
