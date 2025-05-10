@@ -168,9 +168,9 @@ const constructorMethod = (app) => {
 <<<<<<< HEAD
 
   // Commission, Card, and Review routes
-  app.use("/commissions", commissionRoutes);
-  app.use("/cards", cardRoutes);
-  app.use("/reviews", reviewRoutes);
+  //app.use("/commissions", commissionRoutes);
+  //app.use("/cards", cardRoutes);
+  //app.use("/reviews", reviewRoutes);
 
   app.get("/browse", async (req, res) => {
 =======
