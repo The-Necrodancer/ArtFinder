@@ -7,16 +7,18 @@
       class="profile-pic"
     />
     --->
-    <div>
-      <h2>{{artist.name}}</h2>
+    <div>      <h2>{{artist.name}}</h2>
       <p class="tags">{{artist.tags}}</p>
       <p class="availability">{{#if artist.availability}}Available for
           commissions{{else}}Currently unavailable{{/if}}</p>
       {{#if artist.availability}}
-      <button
-        class="commission-btn"
-        onclick="requestCommission('{{artist._id}}')"
-      >Request Commission</button>
+      <div class="action-buttons">
+        <button
+          class="commission-btn"
+          onclick="requestCommission('{{artist._id}}')"
+        >Request Commission</button>
+        <a href="/messages/new/{{artist._id}}" class="message-btn">Send Message</a>
+      </div>
       {{/if}}
       <p class="rating">⭐
         {{artist.rating}}
