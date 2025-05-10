@@ -1,5 +1,0 @@
-Reminders:
-
-- Delete the Node Modules Folder before pushing to GitHub.
-    > Not dealing with an extremely high rate of upload / download.
-- Make sure express is set to "express": "^4.18.2" in package.json. (most recent version is particularly finnicky)
