@@ -22,7 +22,7 @@ router.route("/")
       const cards = await getNewestCards();
 
       // Simple test to see if the cards are being returned correctly
-      return cards;
+      return res.status(400).json(cards);
       
       /*
       res.render("cards", {
@@ -39,8 +39,8 @@ router.route("/")
     catch (e) {
       // Handles an error in getting the cards (if not possible)
 
-      // Throw for testing purposes
-      throw 'Error getting cards';
+      // JSON for testing purposes
+      return res.status(404).json(e);
 
       /*
       return res.status(400).render("error", {

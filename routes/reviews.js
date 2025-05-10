@@ -33,7 +33,7 @@ router.post("/", /*ensureAuthenticated,*/ async (req, res) => {
         // Redirect to the review page after creation
     } catch (e) {
         // Throw for testing purposes
-        throw 'Error creating review';
+        return res.status(404).json(e);
         /*
         return res.status(400).render("createReview", {
             pageTitle: "Create Review",

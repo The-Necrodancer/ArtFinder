@@ -39,11 +39,15 @@ router.post("/", ensureAuthenticated, async (req, res) => {
         // return res.redirect(`/commissions/${commission._id}`);
     }
     catch (e) {
+        // JSON for testing purposes
+        return res.status(404).json(e);
+        /*
         return res.status(400).render("createCommission", {
             pageTitle: "Create Commission",
             headerTitle: "Create Commission",
             error: e.toString(),
         });
+        */
     }
 })
 
@@ -66,7 +70,9 @@ router.get("/:id", /*ensureAuthenticated,*/ async (req, res) => {
             throw "Access denied."
         }
         
+        return res.status(400).json(commission);
         // REMINDER: Render the commission page with the commission details
+        /*
         return res.render("commission", {
             pageTitle: "Commission Details",
             headerTitle: "Commission Details",
@@ -80,9 +86,18 @@ router.get("/:id", /*ensureAuthenticated,*/ async (req, res) => {
                 { link: "/add", text: "Add artist" },
             ],
         });
+        */
     }
     catch (e) {
-
+        // JSON for testing purposes
+        return res.status(404).json(e);
+        /*
+        return res.status(400).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: e.toString(),
+        });
+        */
     }
 })
 
@@ -103,11 +118,15 @@ router.post("/:id/status", ensureAuthenticated, async (req, res) => {
 
     }
     catch (e) {
+        // JSON for testing purposes
+        return res.status(404).json(e);
+        /*
         return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
             error: e.toString(),
         });
+        */
     }
     
 })
