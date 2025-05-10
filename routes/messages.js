@@ -34,6 +34,7 @@ router.get("/", userMiddleware, async (req, res) => {
       navLink: [
         { link: "/", text: "Home" },
         { link: "/dashboard/" + req.session.user.role, text: "Dashboard" },
+        { link: "/signout", text: "Sign Out" },
       ],
     });
   } catch (e) {

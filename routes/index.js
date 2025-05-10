@@ -4,6 +4,7 @@ import loginRoutes from "./login.js";
 import reportRoutes from "./reports.js";
 import { commissions } from "../config/mongoCollection.js";
 import { ObjectId } from "mongodb";
+import authRoutes from "./auth_routes.js";
 import {
   userMiddleware,
   superuserMiddleware,
@@ -26,6 +27,7 @@ const constructorMethod = (app) => {
       renderObj.navLink = [
         { link: "/", text: "Home" },
         { link: "/browse", text: "Browse Artists" },
+        { link: "/signout", text: "Sign Out" },
       ];
       if (req.session.user.role === "admin") {
         renderObj.navLink.push({
@@ -55,6 +57,7 @@ const constructorMethod = (app) => {
       navLink: [
         { link: "/", text: "Home" },
         { link: "/reports", text: "Reports" },
+        { link: "/signout", text: "Sign Out" },
       ],
     });
   });
@@ -91,6 +94,7 @@ const constructorMethod = (app) => {
           { link: "/", text: "Home" },
           { link: "/browse", text: "Browse Artists" },
           { link: "/messages", text: "Messages" },
+          { link: "/signout", text: "Sign Out" },
         ],
         artist: artist,
         commissions: activeCommissions,
@@ -142,6 +146,7 @@ const constructorMethod = (app) => {
           { link: "/", text: "Home" },
           { link: "/browse", text: "Browse Artists" },
           { link: "/messages", text: "Messages" },
+          { link: "/signout", text: "Sign Out" },
         ],
         user: req.session.user,
         activeCommissions: activeCommissions,
@@ -161,6 +166,7 @@ const constructorMethod = (app) => {
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);
   app.use("/reports", reportRoutes);
+  app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
     const { query, style } = req.query;
     res.render("browse", {
@@ -193,7 +199,7 @@ const constructorMethod = (app) => {
       navLink: [
         { link: "/", text: "Home" },
         { link: "/browse", text: "Browse Artists" },
-        { link: "/add", text: "Add artist" },
+        { link: "/signout", text: "Sign Out" },
       ],
       artist,
       isArtist: false,
