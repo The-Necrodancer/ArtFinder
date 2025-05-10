@@ -165,17 +165,13 @@ const constructorMethod = (app) => {
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);
   app.use("/reports", reportRoutes);
-<<<<<<< HEAD
 
   // Commission, Card, and Review routes
   //app.use("/commissions", commissionRoutes);
   //app.use("/cards", cardRoutes);
   //app.use("/reviews", reviewRoutes);
 
-  app.get("/browse", async (req, res) => {
-=======
-  app.get("/browse", userMiddleware, async (req, res) => {
->>>>>>> 7efabc23f75ea4d0f5e98e4e2b5660e60b120457
+app.get("/browse", userMiddleware, async (req, res) => {
     const { query, style } = req.query;
     res.render("browse", {
       pageTitle: "Browse Artists",
