@@ -13,6 +13,10 @@ import {
 import { getUserMessages, getUnreadCount } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
 
+import commissionRoutes from "./commissions.js";
+import cardRoutes from "./cards.js";
+import reviewRoutes from "./reviews.js";
+
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
     let renderObj = {

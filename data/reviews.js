@@ -84,3 +84,19 @@ export const getReviewById = async(id) => {
     review._id = review._id.toString(); 
     return review; 
 }
+
+// UNTESTED
+/**
+ * Gets all reviews for a given commission
+ * @param {String} cid Id of commission
+ */
+export const getReviewsByCommissionId = async(cid) => {
+    cid = checkId(cid);
+    const reviewCollection = await reviews();
+    const reviewList = await reviewCollection.find({cid: cid}).toArray();
+    if (!reviewList) throw `Error: Could not get all reviews.`;
+    reviewList = reviewList.map((review) => {
+        review._id = review._id.toString(); 
+    });
+    return reviewList;
+}
