@@ -4,24 +4,19 @@ import loginRoutes from "./login.js";
 import reportRoutes from "./reports.js";
 import { commissions } from "../config/mongoCollection.js";
 import { ObjectId } from "mongodb";
+import {
+  userMiddleware,
+  superuserMiddleware,
+  roleMiddleware,
+} from "../middleware.js";
+import { getUserMessages, getUnreadCount } from "../data/messages.js";
+import { getUserById } from "../data/users.js";
 
 import commissionRoutes from "./commissions.js";
 import cardRoutes from "./cards.js";
 import reviewRoutes from "./reviews.js";
 
 const constructorMethod = (app) => {
-  // Middleware to check if user is logged in
-  const ensureAuthenticated = (req, res, next) => {
-    if (!req.session.user) {
-      return res.status(401).render("login", {
-        pageTitle: "Login Required",
-        headerTitle: "Login Required",
-        error: "You must be logged in to access this page",
-      });
-    }
-    next();
-  };
-
   app.get("/", async (req, res) => {
     let renderObj = {
       pageTitle: "ArtFinder - Find The Artist For You!",
@@ -56,16 +51,8 @@ const constructorMethod = (app) => {
     }
     res.render("home", renderObj);
   });
-
-  // Dashboard routes
-  app.get("/dashboard/admin", ensureAuthenticated, async (req, res) => {
-    if (req.session.user.role !== "admin") {
-      return res.status(403).render("error", {
-        pageTitle: "Access Denied",
-        headerTitle: "Access Denied",
-        error: "You must be an admin to access this page",
-      });
-    }
+  // Dashboard routes with role-based middleware
+  app.get("/dashboard/admin", roleMiddleware(["admin"]), async (req, res) => {
     return res.render("adminDashboard", {
       pageTitle: "Admin Dashboard",
       headerTitle: "Admin Dashboard",
@@ -76,15 +63,7 @@ const constructorMethod = (app) => {
     });
   });
 
-  app.get("/dashboard/artist", ensureAuthenticated, async (req, res) => {
-    if (req.session.user.role !== "artist") {
-      return res.status(403).render("error", {
-        pageTitle: "Access Denied",
-        headerTitle: "Access Denied",
-        error: "You must be an artist to access this page",
-      });
-    }
-
+  app.get("/dashboard/artist", roleMiddleware(["artist"]), async (req, res) => {
     try {
       const artist = await getArtistById(req.session.user._id);
       const commissionCollection = await commissions();
@@ -95,26 +74,44 @@ const constructorMethod = (app) => {
         })
         .toArray();
 
+      // Get recent messages and user details
+      const allMessages = await getUserMessages(req.session.user._id);
+      const recentMessages = allMessages
+        .filter((msg) => !msg.archived)
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, 3);
+
+      for (let message of recentMessages) {
+        message.sender = await getUserById(message.senderId.toString());
+        message.recipient = await getUserById(message.recipientId.toString());
+      }
+
+      const unreadCount = await getUnreadCount(req.session.user._id);
+
       return res.render("artistDashboard", {
         pageTitle: "Artist Dashboard",
         headerTitle: "Artist Dashboard",
         navLink: [
           { link: "/", text: "Home" },
           { link: "/browse", text: "Browse Artists" },
+          { link: "/messages", text: "Messages" },
         ],
         artist: artist,
         commissions: activeCommissions,
+        recentMessages,
+        unreadCount,
       });
     } catch (e) {
       return res.status(500).render("error", {
         pageTitle: "Error",
         headerTitle: "Error",
         error: e.toString(),
+        navLink: [{ link: "/", text: "Home" }],
       });
     }
   });
 
-  app.get("/dashboard/user", ensureAuthenticated, async (req, res) => {
+  app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {
       const commissionCollection = await commissions();
       const activeCommissions = await commissionCollection
@@ -124,11 +121,23 @@ const constructorMethod = (app) => {
         })
         .toArray();
 
-      // For each commission, get the artist details
       for (let commission of activeCommissions) {
         const artist = await getArtistById(commission.aid);
         commission.artist = artist.username;
       }
+
+      const allMessages = await getUserMessages(req.session.user._id);
+      const recentMessages = allMessages
+        .filter((msg) => !msg.archived)
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, 3);
+
+      for (let message of recentMessages) {
+        message.sender = await getUserById(message.senderId.toString());
+        message.recipient = await getUserById(message.recipientId.toString());
+      }
+
+      const unreadCount = await getUnreadCount(req.session.user._id);
 
       return res.render("userDashboard", {
         pageTitle: "My Dashboard",
@@ -136,15 +145,19 @@ const constructorMethod = (app) => {
         navLink: [
           { link: "/", text: "Home" },
           { link: "/browse", text: "Browse Artists" },
+          { link: "/messages", text: "Messages" },
         ],
         user: req.session.user,
         activeCommissions: activeCommissions,
+        recentMessages,
+        unreadCount,
       });
     } catch (e) {
       return res.status(500).render("error", {
         pageTitle: "Error",
         headerTitle: "Error",
         error: e.toString(),
+        navLink: [{ link: "/", text: "Home" }],
       });
     }
   });
@@ -152,6 +165,7 @@ const constructorMethod = (app) => {
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);
   app.use("/reports", reportRoutes);
+<<<<<<< HEAD
 
   // Commission, Card, and Review routes
   app.use("/commissions", commissionRoutes);
@@ -159,6 +173,9 @@ const constructorMethod = (app) => {
   app.use("/reviews", reviewRoutes);
 
   app.get("/browse", async (req, res) => {
+=======
+  app.get("/browse", userMiddleware, async (req, res) => {
+>>>>>>> 7efabc23f75ea4d0f5e98e4e2b5660e60b120457
     const { query, style } = req.query;
     res.render("browse", {
       pageTitle: "Browse Artists",
@@ -199,10 +216,9 @@ const constructorMethod = (app) => {
       toRender.isArtist = true;
     return res.render("artistProfile", toRender);
   });
-
   app.post(
     "/commission/update-status",
-    ensureAuthenticated,
+    roleMiddleware(["artist"]),
     async (req, res) => {
       try {
         const { commissionId, status } = req.body;

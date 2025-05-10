@@ -5,6 +5,15 @@ const app = express();
 import configRoutes from "./routes/index.js";
 import exphbs from "express-handlebars";
 import addMiddleware from "./middleware.js";
+import messageRoutes from "./routes/messages.js";
+import {
+  loggingMiddleware,
+  registerRedirectMiddleware,
+  loginRedirectMiddleware,
+  userMiddleware,
+  superuserMiddleware,
+  signoutMiddleware,
+} from "./middleware.js";
 
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   // If the user posts to the server with a property called _method, rewrite the request's method
@@ -35,6 +44,26 @@ app.use(
 );
 app.use(rewriteUnsupportedBrowserMethods);
 
+// Apply logging middleware to all routes
+app.use(loggingMiddleware);
+
+// Apply authentication redirects for register and login routes
+app.use("/register", registerRedirectMiddleware);
+app.use("/login", loginRedirectMiddleware);
+
+// Protect user routes
+app.use("/dashboard/user", userMiddleware);
+app.use("/dashboard/artist", userMiddleware);
+app.use("/commission", userMiddleware);
+app.use("/messages", userMiddleware);
+app.use("/reports", userMiddleware);
+
+// Protect admin routes
+app.use("/dashboard/admin", superuserMiddleware);
+
+// Add signout middleware
+app.use("/logout", signoutMiddleware);
+
 app.engine(
   "handlebars",
   exphbs.engine({
@@ -44,11 +73,22 @@ app.engine(
         for (var i = 0; i < n; ++i) accum += block.fn(i);
         return accum;
       },
+      eq: function (a, b) {
+        return a === b;
+      },
+      truncate: function (str, len) {
+        if (str.length > len) {
+          return str.substring(0, len) + "...";
+        }
+        return str;
+      },
     },
     defaultLayout: "main",
   })
 );
 app.set("view engine", "handlebars");
+
+app.use("/messages", messageRoutes);
 
 addMiddleware(app);
 
