@@ -5,6 +5,10 @@ import reportRoutes from "./reports.js";
 import { commissions } from "../config/mongoCollection.js";
 import { ObjectId } from "mongodb";
 
+import commissionRoutes from "./commissions.js";
+import cardRoutes from "./cards.js";
+import reviewRoutes from "./reviews.js";
+
 const constructorMethod = (app) => {
   // Middleware to check if user is logged in
   const ensureAuthenticated = (req, res, next) => {
@@ -148,6 +152,11 @@ const constructorMethod = (app) => {
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);
   app.use("/reports", reportRoutes);
+
+  // Commission, Card, and Review routes
+  app.use("/commissions", commissionRoutes);
+  app.use("/cards", cardRoutes);
+  app.use("/reviews", reviewRoutes);
 
   app.get("/browse", async (req, res) => {
     const { query, style } = req.query;
