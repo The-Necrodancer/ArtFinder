@@ -12,86 +12,74 @@
     }
 */
 import { ObjectId } from "mongodb";
-import { users } from "../config/mongoCollection.js";
-import {
-  throwWrongTypeError,
-  checkId,
-  checkPricingInfoItem,
-  checkPriceValue,
-  checkTag,
-  checkBio,
-  checkTos,
-} from "../helpers.js";
+import { users } from '../config/mongoCollection.js';
+import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
 
 //exported variables:
-export const bioMinLength = 0;
-export const bioMaxLength = 512;
+export const bioMinLength = 0; 
+export const bioMaxLength = 512; 
 
-export const pricingInfoItemMinLength = 5;
-export const pricingInfoItemMaxLength = 32;
+export const pricingInfoItemMinLength = 5; 
+export const pricingInfoItemMaxLength = 32; 
 
-export const tagMinLength = 2;
-export const tagMaxLength = 32;
+export const tagMinLength = 2; 
+export const tagMaxLength = 32; 
 
-export const priceMinValue = 3;
-export const priceMaxValue = 150;
+export const priceMinValue = 3; 
+export const priceMaxValue = 150; 
 
-export const tosMinLength = 0;
-export const tosMaxLength = 1024;
+export const tosMinLength = 0; 
+export const tosMaxLength = 1024; 
 
 //The list of keys that can be manually modiified using updateArtistProfile
-export const artistProfileKeys = [
-  "bio",
-  "portfolio",
-  "pricingInfo",
-  "tags",
-  "availability",
-  "tos",
-];
+export const artistProfileKeys = ['bio', 'portfolio', 'pricingInfo', 'tags', 'availability', 'tos'];
 
 /**
  * Gets a list of all artists
- * @returns {Array} an array of all artists in database.
+ * @returns {Array} an array of all artists in database. 
  */
-export const getAllArtists = async () => {
-  let users = await getAllUsers();
-  users = users.filter((user) => user.role === "artist");
-  return users;
-};
+export const getAllArtists = async() => {
+    let users = await getAllUsers(); 
+    users = users.filter((user) => user.role === 'artist'); 
+    return users; 
+}; 
 
 /**
  * Gets all artists that have a tag
  * @param {String} tag The search tag
  * @returns {Array} The array of artists that have the search tag.
  */
-export const getArtistsByTag = async (tag) => {
-  let artists = await getAllArtists();
-  let result = [];
-  for (let artist of artists)
-    if (artist.tags.includes(tag)) result.push(artist);
-  return result;
-};
+export const getArtistsByTag = async(tag) => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists)
+        if(artist.tags.includes(tag))
+            result.push(artist)
+    return result; 
+}
 
 /**
  * Gets artists by all the tags
  * @param {String} tagArray The array of search tags.
  * @returns {Array} An ordered array of artists by the tags.
  */
-export const getArtistsByTags = async (tagArray) => {
-  let artists = await getAllArtists();
-  let result = [];
-  for (let artist of artists) {
-    let count = 0;
-    for (let tag of tagArray) if (artist.tags.includes(tag)) count = count + 1;
-    result.push({
-      object: artist,
-      tagsMatched: count,
-    });
-  }
-  result.sort((a, b) => b.tagsMatched - a.tagsMatched);
-  return result;
-};
+export const getArtistsByTags = async(tagArray) => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let count = 0;
+        for (let tag of tagArray)
+            if(artist.tags.includes(tag))
+                count = count+1;
+        result.push({
+            object: artist,
+            tagsMatched: count
+        })
+    }
+    result.sort((a, b) => b.tagsMatched - a.tagsMatched);
+    return result; 
+}
 
 /**
  * Gets artists by all the tags
@@ -102,51 +90,40 @@ export const getArtistsByTags = async (tagArray) => {
  * @param {String} availability The availability status of the filter.
  * @returns {Array} An array of artists that match the filters provided.
  */
-export const filterArtists = async (
-  lowPrice,
-  highPrice,
-  lowRating,
-  highRating,
-  availability
-) => {
-  let artists = await getAllArtists();
-  let result = [];
-  for (let artist of artists) {
-    let pass = false;
-    if (artist.availability === availability) {
-      // Availability
-      if (artist.rating >= lowRating && artist.rating <= highRating) {
-        //Rating
-        for (let price in artist.pricingInfo) {
-          if (
-            artist.pricingInfo[price] >= lowPrice &&
-            artist.pricingInfo[price] <= highPrice
-          ) {
-            //Any singular item is within the range
-            pass = true;
-          }
+export const filterArtists = async(lowPrice, highPrice, lowRating, highRating, availability) => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let pass = false;
+        if(artist.availability === availability) { // Availability
+            if (artist.rating >= lowRating && artist.rating <= highRating) { //Rating
+                for (let price in artist.pricingInfo) {
+                    if (artist.pricingInfo[price] >= lowPrice && artist.pricingInfo[price] <= highPrice) { //Any singular item is within the range
+                        pass = true;
+                    }
+                }
+            }
         }
-      }
+        if (pass) {
+            result.push(artist);
+        }
     }
-    if (pass) {
-      result.push(artist);
-    }
-  }
-  return result;
-};
+    return result; 
+}
+
 
 /**
  * Gets an artist by their id
  * @param {String} aid The artist's id
  * @returns {Object} The artist's user object
  */
-export const getArtistById = async (aid) => {
-  aid = checkId(aid);
-  let user = await getUserById(aid);
-  if (user.role !== "artist") throw `Error: user is not an artist`;
-  user._id = user._id.toString();
-  return user;
-};
+export const getArtistById = async(aid) => {
+    aid =  checkId(aid); 
+    let user = await getUserById(aid); 
+    if(user.role !== 'artist') throw `Error: user is not an artist`; 
+    user._id = user._id.toString(); 
+    return user; 
+}
 
 /**
  * Modifies the artist's profile in the database

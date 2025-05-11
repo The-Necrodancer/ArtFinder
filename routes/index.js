@@ -8,6 +8,7 @@ import authRoutes from "./auth_routes.js";
 import { userMiddleware, roleMiddleware } from "../middleware.js";
 import { getUserMessages, getUnreadCount } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
+import { getAllReports } from "../data/reports.js";
 import cardRoutes from "./cards.js";
 
 const constructorMethod = (app) => {
@@ -46,17 +47,44 @@ const constructorMethod = (app) => {
     }
     res.render("home", renderObj);
   });
-  // Dashboard routes with role-based middleware
+
   app.get("/dashboard/admin", roleMiddleware(["admin"]), async (req, res) => {
-    return res.render("adminDashboard", {
-      pageTitle: "Admin Dashboard",
-      headerTitle: "Admin Dashboard",
-      navLink: [
-        { link: "/", text: "Home" },
-        { link: "/reports", text: "Reports" },
-        { link: "/signout", text: "Sign Out" },
-      ],
-    });
+    try {
+      const reports = await getAllReports();
+      const usernames = {};
+
+      // Get usernames for all users involved in reports
+      for (const report of reports) {
+        if (!usernames[report.reportedBy]) {
+          const user = await getUserById(report.reportedBy.toString());
+          usernames[report.reportedBy] = user.username;
+        }
+        if (!usernames[report.reportedUser]) {
+          const user = await getUserById(report.reportedUser.toString());
+          usernames[report.reportedUser] = user.username;
+        }
+      }
+
+      return res.render("adminDashboard", {
+        pageTitle: "Admin Dashboard",
+        headerTitle: "Admin Dashboard",
+        reports,
+        usernames,
+        navLink: [
+          { link: "/", text: "Home" },
+          { link: "/browse", text: "Browse Artists" },
+          { link: "/reports", text: "Reports" },
+          { link: "/signout", text: "Sign Out" },
+        ],
+      });
+    } catch (e) {
+      return res.status(500).render("error", {
+        pageTitle: "Error",
+        headerTitle: "Error",
+        error: e.toString(),
+        navLink: [{ link: "/", text: "Home" }],
+      });
+    }
   });
 
   app.get("/dashboard/artist", roleMiddleware(["artist"]), async (req, res) => {
