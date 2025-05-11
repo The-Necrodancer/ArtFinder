@@ -5,17 +5,10 @@ import reportRoutes from "./reports.js";
 import { commissions } from "../config/mongoCollection.js";
 import { ObjectId } from "mongodb";
 import authRoutes from "./auth_routes.js";
-import {
-  userMiddleware,
-  superuserMiddleware,
-  roleMiddleware,
-} from "../middleware.js";
+import { userMiddleware, roleMiddleware } from "../middleware.js";
 import { getUserMessages, getUnreadCount } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
-
-import commissionRoutes from "./commissions.js";
 import cardRoutes from "./cards.js";
-import reviewRoutes from "./reviews.js";
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {

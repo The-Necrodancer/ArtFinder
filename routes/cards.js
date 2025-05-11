@@ -1,58 +1,95 @@
 import { Router } from "express";
-import {} from "../data/cards.js";
+import {
+  createCard,
+  getAllCards,
+  getCardById,
+  getNewestCards,
+} from "../data/cards.js";
+import { userMiddleware } from "../middleware.js";
+
 const router = Router();
 
-// Ensure user is logged in to make a card.
-const ensureAuthenticated = (req, res, next) => {
-    if (!req.session.user) {
-      return res.status(401).render("login", {
-        pageTitle: "Login Required",
-        headerTitle: "Login Required",
-        error: "You must be logged in to access this page",
-      });
-    }
-    next();
-};
+// Get all cards
+router.get("/", async (req, res) => {
+  try {
+    const cards = await getAllCards();
+    res.render("cards", {
+      pageTitle: "Artist Cards",
+      headerTitle: "Artist Cards",
+      cards,
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  } catch (e) {
+    res.status(500).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  }
+});
 
-// Get the list of cards (either newest or all)
-router.route("/")
-.get(async (req, res) => {
-    try {
-      // const cards = await getAllCards();
-      const cards = await getNewestCards();
+// Get newest cards
+router.get("/new", async (req, res) => {
+  try {
+    const cards = await getNewestCards();
+    res.render("cards", {
+      pageTitle: "Latest Artist Cards",
+      headerTitle: "Latest Artist Cards",
+      cards,
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  } catch (e) {
+    res.status(500).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  }
+});
 
-      // Simple test to see if the cards are being returned correctly
-      return res.status(400).json(cards);
-      
-      /*
-      res.render("cards", {
-        pageTitle: "Cards",
-        headerTitle: "Cards",
-        cards,
-        navLink: [
-          { link: "/", text: "home" },
-          { link: "/add", text: "Add artist" },
-        ],
-      });
-      */
-    }
-    catch (e) {
-      // Handles an error in getting the cards (if not possible)
+// Create new card
+router.post("/", userMiddleware, async (req, res) => {
+  try {
+    const { name, socialsLinks, portfolio, tags, isUserRecommended } = req.body;
+    const card = await createCard(
+      name,
+      socialsLinks,
+      portfolio,
+      tags,
+      isUserRecommended,
+      req.session.user._id
+    );
+    res.redirect(`/cards/${card._id}`);
+  } catch (e) {
+    res.status(400).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  }
+});
 
-      // JSON for testing purposes
-      return res.status(404).json(e);
+// Get card by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const card = await getCardById(req.params.id);
+    res.render("cardDetails", {
+      pageTitle: card.name,
+      headerTitle: card.name,
+      card,
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  } catch (e) {
+    res.status(404).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+      navLink: [{ link: "/", text: "Home" }],
+    });
+  }
+});
 
-      /*
-      return res.status(400).render("error", {
-        pageTitle: "Error",
-        headerTitle: "Error",
-        error: e.toString(),
-        navLink: [
-          { link: "/", text: "home" },
-          { link: "/add", text: "Add artist" },
-        ],
-      });
-      */
-    }
-})
-
+export default router;
