@@ -25,56 +25,239 @@
   <section class="reports-management">
     <h3>Reports and Disputes</h3>
     <div class="reports-filters">
+      <button class="filter-btn active" data-filter="all">All Reports</button>
       <button class="filter-btn" data-filter="pending">Pending</button>
       <button class="filter-btn" data-filter="under-review">Under Review</button>
       <button class="filter-btn" data-filter="resolved">Resolved</button>
       <button class="filter-btn" data-filter="dismissed">Dismissed</button>
     </div>
 
-    <div class="reports-list">
-      {{#each reports}}
-        <div class="report-card {{this.status}}">
-          <div class="report-header">
-            <h4>{{this.subject}}</h4>
-            <span class="report-type {{#if this.commissionId}}commission{{else}}general{{/if}}">
-              {{#if this.commissionId}}Commission Dispute{{else}}General Report{{/if}}
-            </span>
-          </div>
-          
-          <div class="report-details">
-            <p><strong>Reporter:</strong> {{lookup ../usernames this.reportedBy}}</p>
-            <p><strong>Reported User:</strong> {{lookup ../usernames this.reportedUser}}</p>
-            <p><strong>Created:</strong> {{formatDate this.createdAt}}</p>
-            <p><strong>Status:</strong> {{this.status}}</p>
-          </div>
+    <div class="reports-list">      {{#if reports.length}}
+        {{#each reports}}          <div class="report-card {{#if this.status}}{{toLowerCase this.status}}{{else}}pending{{/if}}">
+            <div class="report-header">
+              <h4>{{this.subject}}</h4>
+              <span class="report-type {{#if this.commissionId}}commission{{else}}general{{/if}}">
+                {{#if this.commissionId}}Commission Dispute{{else}}General Report{{/if}}
+              </span>
+              <span class="status {{#if this.status}}{{toLowerCase this.status}}{{else}}pending{{/if}}">{{this.status}}</span>
+            </div>
+            
+            <div class="report-details">
+              <p><strong>Reporter:</strong> {{lookup ../usernames this.reportedBy}}</p>
+              <p><strong>Reported User:</strong> {{lookup ../usernames this.reportedUser}}</p>
+              <p><strong>Created:</strong> {{formatDate this.createdAt}}</p>
+            </div>
 
-          <div class="report-actions">
-            <form action="/reports/{{this._id}}/status" method="POST" class="status-form">
-              <select name="status">
-                <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
-                <option value="Under Review" {{#if (equals this.status "Under Review")}}selected{{/if}}>Under Review</option>
-                <option value="Resolved" {{#if (equals this.status "Resolved")}}selected{{/if}}>Resolved</option>
-                <option value="Dismissed" {{#if (equals this.status "Dismissed")}}selected{{/if}}>Dismissed</option>
-              </select>
-              <button type="submit">Update Status</button>
-            </form>
+            <div class="report-description">
+              <p>{{truncate this.description 200}}</p>
+            </div>
 
-            {{#unless this.resolution}}
-              <form action="/reports/{{this._id}}/resolve" method="POST" class="resolve-form">
-                <textarea name="resolution" placeholder="Enter resolution details..." required></textarea>
-                <button type="submit">Resolve Report</button>
-              </form>
-            {{/unless}}
+            <div class="report-actions">
+              {{#unless this.resolution}}
+                <form class="status-form" action="/reports/{{this._id}}/admin/status" method="POST">
+                  <select name="status">
+                    <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
+                    <option value="Under Review" {{#if (equals this.status "Under Review")}}selected{{/if}}>Under Review</option>
+                    <option value="Resolved" {{#if (equals this.status "Resolved")}}selected{{/if}}>Resolved</option>
+                    <option value="Dismissed" {{#if (equals this.status "Dismissed")}}selected{{/if}}>Dismissed</option>
+                  </select>
+                  <button type="submit">Update Status</button>
+                </form>
 
-            <a href="/reports/{{this._id}}" class="view-details">View Full Details</a>
+                <form class="resolve-form" action="/reports/{{this._id}}/admin/resolve" method="POST">
+                  <textarea name="resolution" placeholder="Enter resolution details..." required></textarea>
+                  <button type="submit">Resolve Report</button>
+                </form>
+              {{/unless}}
+
+              <a href="/reports/{{this._id}}" class="view-details">View Full Details</a>
+            </div>
           </div>
-        </div>
+        {{/each}}
       {{else}}
         <p class="no-reports">No reports found.</p>
-      {{/each}}
+      {{/if}}
     </div>
   </section>
 </main>
+
+<style>
+.reports-management {
+  padding: 2rem;
+}
+
+.reports-filters {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #e2e8f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-btn.active {
+  background: #4a5568;
+  color: white;
+}
+
+.reports-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.report-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.report-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.report-type {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.report-type.commission {
+  background: #ebf4ff;
+  color: #3182ce;
+}
+
+.report-type.general {
+  background: #f0fff4;
+  color: #38a169;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.status.pending {
+  background: #fefcbf;
+  color: #d69e2e;
+}
+
+.status.under-review {
+  background: #e9d8fd;
+  color: #805ad5;
+}
+
+.status.resolved {
+  background: #c6f6d5;
+  color: #38a169;
+}
+
+.status.dismissed {
+  background: #fed7d7;
+  color: #e53e3e;
+}
+
+.report-details {
+  font-size: 0.9rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+}
+
+.report-details p {
+  margin: 0.25rem 0;
+}
+
+.report-description {
+  margin: 1rem 0;
+  color: #2d3748;
+}
+
+.report-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.status-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-form select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.resolve-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resolve-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background: #4a5568;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background: #2d3748;
+}
+
+.view-details {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #4a5568;
+  background: #edf2f7;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  text-align: center;
+}
+
+.view-details:hover {
+  background: #e2e8f0;
+}
+
+.no-reports {
+  text-align: center;
+  color: #4a5568;
+  padding: 2rem;
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -88,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
       button.classList.add('active');
 
       // Filter reports
-      const filter = button.dataset.filter;
+      const filter = button.dataset.filter.toLowerCase();
       reportCards.forEach(card => {
         if (filter === 'all' || card.classList.contains(filter)) {
           card.style.display = 'block';
