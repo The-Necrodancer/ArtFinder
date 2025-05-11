@@ -1,12 +1,11 @@
 // Our node.js file :D
 import express from "express";
 import session from "express-session";
-import exphbs from "express-handlebars";
+const app = express();
 import configRoutes from "./routes/index.js";
+import exphbs from "express-handlebars";
 import addMiddleware from "./middleware.js";
 import messageRoutes from "./routes/messages.js";
-
-const app = express();
 import {
   loggingMiddleware,
   registerRedirectMiddleware,
@@ -65,24 +64,42 @@ app.use("/dashboard/admin", superuserMiddleware);
 // Add signout middleware
 app.use("/logout", signoutMiddleware);
 
-// Configure Handlebars
-const hbs = exphbs.create({
-  defaultLayout: "main",
-  extname: ".handlebars",
-  helpers: {
-    eq: (arg1, arg2) => arg1 === arg2,
-    equals: (arg1, arg2) => arg1 === arg2,
-    toLowerCase: (str) => str && str.toLowerCase(),
-    truncate: (str, len) =>
-      str && (str.length > len ? str.substring(0, len) + "..." : str),
-    formatDate: (date) => (date ? new Date(date).toLocaleDateString() : ""),
-  },
-  // Configure the layouts and partials directories
-  layoutsDir: "./views/layouts",
-  partialsDir: "./views/partials",
-});
-
-app.engine("handlebars", hbs.engine);
+app.engine(
+  "handlebars",
+  exphbs.engine({
+    helpers: {
+      times: function (n, block) {
+        var accum = "";
+        for (var i = 0; i < n; ++i) accum += block.fn(i);
+        return accum;
+      },
+      eq: function (a, b) {
+        return a === b;
+      },
+      truncate: function (str, len) {
+        if (str.length > len) {
+          return str.substring(0, len) + "...";
+        }
+        return str;
+      },
+      toLowerCase: function (str) {
+        return str.toLowerCase();
+      },
+      formatDate: function (date) {
+        if (!date) return "";
+        const d = new Date(date);
+        return d.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+    },
+    defaultLayout: "main",
+  })
+);
 app.set("view engine", "handlebars");
 
 app.use("/messages", messageRoutes);
