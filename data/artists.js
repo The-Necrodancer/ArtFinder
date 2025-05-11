@@ -169,8 +169,9 @@ export const updateArtistProfile = async(aid, newProfile) => {
         //validates the input and then adds it to pricingInfo
         for (let [key, value] of Object.entries(newProfile.pricingInfo)) {
             //check that didn't submit duplicate keys: 
-            if(Object.keys(validatedObj.artistProfile.pricingInfo).contains(key)) {
-                throw `Error: cannot have duplicate keys.`; 
+            //if(Object.keys(validatedObj.artistProfile.pricingInfo).contains(key)) {
+            if (Object.keys(validatedObj.artistProfile.pricingInfo).includes(key)) {
+                throw `Error: cannot have duplicate keys.`;
             }
             key = checkPricingInfoItem(key);  
             value = checkPriceValue(value); 
