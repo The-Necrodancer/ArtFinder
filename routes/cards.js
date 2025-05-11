@@ -15,8 +15,7 @@ const ensureAuthenticated = (req, res, next) => {
 };
 
 // Get the list of cards (either newest or all)
-router.route("/")
-.get(async (req, res) => {
+router.get("/", async (req, res) => {
     try {
       // const cards = await getAllCards();
       const cards = await getNewestCards();
@@ -55,4 +54,25 @@ router.route("/")
       */
     }
 })
+
+// Create a new card
+router.post("/", /*ensureAuthenticated,*/ async (req, res) => {
+    try {
+        const { title, description, imageUrl } = req.body;
+
+        // Create the card
+        const card = await createCard(title, description, imageUrl);
+
+        // For testing purposes
+        return res.status(400).json(card);
+
+        // Redirect to the card page after creation
+    } catch (e) {
+        // Throw for testing purposes
+        return res.status(404).json(e);
+    }
+});
+
+export default router;
+
 
