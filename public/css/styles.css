@@ -621,7 +621,6 @@ form#search-form button:hover {
   background: #f3f4f6;
   color: #374151;
   text-decoration: none;
-  text-align: center;
 }
 
 .cancel-button:hover {
@@ -928,4 +927,46 @@ form#search-form button:hover {
 
 .view-all-messages:hover {
   text-decoration: underline;
+}
+
+/* Signout Page Styles */
+.signout-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.signout-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.signout-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.signout-button:hover {
+  background-color: #c82333;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
 }
