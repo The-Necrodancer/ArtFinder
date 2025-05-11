@@ -165,3 +165,8 @@ export const getAllPendingReports = async () => {
   const reportCollection = await reports();
   return await reportCollection.find({ status: "Pending" }).toArray();
 };
+
+export const getAllReports = async () => {
+  const reportCollection = await reports();
+  return await reportCollection.find({}).sort({ createdAt: -1 }).toArray();
+};
