@@ -20,3 +20,4 @@ export const reviews = getCollectionFn("reviews");
 export const reports = getCollectionFn("reports");
 export const posts = getCollectionFn("posts");
 export const cards = getCollectionFn("cards");
+export const messages = getCollectionFn("messages");

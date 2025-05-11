@@ -37,7 +37,7 @@ const testCreateUser = async (totalNumUsers) => {
             hasErrors = true; 
             continue; 
         }
-        let insertedUser = getUserById(insertedUserId);
+        let insertedUser = await getUserById(insertedUserId);
         newUser._id = insertedUser._id; 
         newUser.requestedCommissions = []; 
         newUser.reviewsGiven = []; 

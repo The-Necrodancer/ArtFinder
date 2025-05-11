@@ -1,0 +1,86 @@
+<main>
+  <div class="messages-container">
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <div class="messages-header">
+      <h2>Messages {{#if unreadCount}}<span class="unread-count">({{unreadCount}} unread)</span>{{/if}}</h2>
+    </div>
+
+    <div class="messages-filters">
+      <button class="filter-btn active" data-filter="inbox">Inbox</button>
+      <button class="filter-btn" data-filter="sent">Sent</button>
+      <button class="filter-btn" data-filter="archived">Archived</button>
+    </div>
+
+    <div class="messages-list">
+      {{#if messages.length}}
+        {{#each messages}}
+          <div class="message-card {{#unless this.read}}unread{{/unless}} {{#if this.archived}}archived{{/if}}"
+               data-type="{{#if (eq ../user._id this.senderId)}}sent{{else}}received{{/if}}">
+            <div class="message-header">
+              <h3>{{this.subject}}</h3>
+              {{#unless read}}
+                <span class="unread-badge">New</span>
+              {{/unless}}
+            </div>
+
+            <div class="message-meta">
+              {{#if (eq ../user._id this.senderId)}}
+                <span>To: {{this.recipient.username}}</span>
+              {{else}}
+                <span>From: {{this.sender.username}}</span>
+              {{/if}}
+              <span class="message-date">{{this.createdAt}}</span>
+            </div>
+
+            <div class="message-preview">
+              {{truncate this.content 100}}
+            </div>
+
+            <div class="message-actions">
+              <a href="/messages/{{this._id}}" class="view-btn">View Message</a>
+              {{#unless this.archived}}
+                {{#if (eq ../user._id this.recipientId)}}
+                  <form action="/messages/{{this._id}}/archive" method="POST" class="archive-form">
+                    <button type="submit">Archive</button>
+                  </form>
+                {{/if}}
+              {{/unless}}
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p class="no-messages">No messages found.</p>
+      {{/if}}
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const messageCards = document.querySelectorAll('.message-card');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Update active button
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      // Filter messages
+      const filter = button.dataset.filter;
+      messageCards.forEach(card => {
+        if (filter === 'inbox') {
+          card.style.display = (!card.classList.contains('archived') && card.dataset.type === 'received') ? 'block' : 'none';
+        } else if (filter === 'sent') {
+          card.style.display = (card.dataset.type === 'sent') ? 'block' : 'none';
+        } else if (filter === 'archived') {
+          card.style.display = card.classList.contains('archived') ? 'block' : 'none';
+        }
+      });
+    });
+  });
+});
+</script>

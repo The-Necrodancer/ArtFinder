@@ -7,25 +7,15 @@ import {
   resolveReport,
   getUserReports,
 } from "../data/reports.js";
-import { getUserById } from "../data/users.js";
+import { getUserById, getUserByUsername } from "../data/users.js";
 import { getCommissionById } from "../data/commissions.js";
 
 const router = Router();
 
-// Middleware to check if user is logged in
-const ensureAuthenticated = (req, res, next) => {
-  if (!req.session.user) {
-    return res.status(401).render("login", {
-      pageTitle: "Login Required",
-      headerTitle: "Login Required",
-      error: "You must be logged in to access this page",
-    });
-  }
-  next();
-};
+import { userMiddleware, superuserMiddleware } from "../middleware.js";
 
 // List reports for current user
-router.get("/", ensureAuthenticated, async (req, res) => {
+router.get("/", userMiddleware, async (req, res) => {
   try {
     const reports = await getUserReports(req.session.user._id);
     return res.render("reports", {
@@ -44,7 +34,7 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 });
 
 // Show report/dispute creation form
-router.get("/new", ensureAuthenticated, async (req, res) => {
+router.get("/new", userMiddleware, async (req, res) => {
   const { commissionId } = req.query;
   try {
     let commission = null;
@@ -76,13 +66,16 @@ router.get("/new", ensureAuthenticated, async (req, res) => {
 });
 
 // Create new report/dispute
-router.post("/", ensureAuthenticated, async (req, res) => {
+router.post("/", userMiddleware, async (req, res) => {
   try {
-    const { reportedUserId, subject, description, commissionId } = req.body;
+    const { reportedUsername, subject, description, commissionId } = req.body;
+
+    // Get the reported user's ID from their username
+    const reportedUser = await getUserByUsername(reportedUsername);
 
     const report = await createReport(
       req.session.user._id,
-      reportedUserId,
+      reportedUser._id,
       subject,
       description,
       commissionId
@@ -95,12 +88,13 @@ router.post("/", ensureAuthenticated, async (req, res) => {
       headerTitle: "Submit Report",
       hasError: true,
       error: e.toString(),
+      navLink: [{ link: "/", text: "home" }],
     });
   }
 });
 
 // View report details
-router.get("/:id", ensureAuthenticated, async (req, res) => {
+router.get("/:id", userMiddleware, async (req, res) => {
   try {
     const report = await getReportById(req.params.id);
     const reportedUser = await getUserById(report.reportedUser.toString());
@@ -140,7 +134,7 @@ router.get("/:id", ensureAuthenticated, async (req, res) => {
 });
 
 // Add comment to report
-router.post("/:id/comment", ensureAuthenticated, async (req, res) => {
+router.post("/:id/comment", userMiddleware, async (req, res) => {
   try {
     const { comment } = req.body;
     await addReportComment(req.params.id, req.session.user._id, comment);
@@ -155,11 +149,8 @@ router.post("/:id/comment", ensureAuthenticated, async (req, res) => {
 });
 
 // Update report status (admin only)
-router.post("/:id/status", ensureAuthenticated, async (req, res) => {
+router.post("/:id/status", superuserMiddleware, async (req, res) => {
   try {
-    if (req.session.user.role !== "admin") {
-      throw "Only administrators can update report status";
-    }
     const { status } = req.body;
     await updateReportStatus(req.params.id, status);
     res.redirect(`/reports/${req.params.id}`);
@@ -173,7 +164,7 @@ router.post("/:id/status", ensureAuthenticated, async (req, res) => {
 });
 
 // Resolve report (admin only)
-router.post("/:id/resolve", ensureAuthenticated, async (req, res) => {
+router.post("/:id/resolve", userMiddleware, async (req, res) => {
   try {
     if (req.session.user.role !== "admin") {
       throw "Only administrators can resolve reports";

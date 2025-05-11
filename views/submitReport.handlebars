@@ -10,8 +10,8 @@
         <input type="hidden" name="commissionId" value="{{commission._id}}" />
         <input
           type="hidden"
-          name="reportedUserId"
-          value="{{reportedUser._id}}"
+          name="reportedUsername"
+          value="{{reportedUser.username}}"
         />
 
         <div class="commission-info">
@@ -23,12 +23,14 @@
         </div>
       {{else}}
         <div class="form-group">
-          <label for="reportedUserId">Username to Report:</label>
+          <label for="reportedUsername">Username to Report:</label>
           <input
             type="text"
-            id="reportedUserId"
-            name="reportedUserId"
+            id="reportedUsername"
+            name="reportedUsername"
             required
+            minlength="3"
+            maxlength="32"
           />
           <small>Enter the username of the person you want to report</small>
         </div>

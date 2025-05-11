@@ -1,0 +1,45 @@
+<main>
+  <div class="form-container">
+    <h2>New Message</h2>
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <form id="message-form" action="/messages" method="POST">
+      <input type="hidden" name="recipientId" value="{{recipient._id}}" />
+
+      <div class="recipient-info">
+        <p><strong>To:</strong> {{recipient.username}}</p>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject:</label>
+        <input
+          type="text"
+          id="subject"
+          name="subject"
+          required
+          minlength="3"
+          maxlength="100"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="content">Message:</label>
+        <textarea
+          id="content"
+          name="content"
+          required
+          minlength="1"
+          maxlength="1000"
+          rows="6"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-button">Send Message</button>
+        <a href="/messages" class="cancel-button">Cancel</a>
+      </div>
+    </form>
+  </div>
+</main>
