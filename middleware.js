@@ -6,9 +6,7 @@ const loggingMiddleware = (req, res, next) => {
   const currentTime = new Date().toUTCString();
   const method = req.method;
   const path = req.path;
-  const userRole = req.session.user
-    ? req.session.user.role
-    : "Non-Authenticated";
+  const userRole = req.session.user ? req.session.user.role : "Non-Authenticated";
   console.log(`[${currentTime}]: ${method} ${path} (${userRole})`);
   next();
 };
@@ -41,18 +39,13 @@ const userMiddleware = (req, res, next) => {
 
 const superuserMiddleware = (req, res, next) => {
   if (!req.session.user) {
-    return res.status(401).render("login", {
-      pageTitle: "Login Required",
-      headerTitle: "Login Required",
-      error: "You must be logged in to access this page",
-      navLink: [{ link: "/", text: "Home" }],
-    });
+    return res.redirect("/login");
   }
   if (req.session.user.role !== "admin") {
     return res.status(403).render("error", {
       pageTitle: "Access Denied",
       headerTitle: "Access Denied",
-      error: "Only administrators can access this page",
+      error: "You do not have permission to view this page",
       navLink: [
         { link: "/", text: "Home" },
         { link: `/dashboard/${req.session.user.role}`, text: "Dashboard" },
