@@ -36,7 +36,15 @@ export const tosMaxLength = 1024;
 //The list of keys that can be manually modiified using updateArtistProfile
 export const artistProfileKeys = ['bio', 'portfolio', 'pricingInfo', 'tags', 'availability', 'tos'];
 
-
+/**
+ * Gets a list of all artists
+ * @returns {Array} an array of all artists in database. 
+ */
+export const getAllArtists = async() => {
+    let users = await getAllUsers(); 
+    users = users.filter((user) => user.role === 'artist'); 
+    return users; 
+}; 
 
 /**
  * Gets all artists that have a tag
