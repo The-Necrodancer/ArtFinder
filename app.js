@@ -96,6 +96,10 @@ app.engine(
           minute: "2-digit",
         });
       },
+      toString: function (obj) {
+        if (!obj) return "";
+        return obj.toString();
+      },
     },
     defaultLayout: "main",
   })

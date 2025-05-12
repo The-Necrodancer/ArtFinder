@@ -6,6 +6,7 @@ import {
   addReportComment,
   resolveReport,
   getUserReports,
+  deleteReport
 } from "../data/reports.js";
 import { getUserById, getUserByUsername } from "../data/users.js";
 import { getCommissionById } from "../data/commissions.js";
@@ -112,7 +113,16 @@ router.get("/:id", userMiddleware, async (req, res) => {
     let commission = null;
     if (report.commissionId) {
       commission = await getCommissionById(report.commissionId.toString());
-    }
+    } // Create nav links array
+    const navLinks = [{ link: "/", text: "Home" }];
+
+    // Add admin dashboard link for admin users
+    if (req.session.user.role === "admin") {
+      navLinks.push({ link: "/dashboard/admin", text: "Admin Dashboard" });
+    }    // Log values to verify what we're passing
+    console.log('Report creator:', report.reportedBy.toString());
+    console.log('Current user:', req.session.user._id.toString());
+    console.log('Are they equal?', report.reportedBy.toString() === req.session.user._id.toString());
 
     res.render("reportDetails", {
       pageTitle: "Report Details",
@@ -122,7 +132,9 @@ router.get("/:id", userMiddleware, async (req, res) => {
       reporter,
       commission,
       isAdmin: req.session.user.role === "admin",
-      navLink: [{ link: "/", text: "home" }],
+      currentUserId: req.session.user._id.toString(),
+      reportCreatorId: report.reportedBy.toString(),
+      navLink: navLinks,
     });
   } catch (e) {
     res.status(404).render("error", {
@@ -139,11 +151,11 @@ router.post("/:id/comment", userMiddleware, async (req, res) => {
     const { comment } = req.body;
     await addReportComment(req.params.id, req.session.user._id, comment);
     if (req.headers["content-type"] === "application/json") {
-          return res.json({
-            success: true,
-            username: req.session.user.username,
-          });
-        }
+      return res.json({
+        success: true,
+        username: req.session.user.username,
+      });
+    }
 
     res.redirect(`/reports/${req.params.id}`);
   } catch (e) {
@@ -163,7 +175,13 @@ router.post("/:id/status", superuserMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
     await updateReportStatus(req.params.id, status);
-    res.redirect(`/reports/${req.params.id}`);
+
+    // If it's a JSON request (AJAX), send JSON response
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      return res.json({ success: true });
+    }
+    // Otherwise redirect to admin dashboard
+    res.redirect("/dashboard/admin");
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
@@ -184,6 +202,30 @@ router.post("/:id/resolve", userMiddleware, async (req, res) => {
     res.redirect(`/reports/${req.params.id}`);
   } catch (e) {
     res.status(400).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+    });
+  }
+});
+
+// Delete report (creator only)
+router.delete("/:id", userMiddleware, async (req, res) => {
+  try {
+    await deleteReport(req.params.id, req.session.user._id);
+
+    // If it's a JSON request (AJAX), send JSON response
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      return res.json({ success: true });
+    }
+
+    // Otherwise redirect to reports list
+    res.redirect("/reports");
+  } catch (e) {
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      return res.status(403).json({ error: e.toString() });
+    }
+    res.status(403).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
       error: e.toString(),

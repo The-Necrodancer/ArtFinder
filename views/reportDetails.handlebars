@@ -1,4 +1,3 @@
-
 <main>
   <div class="report-container">
     {{#if error}}
@@ -99,6 +98,11 @@
         </div>
       {{/if}}
     </div>
-  </div>
+  </div>  {{#if (eq reportCreatorId currentUserId)}}
+    <div class="delete-section">
+      <button type="button" class="delete-report-btn">Delete Report</button>
+    </div>
+  {{/if}}
 </main>
- <script src="/js/reportDetails.js"></script>
+
+<script src="/js/reportDetails.js"></script>

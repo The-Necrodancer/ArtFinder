@@ -2,6 +2,43 @@ document.addEventListener("DOMContentLoaded", function () {
   const commentForm = document.querySelector(".comment-form");
   const statusForm = document.querySelector(".status-form");
   const resolveForm = document.querySelector(".resolve-form");
+  const deleteBtn = document.querySelector(".delete-report-btn");
+
+  // Handle delete button
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+
+      if (
+        !confirm(
+          "Are you sure you want to delete this report? This action cannot be undone."
+        )
+      ) {
+        return;
+      }
+
+      const reportId = window.location.pathname.split("/")[2];
+
+      try {
+        const response = await fetch(`/reports/${reportId}`, {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to delete report");
+        }
+
+        window.location.href = "/reports";
+      } catch (error) {
+        console.error("Error:", error);
+        alert(error.message || "Failed to delete report. Please try again.");
+      }
+    });
+  }
 
   // Handle comment submission
   if (commentForm) {
