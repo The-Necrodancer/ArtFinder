@@ -6,7 +6,7 @@
     tags -> array of strings 
     availability: -> boolean 
     tos -> string 
-    rating -> 
+    rating -> float
     createdCommissions -> an array of commission ids that the user is creating/ed for someone else 
     reviewsReceived -> an array of review ids that the artist has received 
     }
@@ -15,6 +15,7 @@ import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
 import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
+import { createCard } from "./cards.js";
 
 //exported variables:
 export const bioMinLength = 0; 
@@ -35,15 +36,7 @@ export const tosMaxLength = 1024;
 //The list of keys that can be manually modiified using updateArtistProfile
 export const artistProfileKeys = ['bio', 'portfolio', 'pricingInfo', 'tags', 'availability', 'tos'];
 
-/**
- * Gets a list of all artists
- * @returns {Array} an array of all artists in database. 
- */
-export const getAllArtists = async() => {
-    let users = await getAllUsers(); 
-    users = users.filter((user) => user.role === 'artist'); 
-    return users; 
-}; 
+
 
 /**
  * Gets all artists that have a tag
@@ -55,7 +48,7 @@ export const getArtistsByTag = async(tag) => {
     let result = [];
     for (let artist of artists)
         if(artist.tags.includes(tag))
-            result.push(artist)
+            result.push(artist);
     return result; 
 }
 
@@ -75,9 +68,45 @@ export const getArtistsByTags = async(tagArray) => {
         result.push({
             object: artist,
             tagsMatched: count
-        })
+        });
     }
     result.sort((a, b) => b.tagsMatched - a.tagsMatched);
+    return result; 
+};
+
+/**
+ * Gets artists in an ordered list of the number of commissions accepted.
+ * @returns {Array} An ordered array of artists by the commissions accepted.
+ */
+export const getArtistsByCommissions = async() => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let count = artist.createdCommissions.length;
+        result.push({
+            object: artist,
+            commissionCount: count
+        });
+    }
+    result.sort((a, b) => b.commissionCount - a.commissionCount);
+    return result; 
+};
+
+/**
+ * Gets artists in an ordered list based on rating.
+ * @returns {Array} An ordered array of artists by their ratings.
+ */
+export const getArtistsByRating = async() => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let count = artist.rating;
+        result.push({
+            object: artist,
+            rating: count
+        });
+    }
+    result.sort((a, b) => b.rating - a.rating);
     return result; 
 }
 
