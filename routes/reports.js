@@ -138,8 +138,18 @@ router.post("/:id/comment", userMiddleware, async (req, res) => {
   try {
     const { comment } = req.body;
     await addReportComment(req.params.id, req.session.user._id, comment);
+    if (req.headers["content-type"] === "application/json") {
+          return res.json({
+            success: true,
+            username: req.session.user.username,
+          });
+        }
+
     res.redirect(`/reports/${req.params.id}`);
   } catch (e) {
+    if (req.headers["content-type"] === "application/json") {
+      return res.status(500).json({ error: e.toString() });
+    }
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
