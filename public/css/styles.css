@@ -1878,14 +1878,21 @@ section h3 {
   margin-top: 0.5rem;
 }
 
-/* DevLog Navigation Link */
-.header_nav_links a[href="/blogs"] {
-  color: var(--primary);
-  font-weight: 500;
+/* Navigation Links */
+
+#header_link_list {
+  list-style: none;
+  padding: 0;
 }
 
-.header_nav_links a[href="/blogs"]:hover {
-  color: var(--primary-dark);
+.header_nav_links a {
+  color: white;
+  font-weight: Bold;
+  text-decoration: none;
+}
+
+.header_nav_links a:hover {
+  color: lightskyblue;
 }
 
 /* Blog Admin Styles */

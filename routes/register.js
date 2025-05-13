@@ -6,7 +6,7 @@ import { registerRedirectMiddleware } from "../middleware.js";
 
 const pageTitle = "Create an ArtFinder Account";
 const headerTitle = "Create an Account";
-const navLink = [{ link: "/", text: "home" }];
+const navLink = [{ link: "/", text: "Home" }];
 
 router
   .route("/")

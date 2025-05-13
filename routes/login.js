@@ -7,7 +7,7 @@ import { loginRedirectMiddleware } from "../middleware.js";
 
 const pageTitle = "Log In to ArtFinder Account";
 const headerTitle = "Log In to Your Account";
-const navLink = [{ link: "/", text: "home" }];
+const navLink = [{ link: "/", text: "Home" }];
 
 router
   .route("/")

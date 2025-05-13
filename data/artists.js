@@ -178,9 +178,9 @@ export const filterArtists = async(lowPrice, highPrice, lowRating, highRating, a
     for (let artist of artists) {
         let pass = false;
         if(artist.availability === availability) { // Availability
-            if (artist.rating >= lowRating && artist.rating <= highRating) { //Rating
+            if (artist.rating >= lowRating && artist.rating <= highRating) { // Rating
                 for (let price in artist.pricingInfo) {
-                    if (artist.pricingInfo[price] >= lowPrice && artist.pricingInfo[price] <= highPrice) { //Any singular item is within the range
+                    if (artist.pricingInfo[price] >= lowPrice && artist.pricingInfo[price] <= highPrice) { // Any singular item is within the range
                         pass = true;
                     }
                 }
