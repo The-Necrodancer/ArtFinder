@@ -1,5 +1,6 @@
 import { comments } from "../config/mongoCollection.js";
 import { ObjectId } from "mongodb";
+import { getUserById } from "./users.js";
 
 export const createComment = async (content, userId, targetId, targetType) => {
   if (!content || !userId || !targetId || !targetType)
@@ -11,7 +12,13 @@ export const createComment = async (content, userId, targetId, targetType) => {
   if (!["artwork", "profile"].includes(targetType)) throw "Invalid target type";
 
   const commentCollection = await comments();
+
+  // Note: If we want to have the user change their username, we need to update it here.
+  const user = await getUserById(userId);
+  const username = user.username;
+  if (!username) throw "User not found";
   const newComment = {
+    poster: username,
     content: content.trim(),
     userId: new ObjectId(userId),
     targetId: new ObjectId(targetId),
