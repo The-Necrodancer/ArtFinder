@@ -24,7 +24,7 @@ router.get("/", userMiddleware, async (req, res) => {
       pageTitle: "My Reports",
       headerTitle: "My Reports",
       reports,
-      navLink: [{ link: "/", text: "home" }],
+      navLink: [{ link: "/", text: "Home" }],
     });
   } catch (e) {
     return res.status(400).render("reports", {
@@ -56,7 +56,7 @@ router.get("/new", userMiddleware, async (req, res) => {
       headerTitle: commissionId ? "Submit Commission Dispute" : "Submit Report",
       commission,
       reportedUser,
-      navLink: [{ link: "/", text: "home" }],
+      navLink: [{ link: "/", text: "Home" }],
     });
   } catch (e) {
     return res.status(400).render("submitReport", {
@@ -90,7 +90,7 @@ router.post("/", userMiddleware, async (req, res) => {
       headerTitle: "Submit Report",
       hasError: true,
       error: e.toString(),
-      navLink: [{ link: "/", text: "home" }],
+      navLink: [{ link: "/", text: "Home" }],
     });
   }
 });

@@ -7,7 +7,7 @@ import { loginRedirectMiddleware } from "../middleware.js";
 
 const pageTitle = "Log In to ArtFinder Account";
 const headerTitle = "Log In to Your Account";
-const navLink = [{ link: "/", text: "home" }];
+const navLink = [{ link: "/", text: "Home" }];
 
 router
   .route("/")
@@ -29,7 +29,7 @@ router
         headerTitle,
         navLink,
         hasError: true,
-        error: e,
+        loginError: "Invalid Username or Password.",
       });
     }
     req.session.user = user;

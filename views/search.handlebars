@@ -9,6 +9,7 @@
 <body>
   <!-- Sidebar -->
   <div id="sidebar-filter">
+    <button id="sidebar-toggle" aria-label="Hide sidebar">&#8592;</button>
     <h3>Filter by Price Range</h3>
     <div>
       <label>Min Budget: $<span id="min-price-value">{{filters.minPrice}}</span></label>
@@ -86,7 +87,7 @@
       <button type="submit" id="search-button">Search</button>
     </form>
     <section id="artist-list">
-      <h2>Featured Artists</h2>
+      <h2>Found Artists</h2>
       <ul id="artists">
         {{#each artists}}
           <li class="artist-card">

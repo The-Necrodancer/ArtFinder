@@ -6,7 +6,7 @@ import { registerRedirectMiddleware } from "../middleware.js";
 
 const pageTitle = "Create an ArtFinder Account";
 const headerTitle = "Create an Account";
-const navLink = [{ link: "/", text: "home" }];
+const navLink = [{ link: "/", text: "Home" }];
 
 router
   .route("/")
@@ -41,7 +41,7 @@ router
         headerTitle,
         navLink,
         hasError: true,
-        error: e,
+        loginError: e || e.message,
       });
     }
 
@@ -53,7 +53,7 @@ router
       headerTitle,
       navLink,
       hasError: true,
-      error: "Internal Server Error",
+      loginError: e || e.message,
     });
   });
 
