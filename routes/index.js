@@ -97,7 +97,7 @@ const constructorMethod = (app) => {
       const commissionCollection = await commissions();
       const activeCommissions = await commissionCollection
         .find({
-          aid: new ObjectId(artist._id),
+          aid: artist._id,
           status: { $in: ["Pending", "In Progress"] },
         })
         .toArray();
