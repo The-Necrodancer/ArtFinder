@@ -13,8 +13,11 @@ import cardRoutes from "./cards.js";
 import blogRoutes from "./blogs.js";
 import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
+import reviewRoutes from "./reviews.js";
+import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from './api.js';
 import artistDashboardRoutes from "./artistDashboard.js"
+
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -55,46 +58,8 @@ const constructorMethod = (app) => {
     res.render("home", renderObj);
   });
 
-  app.get("/dashboard/admin", roleMiddleware(["admin"]), async (req, res) => {
-    try {
-      const reports = await getAllReports();
-
-      // Create a map of user IDs to usernames
-      const usernames = {};
-      for (const report of reports) {
-        if (!usernames[report.reportedBy]) {
-          const user = await getUserById(report.reportedBy.toString());
-          usernames[report.reportedBy] = user.username;
-        }
-        if (!usernames[report.reportedUser]) {
-          const user = await getUserById(report.reportedUser.toString());
-          usernames[report.reportedUser] = user.username;
-        }
-      }
-
-      return res.render("adminDashboard", {
-        pageTitle: "Admin Dashboard",
-        headerTitle: "Admin Dashboard",
-        reports,
-        usernames,
-        navLink: [
-          { link: "/", text: "Home" },
-          { link: "/reports", text: "Reports" },
-          { link: "/signout", text: "Sign Out" },
-        ],
-      });
-    } catch (e) {
-      return res.status(500).render("error", {
-        pageTitle: "Error",
-        headerTitle: "Error",
-        error: e.toString(),
-        navLink: [{ link: "/", text: "Home" }],
-      });
-    }
-  });
-
   
-
+  app.use("api", apiRoutes);
   app.use("/dashboard/artist", artistDashboardRoutes); 
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
@@ -154,85 +119,7 @@ const constructorMethod = (app) => {
     }
   });
 
-  // Admin routes for user management
-  app.get("/admin/users", roleMiddleware(["admin"]), async (req, res) => {
-    try {
-      const usersList = await getAllUsers();
-      return res.render("adminDashboard", {
-        pageTitle: "Admin Dashboard",
-        headerTitle: "Admin Dashboard",
-        users: usersList,
-        navLink: [
-          { link: "/", text: "Home" },
-          { link: "/reports", text: "Reports" },
-          { link: "/signout", text: "Sign Out" },
-        ],
-      });
-    } catch (e) {
-      return res.status(500).render("error", {
-        pageTitle: "Error",
-        headerTitle: "Error",
-        error: e.toString(),
-        navLink: [{ link: "/", text: "Home" }],
-      });
-    }
-  });
-
-  // Update user status
-  app.post(
-    "/admin/user/:id/status",
-    roleMiddleware(["admin"]),
-    async (req, res) => {
-      try {
-        const { status } = req.body;
-        const userId = req.params.id;
-        await updateUserStatus(userId, status);
-
-        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-          return res.json({ success: true });
-        }
-        return res.redirect("/admin/users");
-      } catch (e) {
-        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-          return res.status(400).json({ error: e.toString() });
-        }
-        return res.status(400).render("error", {
-          pageTitle: "Error",
-          headerTitle: "Error",
-          error: e.toString(),
-        });
-      }
-    }
-  );
-
-  // Update user role
-  app.post(
-    "/admin/user/:id/role",
-    roleMiddleware(["admin"]),
-    async (req, res) => {
-      try {
-        const { role } = req.body;
-        const userId = req.params.id;
-        await updateUserRole(userId, role);
-
-        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-          return res.json({ success: true });
-        }
-        return res.redirect("/admin/users");
-      } catch (e) {
-        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
-          return res.status(400).json({ error: e.toString() });
-        }
-        return res.status(400).render("error", {
-          pageTitle: "Error",
-          headerTitle: "Error",
-          error: e.toString(),
-        });
-      }
-    }
-  );
-
-  app.use("/api", apiRoutes); 
+  app.use("/dashboard/admin", adminActionsRouter);
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);
   app.use("/reports", reportRoutes);
@@ -240,13 +127,14 @@ const constructorMethod = (app) => {
   // Commission, Card, and Review routes
   app.use("/commission", commissionRoutes);
   app.use("/cards", cardRoutes);
-  //app.use("/reviews", reviewRoutes);
+  app.use("/reviews", reviewRoutes);
 
   app.use("/blogs", blogRoutes);
   app.use("/comments", commentRoutes);
 
   app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
+    const featuredCards = await getRecommendedCards();
     res.render("browse", {
       pageTitle: "Browse Artists",
       headerTitle: "Browse Artists",
@@ -254,10 +142,13 @@ const constructorMethod = (app) => {
         { link: "/", text: "Home" },
         { link: "/add", text: "Add Artist" },
       ],
+      cards: featuredCards,
     });
   });
   app.get("/search", userMiddleware, async (req, res) => {
     const { artist = '', style = '', "low-price": lowPrice = 0, "high-price": highPrice = 1000, "low-rating": lowRating = 0, "high-rating": highRating = 5, available = ''} = req.query;
+    const filteredCards = await getfilteredCards(artist, style, lowPrice, highPrice, lowRating, highRating, available);
+    
     res.render("search", {
       pageTitle: "Search Artists",
       headerTitle: "Search Artists",
@@ -274,6 +165,7 @@ const constructorMethod = (app) => {
         maxRating: highRating,
         availability: available
       },
+      cards: filteredCards,
     });
   });
   app.get("/artist/:id", async (req, res) => {

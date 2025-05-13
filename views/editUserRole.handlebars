@@ -1,0 +1,16 @@
+<main>
+  <h2>Edit User Role</h2>
+  {{#if error}}
+    <div class="error-message">{{error}}</div>
+  {{/if}}
+  <form action="/dashboard/admin/user/{{user._id}}/edit-role" method="POST">
+    <label for="newRole">Role:</label>
+    <select id="newRole" name="newRole" required>
+      <option value="user" {{#if (eq user.role "user")}}selected{{/if}}>User</option>
+      <option value="artist" {{#if (eq user.role "artist")}}selected{{/if}}>Artist</option>
+      <option value="admin" {{#if (eq user.role "admin")}}selected{{/if}}>Admin</option>
+    </select>
+    <button type="submit">Update Role</button>
+    <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+  </form>
+</main>

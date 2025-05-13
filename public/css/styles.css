@@ -45,6 +45,10 @@ header {
   text-align: center;
 }
 
+.header_title {
+  font-size: 3rem;
+}
+
 h1 {
   margin: 0;
 }
@@ -1878,14 +1882,22 @@ section h3 {
   margin-top: 0.5rem;
 }
 
-/* DevLog Navigation Link */
-.header_nav_links a[href="/blogs"] {
-  color: var(--primary);
-  font-weight: 500;
+/* Navigation Links */
+
+#header_link_list {
+  list-style: none;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
-.header_nav_links a[href="/blogs"]:hover {
-  color: var(--primary-dark);
+.header_nav_links a {
+  color: white;
+  font-weight: Bold;
+  text-decoration: none;
+}
+
+.header_nav_links a:hover {
+  color: lightskyblue;
 }
 
 /* Blog Admin Styles */
@@ -1897,7 +1909,7 @@ section h3 {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.edit-btn,
+.edit-btn, .edit-admin-btn,
 .delete-btn {
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -1906,13 +1918,13 @@ section h3 {
   transition: all 0.2s ease;
 }
 
-.edit-btn {
+.edit-btn , .edit-admin-btn{
   background-color: var(--primary);
   color: white;
   border: none;
 }
 
-.edit-btn:hover {
+.edit-btn:hover , .edit-admin-btn:hover{
   background-color: var(--primary-dark);
 }
 
@@ -1969,14 +1981,14 @@ section h3 {
   gap: 1rem;
 }
 
-.blog-post .admin-actions .edit-btn,
+.blog-post .admin-actions .edit-btn .edit-admin-btn
 .blog-post .admin-actions .delete-btn {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.blog-post .admin-actions .edit-btn {
+.blog-post .admin-actions .edit-btn .edit-admin-btn {
   background-color: #4a90e2;
   color: white;
   border: none;
@@ -2160,9 +2172,6 @@ button:hover {
   text-align: center;
 }
 
-.view-details:hover {
-  background: #e2e8f0;
-}
 
 .no-reports {
   text-align: center;
@@ -2173,27 +2182,56 @@ button:hover {
 /* Filter Sidebar Used: https://www.w3schools.com/howto/howto_js_rangeslider.asp*/
 #sidebar-filter {
   position: fixed;
-  top: 150px;
+  top: 163px;
   left: 0;
   width: 250px;
   height: 80%;
   background-color: var(--background); 
-  padding: 20px;
+  padding: 30px;
   box-shadow: 0 2px 8px var(--shadow);
   z-index: 1000;
+  transition: width 0.3s, min-width 0.3s;
+  overflow: hidden;
+}
+
+#sidebar-filter.collapsed {
+  width: 50px;
+  min-width: 50px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#sidebar-toggle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center+1px;
+  justify-content: center;
+  padding: 0;
+  z-index: 1101;
+}
+
+#sidebar-filter.collapsed > *:not(#sidebar-toggle) {
+  display: none;
 }
 
 #sidebar-filter h3 {
+  margin-top: 30px;
   font-size: 1.5rem;
   margin-bottom: 20px;
 }
 
 #sidebar-filter div {
   margin-bottom: 15px;
-}
-
-#sidebar-filter label {
-  font-size: 1rem;
 }
 
 #sidebar-filter input[type="range"] {
@@ -2235,4 +2273,24 @@ button:hover {
   border-radius: 6px;
   cursor: pointer;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.delete-user-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.delete-user-btn:hover {
+  background-color: var(--danger);
+}
+.edit-admin-btn,
+.delete-user-btn{
+  margin-right: 0.5rem;
+  padding-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }

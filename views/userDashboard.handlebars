@@ -36,7 +36,7 @@
         <p>Price: ${{this.price}}</p>
         {{#if (equals this.status "Completed")}}
           {{#unless this.reviewed}}
-            <form action="/review/create" method="POST">
+            <form action="/reviews/create" method="POST">
               <input type="hidden" name="commissionId" value="{{this._id}}" />
               <div class="form-group">
                 <label for="rating">Rating:</label>

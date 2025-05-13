@@ -167,4 +167,14 @@ document
   // Activate on startup
   updatePriceLabels();
   updateRatingLabels();
+
+  const sidebar = document.getElementById('sidebar-filter');
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  if (sidebar && toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const collapsed = sidebar.classList.toggle('collapsed');
+      toggleBtn.innerHTML = collapsed ? '\u2192' : '\u2190'; // → or ←
+      toggleBtn.setAttribute('aria-label', collapsed ? 'Show sidebar' : 'Hide sidebar');
+    });
+  }
 });

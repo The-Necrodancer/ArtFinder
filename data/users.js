@@ -114,7 +114,9 @@ export const getUserById = async (id) => {
 export const getUserByUsername = async (username) => {
   username = checkUsername(username);
   const userCollection = await users();
-  const user = await userCollection.findOne({ username });
+  const user = await userCollection.findOne({ 
+    username: { $regex: new RegExp(`^${username}$`, 'i') }
+  });
   if (!user) throw `Error: user with username ${username} not found.`;
   delete user.password;
   user._id = user._id.toString();
@@ -145,7 +147,9 @@ export const getAllUsers = async () => {
 export const containsUsername = async (username) => {
   username = checkUsername(username);
   const userCollection = await users();
-  return !(await userCollection.findOne({ username })) ? false : true;
+  return !(await userCollection.findOne({ 
+    username: { $regex: new RegExp(`^${username}$`, 'i') }
+  })) ? false : true;
 };
 
 /**
@@ -158,13 +162,17 @@ export const containsEmail = async (email) => {
   if (!validateEmail(email))
     throw "Error: ${email} is not a valid email address.";
   const userCollection = await users();
-  return !(await userCollection.findOne({ email })) ? false : true;
+  return !(await userCollection.findOne({ 
+    username: { $regex: new RegExp(`^${email}$`, 'i') }
+  })) ? false : true;
 };
 
 export const login = async (username, password) => {
   let userCollection = await users();
   username = checkUsername(username);
-  let user = await userCollection.findOne({ username });
+  let user = await userCollection.findOne({ 
+    username: { $regex: new RegExp(`^${username}$`, 'i') } // Source: https://www.geeksforgeeks.org/mongodb-query-with-case-insensitive-search/
+  });
   if (!user) {
     throw "Either the username or password is invalid";
   }
@@ -254,4 +262,45 @@ export const updateUserRole = async (id, newRole) => {
   }
 
   return await getUserById(id);
+};
+
+/**
+ * Updates a user's username.
+ * @param {string} id The user's id.
+ * @param {string} newUsername The new username.
+ * @returns {Object} The updated user object.
+ */
+export const updateUsername = async (id, newUsername) => {
+  id = checkId(id);
+  newUsername = checkUsername(newUsername, "username");
+  const userCollection = await users();
+
+  // Check if username is already taken
+  if (await containsUsername(newUsername)) {
+    throw `Error: username already taken.`;
+  }
+
+  const updateInfo = await userCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { username: newUsername } }
+  );
+  if (!updateInfo.matchedCount) throw "User not found";
+  if (!updateInfo.modifiedCount) throw "Username was not updated";
+
+  return await getUserById(id);
+};
+
+/**
+ * Deletes a user by id.
+ * @param {string} id The user's id.
+ * @returns {boolean} True if deleted, false otherwise.
+ */
+export const deleteUser = async (id) => {
+  id = checkId(id);
+  const userCollection = await users();
+  const deletionInfo = await userCollection.deleteOne({ _id: new ObjectId(id) });
+  if (deletionInfo.deletedCount === 0) {
+    throw `Error: Could not delete user with id ${id}`;
+  }
+  return true;
 };
