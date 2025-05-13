@@ -88,6 +88,9 @@ app.engine(
       equals: function (a, b) {
         return a === b;
       },
+      length: function (array) {
+        return array ? array.length : 0;
+      },
       truncate: function (str, len) {
         if (str.length > len) {
           return str.substring(0, len) + "...";

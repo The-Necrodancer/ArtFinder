@@ -1,0 +1,19 @@
+<!-- 
+This one is very much a work in progress.
+-->
+<main>
+  <h2>{{headerTitle}}</h2>
+  {{#if reviews.length}}
+    <div class="reviews-list">
+      {{#each reviews}}
+        <div class="review-card">
+          <p><strong>Rating:</strong> {{this.rating}}/5</p>
+          <p><strong>Comment:</strong> {{this.comment}}</p>
+          <p><strong>By:</strong> {{this.username}}</p>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p>No reviews available for this artist.</p>
+  {{/if}}
+</main>
