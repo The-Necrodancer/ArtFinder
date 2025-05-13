@@ -14,6 +14,7 @@ import blogRoutes from "./blogs.js";
 import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
 import apiRoutes from './api.js';
+import artistDashboardRoutes from "./artistDashboard.js"
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -92,55 +93,9 @@ const constructorMethod = (app) => {
     }
   });
 
-  app.get("/dashboard/artist", roleMiddleware(["artist"]), async (req, res) => {
-    try {
-      const artist = await getArtistById(req.session.user._id);
-      const commissionCollection = await commissions();
-      const activeCommissions = await commissionCollection
-        .find({
-          aid: artist._id,
-          status: { $in: ["Pending", "In Progress"] },
-        })
-        .toArray();
+  
 
-      // Get recent messages and user details
-      const allMessages = await getUserMessages(req.session.user._id);
-      const recentMessages = allMessages
-        .filter((msg) => !msg.archived)
-        .sort((a, b) => b.createdAt - a.createdAt)
-        .slice(0, 3);
-
-      for (let message of recentMessages) {
-        message.sender = await getUserById(message.senderId.toString());
-        message.recipient = await getUserById(message.recipientId.toString());
-      }
-
-      const unreadCount = await getUnreadCount(req.session.user._id);
-
-      return res.render("artistDashboard", {
-        pageTitle: "Artist Dashboard",
-        headerTitle: "Artist Dashboard",
-        navLink: [
-          { link: "/", text: "Home" },
-          { link: "/browse", text: "Browse Artists" },
-          { link: "/messages", text: "Messages" },
-          { link: "/signout", text: "Sign Out" },
-        ],
-        artist: artist,
-        commissions: activeCommissions,
-        recentMessages,
-        unreadCount,
-
-      });
-    } catch (e) {
-      return res.status(500).render("error", {
-        pageTitle: "Error",
-        headerTitle: "Error",
-        error: e.toString(),
-        navLink: [{ link: "/", text: "Home" }],
-      });
-    }
-  });
+  app.use("/dashboard/artist", artistDashboardRoutes); 
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {

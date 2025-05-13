@@ -338,6 +338,7 @@ export const checkSocialsLinks = (socialsLinks) => {
         throwWrongTypeError('Socials Links', 'Array', typeof socialsLinks); 
     if(socialsLinks.length === 0)
         throw `Error: at least one social link must be provided.`; 
+    let keyArr = []; 
     for(let i=0; i<socialsLinks.length; i++) {
         let link = socialsLinks[i]; 
         if(Object.keys(link).length !==2 || !link.site || !link.url) {
@@ -345,6 +346,10 @@ export const checkSocialsLinks = (socialsLinks) => {
         }
         link.site = checkSocialLinkSite(link.site); 
         link.url = checkUrl(link.url); 
+        keyArr.push(link.site); 
+    }
+    if(Set(keyArr).length !== keyArr.length) {
+        throw "Error: cannot have more than 1 link per site."; 
     }
     return socialsLinks; 
 }
@@ -361,6 +366,11 @@ const checkStringMinMaxNaN = (string, varName, min, max) => {
     string = checkStringMinMax(string, varName, min, max); 
     if(!isNaN(string)) throw `Error: ${varName} cannot be a number`; 
     return string;  
+}
+
+export const checkImageUrl = (string) => {
+    string = checkUrl(string); 
+    return string; 
 }
 
 /**
