@@ -75,11 +75,16 @@ router.get("/:id", async (req, res) => {
         const commissionId = req.params.id;
         const commission = await getCommissionById(commissionId);
 
-        if (!commission) { throw `Commission not found with id: ${commissionId}`; }
+        if (!commission) {
+            throw `Commission not found with id: ${commissionId}`;
+        }
 
-        res.render("commission", { commission, user: req.session.user });
-    }
-    catch (e) {
+        // Render the commission.handlebars view with the commission data
+        res.render("commission", {
+            commission,
+            user: req.session.user, // Pass the logged-in user for conditional rendering
+        });
+    } catch (e) {
         console.log("Error viewing commission:", e);
         res.status(400).render("error", {
             pageTitle: "Error",
@@ -88,4 +93,31 @@ router.get("/:id", async (req, res) => {
         });
     }
 });
+
+// POST route to update commission status!
+// Ensure user is logged in to update commission status.
+router.post("/update-status", async (req, res) => {
+    try {
+        const { commissionId, status } = req.body;
+        console.log(req.body);
+
+        if (!commissionId || !status) { throw `All fields are required.`;}
+
+        // Update the commission status!
+        await updateCommissionStatus(commissionId, status);
+
+        // Redirect to the commission page after updating status!
+        res.redirect(`/commission/${commissionId}`);
+
+
+    } catch (e) {
+        console.log("Error updating commission status:", e);
+        res.status(400).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: e.toString(),
+        });
+    }
+})
+
 export default router;

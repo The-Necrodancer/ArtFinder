@@ -15,6 +15,15 @@ import {
   signoutMiddleware,
 } from "./middleware.js";
 
+/************************************************************************************/ 
+// Adding hanblebars helpers
+import handlebarsHelpers from "handlebars-helpers";
+import Handlebars from "handlebars";
+
+// Register all helpers
+handlebarsHelpers({ handlebars: Handlebars });
+/************************************************************************************/
+
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   // If the user posts to the server with a property called _method, rewrite the request's method
   // To be that method; so if they post _method=PUT you can now allow browsers to POST to a route that gets
@@ -72,6 +81,11 @@ app.engine(
         return accum;
       },
       eq: function (a, b) {
+        return a === b;
+      },
+      // Was getting an error with this helper.
+      // Unsure if eq will work or not.
+      equals: function (a, b) {
         return a === b;
       },
       truncate: function (str, len) {
