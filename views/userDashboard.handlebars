@@ -1,5 +1,5 @@
 <main>
-  <h2>My Commissions</h2>
+  <div class="welcome-message">Welcome, {{user.username}}</div>
 
   <section class="messages-section">
     <h3>Messages {{#if unreadCount}}<span class="unread-count">({{unreadCount}} unread)</span>{{/if}}</h3>
@@ -25,6 +25,7 @@
     </div>
   </section>
 
+<h2>My Commissions</h2>
   <section class="active-commissions">
     <h3>Active Commissions</h3>
     {{#each activeCommissions}}
