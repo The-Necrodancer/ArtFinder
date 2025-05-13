@@ -1,0 +1,84 @@
+<main>
+    <div class="card-creation-container">
+        {{#if error}}
+            <div class="error-message">{{error}}</div>
+        {{/if}}
+        <div class="card-creation-header">
+            <h2>Create a New Card</h2>
+        </div>
+        <form id="card-creation-form" action="/cards/create" method="POST">
+            <div class="form-group">
+                <label for="title">Artist Name:</label>
+                <input type="text" id="name" name="name" required />
+            </div>
+
+            <div class="form-group">
+                <label for="details">Social Links:</label>
+                <ul class="social-links">
+                    <li>
+                        <label for="youtube">YouTube:</label>
+                        <input type="url" id="youtube" name="socials[YouTube]" placeholder="https://youtube.com/..."/>
+                    </li>
+                    <li>
+                        <label for="facebook">Facebook:</label>
+                        <input type="url" id="facebook" name="socials[Facebook]" placeholder="https://facebook.com/..."/>
+                    </li>
+                    <li>
+                        <label for="instagram">Instagram:</label>
+                        <input type="url" id="instagram" name="socials[Instagram]" placeholder="https://instagram.com/..."/>
+                    </li>
+                    <li>
+                        <label for="twitter">X (Twitter):</label>
+                        <input type="url" id="twitter" name="socials[Twitter]" placeholder="https://x.com/..."/>
+                    </li>
+                    <li>
+                        <label for="deviantart">DeviantArt:</label>
+                        <input type="url" id="deviantart" name="socials[DeviantArt]" placeholder="https://deviantart.com/..."/>
+                    </li>
+                    <li>
+                        <label for="artstation">ArtStation:</label>
+                        <input type="url" id="artstation" name="socials[ArtStation]" placeholder="https://artstation.com/..."/>
+                    </li>
+                    <li>
+                        <label for="tumblr">Tumblr:</label>
+                        <input type="url" id="tumblr" name="socials[Tumblr]" placeholder="https://tumblr.com/..."/>
+                    </li>
+                    <li>
+                        <label for="threads">Threads:</label>
+                        <input type="url" id="threads" name="socials[Threads]" placeholder="https://threads.net/..."/>
+                    </li>
+                    <li>
+                        <label for="bluesky">BlueSky:</label>
+                        <input type="url" id="bluesky" name="socials[BlueSky]" placeholder="https://bsky.app/..."/>
+                    </li>
+                    <li>
+                        <label for="tiktok">TikTok:</label>
+                        <input type="url" id="tiktok" name="socials[TikTok]" placeholder="https://tiktok.com/..."/>
+                    </li>
+                    <li>
+                        <label for="pillowfort">Pillowfort:</label>
+                        <input type="url" id="pillowfort" name="socials[Pillowfort]" placeholder="https://pillowfort.com/..."/>
+                    </li>
+                    <li>
+                        <label for="newgrounds">Newgrounds:</label>
+                        <input type="url" id="newgrounds" name="socials[Newgrounds]" placeholder="https://newgrounds.com/..."/>
+                    </li>
+                    <li>
+                        <label for="unvale">Unvale:</label>
+                        <input type="url" id="unvale" name="socials[Unvale]" placeholder="https://unvale.com/..."/>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags:</label>
+                <div id="tags-container">
+                    <!-- Add tags dynamically here... -->
+                </div>
+                <input type="text" id="tag-input" placeholder="Enter a tag and press Add" />
+                <button type="button" id="add-tag-button">Add Tag</button>
+            </div>
+
+            <button type="submit">Create Card</button>
+    </div> 
+</main>

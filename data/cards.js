@@ -40,6 +40,7 @@ export const socialMediaSites = [
   "Pillowfort",
   "Newgrounds",
   "Unvale",
+  "Tumblr"
 ];
 
 export const createCard = async (

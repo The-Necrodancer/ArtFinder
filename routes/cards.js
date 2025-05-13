@@ -50,7 +50,7 @@ router.get("/new", async (req, res) => {
 });
 
 // Create new card
-router.post("/", userMiddleware, async (req, res) => {
+/*router.post("/", userMiddleware, async (req, res) => {
   try {
     const { name, socialsLinks, portfolio, tags, isUserRecommended } = req.body;
     const card = await createCard(
@@ -70,7 +70,37 @@ router.post("/", userMiddleware, async (req, res) => {
       navLink: [{ link: "/", text: "Home" }],
     });
   }
-});
+});*/
+router.get("/create", /*userMiddleware,*/ async (req, res) => {
+  try {
+    res.render("cardCreation", {error : null});
+  } catch (e) {
+    res.status(500).render("error", {error: e.toString()});
+  }
+})
+
+router.post("/create", /*userMiddleware,*/ async (req, res) => {
+  try {
+    console.log(req.body);
+    const {name, socials} = req.body;
+
+    const socialLinks = Object.values(socials || {}).filter((url) => url.trim() !== "");
+
+    const card = await createCard(
+      name,
+      socials,
+      [],
+      [],
+      true,
+      req.session.user._id
+    );
+
+    console.log(card);
+
+  } catch (e) {
+    res.status(500).render("error", {error: e.toString()});
+  }
+})
 
 // Get card by ID
 router.get("/:id", async (req, res) => {
@@ -92,28 +122,4 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// Create a new card
-router.post("/", /*ensureAuthenticated,*/ async (req, res) => {
-    try {
-        const { title, description, imageUrl } = req.body;
-
-        // Create the card
-        const card = await createCard(title, description, imageUrl);
-
-        // For testing purposes
-        return res.status(400).json(card);
-
-        // Redirect to the card page after creation
-    } catch (e) {
-        // Throw for testing purposes
-        return res.status(404).json(e);
-    }
-});
-
 export default router;
-
-
-=======
-export default router;
->>>>>>> 7aa9146e55ffd2a5ad1233b91996883784987e10
