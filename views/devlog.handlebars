@@ -5,7 +5,7 @@
       <form action="/blogs" method="POST" class="blog-form">
         <div class="form-group">
           <label for="title">Title</label>
-          <input type="text" id="title" name="title" required>
+          <input type="text" id="title" name="title" required />
         </div>
         <div class="form-group">
           <label for="content">Content</label>
@@ -19,7 +19,8 @@
     <div class="section-header">
       <h2>Latest Updates</h2>
       {{#unless isAdmin}}
-        <p class="info-text">Welcome to the ArtFinder DevLog! Here you can find the latest updates and announcements about our platform.</p>
+        <p class="info-text">Welcome to the ArtFinder DevLog! Here you can find
+          the latest updates and announcements about our platform.</p>
       {{/unless}}
     </div>
     {{#if blogs.length}}
@@ -35,11 +36,6 @@
             </div>
             <div class="blog-actions">
               <a href="/blogs/{{this._id}}" class="read-more">Read More</a>
-              {{#if ../isAdmin}}                <form action="/blogs/{{this._id}}" method="POST" class="delete-form">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="delete-btn">Delete</button>
-                </form>
-              {{/if}}
             </div>
           </article>
         {{/each}}

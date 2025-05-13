@@ -1,7 +1,6 @@
 // Our node.js file :D
 import express from "express";
 import session from "express-session";
-import methodOverride from "method-override";
 const app = express();
 import configRoutes from "./routes/index.js";
 import exphbs from "express-handlebars";
@@ -33,21 +32,12 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure method-override to handle form submissions
-app.use(methodOverride(function (req, res) {
-  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-    const method = req.body._method;
-    delete req.body._method;
-    return method;
-  }
-}));
-
 app.use(
   session({
     name: "AuthenticationState",
     secret: "some secret string!",
     resave: false,
-    saveUninitialized: false,
+  saveUninitialized: false,
   })
 );
 app.use(rewriteUnsupportedBrowserMethods);

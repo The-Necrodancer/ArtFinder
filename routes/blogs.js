@@ -72,22 +72,27 @@ router.post("/", roleMiddleware(["admin"]), async (req, res) => {
 });
 
 // Update blog post (admin only)
-router.put("/:id", roleMiddleware(["admin"]), async (req, res) => {
+router.post("/update/:id", roleMiddleware(["admin"]), async (req, res) => {
   try {
     const { title, content } = req.body;
     if (!title || !content) {
       throw "Title and content are required";
     }
 
-    const updatedBlog = await updateBlog(req.params.id, title, content);
-    return res.json(updatedBlog);
+    await updateBlog(req.params.id, title, content);
+    return res.redirect("/blogs");
   } catch (e) {
-    return res.status(400).json({ error: e.toString() });
+    return res.status(400).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+      navLink: [{ link: "/", text: "Home" }],
+    });
   }
 });
 
 // Delete blog post (admin only)
-router.delete("/:id", roleMiddleware(["admin"]), async (req, res) => {
+router.post("/delete/:id", roleMiddleware(["admin"]), async (req, res) => {
   try {
     await deleteBlog(req.params.id);
     return res.redirect("/blogs");
