@@ -1,12 +1,11 @@
 // Our node.js file :D
 import express from "express";
 import session from "express-session";
-import exphbs from "express-handlebars";
+const app = express();
 import configRoutes from "./routes/index.js";
+import exphbs from "express-handlebars";
 import addMiddleware from "./middleware.js";
 import messageRoutes from "./routes/messages.js";
-
-const app = express();
 import {
   loggingMiddleware,
   registerRedirectMiddleware,
@@ -96,10 +95,6 @@ app.engine(
           hour: "2-digit",
           minute: "2-digit",
         });
-      },
-      toString: function (obj) {
-        if (!obj) return "";
-        return obj.toString();
       },
     },
     defaultLayout: "main",

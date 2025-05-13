@@ -21,3 +21,5 @@ export const reports = getCollectionFn("reports");
 export const posts = getCollectionFn("posts");
 export const cards = getCollectionFn("cards");
 export const messages = getCollectionFn("messages");
+export const blogs = getCollectionFn("blogs");
+export const comments = getCollectionFn("comments");

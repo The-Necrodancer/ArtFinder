@@ -1,0 +1,67 @@
+<main class="blog-post-container">
+  <article class="blog-post">
+    <header class="blog-header">
+      <h1>{{blog.title}}</h1>
+      <div class="blog-meta">
+        <span class="date">{{formatDate blog.createdAt}}</span>
+        {{#if blog.updatedAt}}
+          <span class="updated">(Updated: {{formatDate blog.updatedAt}})</span>
+        {{/if}}
+      </div>
+    </header>
+    {{#if isAdmin}}
+      <div class="admin-actions">
+        <button type="button" class="edit-btn toggle-edit-form">Edit Post</button>
+        <button
+          type="button"
+          class="delete-btn delete-blog-btn"
+          data-blog-id="{{blog._id}}"
+        >Delete Post</button>
+      </div>
+
+      <form
+        id="edit-blog-form"
+        class="blog-form"
+        style="display: none;"
+        data-blog-id="{{blog._id}}"
+      >
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value="{{blog.title}}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea
+            id="content"
+            name="content"
+            required
+            rows="10"
+          >{{blog.content}}</textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="submit-btn">Update Post</button>
+          <button
+            type="button"
+            class="cancel-btn"
+            onclick="toggleEditForm()"
+          >Cancel</button>
+        </div>
+      </form>
+    {{/if}}
+
+    <div class="blog-content">
+      {{blog.content}}
+    </div>
+  </article>
+</main>
+
+<script>
+  function toggleEditForm() { const form = document.getElementById('edit-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none'; }
+</script>

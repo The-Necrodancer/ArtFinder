@@ -10,6 +10,8 @@ import { getUserMessages, getUnreadCount } from "../data/messages.js";
 import { getAllReports } from "../data/reports.js";
 import { getUserById } from "../data/users.js";
 import cardRoutes from "./cards.js";
+import blogRoutes from "./blogs.js";
+import commentRoutes from "./comments.js";
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -19,12 +21,14 @@ const constructorMethod = (app) => {
       navLink: [
         { link: "/login", text: "Log In" },
         { link: "/register", text: "Register" },
+        { link: "/blogs", text: "DevLog" },
       ],
     };
     if (req.session && req.session.user) {
       renderObj.navLink = [
         { link: "/", text: "Home" },
         { link: "/browse", text: "Browse Artists" },
+        { link: "/blogs", text: "DevLog" },
         { link: "/signout", text: "Sign Out" },
       ];
       if (req.session.user.role === "admin") {
@@ -274,7 +278,9 @@ const constructorMethod = (app) => {
   app.use("/cards", cardRoutes);
   //app.use("/reviews", reviewRoutes);
 
-  
+  app.use("/blogs", blogRoutes);
+  app.use("/comments", commentRoutes);
+
   app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
     const { query, style } = req.query;

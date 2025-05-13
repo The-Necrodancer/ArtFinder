@@ -18,7 +18,9 @@
                 {{/each}}
             </ul>
         </div>
-    </header>
-    {{{body}}}
+    </header>    {{{body}}}
     <script src="/js/password-toggle.js"></script>
+    {{#if isAdmin}}
+    <script src="/js/blogAdmin.js"></script>
+    {{/if}}
 </body>
