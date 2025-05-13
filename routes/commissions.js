@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { createCommission, updateCommissionStatus } from "../data/commissions.js";
+import { createCommission, getCommissionById, updateCommissionStatus } from "../data/commissions.js";
+import { getArtistById } from "../data/artists.js";
 const router = Router();
 
 // Middleware to check if user is logged in
-const ensureAuthenticated = (req, res, next) => {
+/*const ensureAuthenticated = (req, res, next) => {
     if (!req.session.user) {
       return res.status(401).render("login", {
         pageTitle: "Login Required",
@@ -12,121 +13,110 @@ const ensureAuthenticated = (req, res, next) => {
       });
     }
     next();
-};
+};*/
 
-router.get("/", ensureAuthenticated, async (req, res) => { 
+// Request
 
-})
-
-// Create a request
-// Ensure user is logged in to create a commission.
-// Can be either user, artist, or admin.
-router.post("/", ensureAuthenticated, async (req, res) => {
+// GET route to render the commission request form
+// Ensure user is logged in to view the form.
+router.get("/request/:artistId", /*ensureAuthenticated,*/ async (req, res) => {
     try {
+        // console.log("Artist ID:", req.params.artistId);
+
+        const artistId = req.params.artistId;
+        const artist = await getArtistById(artistId);
+        res.render("commission", { artist });
+    } catch (e) {
+        console.log("Error rendering commission form:", e);
+        res.status(500).render("error", {error: e.toString()});
+    }
+});
+
+// POST route to handle commission request submission
+router.post("/request", async (req, res) => {
+    try {
+        console.log(req.body);
+
         const { artistId, title, details, price } = req.body;
-        const commission = await createCommission(
-            artistId, 
-            req.session.user._id, // User is requestor 
-            title, 
-            details, 
-            price
-        );
-
-        // For testing purposes
-        return res.status(400).json(commission);
-
-        // Redirect to the commission page after creation...
-        // return res.redirect(`/commissions/${commission._id}`);
-    }
-    catch (e) {
-        // JSON for testing purposes
-        return res.status(404).json(e);
-        /*
-        return res.status(400).render("createCommission", {
-            pageTitle: "Create Commission",
-            headerTitle: "Create Commission",
-            error: e.toString(),
-        });
-        */
-    }
-})
-
-// View a commission
-// Ensure user is logged in to view a commission.
-// Can only be either the user who made the request or the artist who accepted it.
-router.get("/:id", /*ensureAuthenticated,*/ async (req, res) => {
-    try {
-        const commission = await getCommissionById(req.params.id);
-        // Get the user who requested the commission
-        const userClient = await getUserById(commission.uid.toString());
-        // Get the artist who accepted the commission
-        const artistMerchant = await getUserById(commission.aid.toString());
-
-        // Check if the user or artist is logged in
-        if (
-            commission.uid.toString() !== req.session.user._id.toString() &&
-            commission.aid.toString() !== req.session.user._id.toString()
-        ) {
-            throw "Access denied."
+        //console.log("Artist ID:", artistId);
+        //console.log("Title:", title);
+        //console.log("Details:", details);
+        //console.log("Price:", price);
+        // Validate input
+        if (!title || !details || !price) {
+            throw new Error("All fields are required.");
         }
+
+        // Note: price should be a number. This is a temporary fix.
+        const priceNum = parseFloat(price);
+
+        // Create a commission request
+        const commission = await createCommission(artistId, req.session.user._id, title, details, priceNum);
+        console.log("Commission id:", commission._id);
+        console.log("Commission created:", commission);
         
-        return res.status(400).json(commission);
-        // REMINDER: Render the commission page with the commission details
-        /*
-        return res.render("commission", {
-            pageTitle: "Commission Details",
-            headerTitle: "Commission Details",
-            commission,
-            userClient,
-            artistMerchant,
-            status,
-            navLink: [
-                { link: "/", text: "home" },
-                { link: "/browse", text: "Browse Artists" },
-                { link: "/add", text: "Add artist" },
-            ],
-        });
-        */
-    }
-    catch (e) {
-        // JSON for testing purposes
-        return res.status(404).json(e);
-        /*
-        return res.status(400).render("error", {
+        // Redirect to the commission page after creation...
+        return res.redirect(`/commission/${commission._id}`);
+    } catch (e) {
+        // Idk if this is the right error
+        console.log("Error creating commission:", e);
+        res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
             error: e.toString(),
         });
-        */
     }
 })
 
-// Update commission status
-// Ensure user is logged in
-// Can only be the artist who accepted the commission (or admin, possibly)
-router.post("/:id/status", ensureAuthenticated, async (req, res) => {
+// GET route to view a commission
+// Ensure user is logged in to view a commission.
+router.get("/:id", async (req, res) => {
     try {
-        if (req.session.user.role !== "artist") {
-            throw "Only artists can update commission status!";
-            /*return res.status(403).render("error", {
-                pageTitle: "Forbidden",
-                headerTitle: "Forbidden",
-                error: "You do not have permission to access this page",
-            });*/
-        }
-        const { status } = req.body;
+        const commissionId = req.params.id;
+        const commission = await getCommissionById(commissionId);
 
-    }
-    catch (e) {
-        // JSON for testing purposes
-        return res.status(404).json(e);
-        /*
-        return res.status(400).render("error", {
+        if (!commission) {
+            throw `Commission not found with id: ${commissionId}`;
+        }
+
+        // Render the commission.handlebars view with the commission data
+        res.render("commission", {
+            commission,
+            user: req.session.user, // Pass the logged-in user for conditional rendering
+        });
+    } catch (e) {
+        console.log("Error viewing commission:", e);
+        res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
             error: e.toString(),
         });
-        */
+    }
+});
+
+// POST route to update commission status!
+// Ensure user is logged in to update commission status.
+router.post("/update-status", async (req, res) => {
+    try {
+        const { commissionId, status } = req.body;
+        console.log(req.body);
+
+        if (!commissionId || !status) { throw `All fields are required.`;}
+
+        // Update the commission status!
+        await updateCommissionStatus(commissionId, status);
+
+        // Redirect to the commission page after updating status!
+        res.redirect(`/commission/${commissionId}`);
+
+
+    } catch (e) {
+        console.log("Error updating commission status:", e);
+        res.status(400).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: e.toString(),
+        });
     }
 })
 
