@@ -51,6 +51,7 @@ router.get("/new", async (req, res) => {
 
 // Create a new card
 // Ensure user is logged in to create a card
+// GET - Shows the card creation form.
 router.get("/create", /*userMiddleware,*/ async (req, res) => {
   try {
     res.render("cardCreation", {error : null});
@@ -59,10 +60,16 @@ router.get("/create", /*userMiddleware,*/ async (req, res) => {
   }
 })
 
+// Create a new card
+// Ensure user is logged in to create a card
+// POST - Handles the form submission for creating a new card.
 router.post("/create", /*userMiddleware,*/ async (req, res) => {
   try {
     console.log(req.body);
-    const {name, socials} = req.body;
+    // portfolio & tags are work in progress
+
+    // REMEMBER TO SANITIZE THE DATA INPUTS
+    const {name, socials, portfolio, tags} = req.body;
 
     const socialLinks = Object.entries(socials || {})
       .filter(([site, url]) => url.trim() !== "")
@@ -71,11 +78,14 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
     const card = await createCard(
       name,
       socialLinks,
-      [],
-      [],
+      portfolio,
+      tags,
       true,
       req.session.user._id
     );
+
+    // Redirect to the card details page after creation!
+    // Still needs to be implemented
 
   } catch (e) {
     res.status(500).render("error", {error: e.toString()});
