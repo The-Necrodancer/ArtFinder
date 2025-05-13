@@ -47,24 +47,36 @@ export const createReview = async(cid, rating, comment) => {
     if(num>1) {
         avg = artist.artistProfile.rating * ((num-1)/num) + rating/num; 
     }
+    // Round to 2 places
+    avg = parseFloat(avg.toFixed(2));
 
-    //add review and updated rating to artist
+    // Perform the update operation
     const updatedArtist = await userCollection.updateOne(
-        {_id: new ObjectId(aid)}, 
-        {$set: {
-            "artistProfile.reviewsReceived": artist.artistProfile.reviewsReceived, 
-            'artistProfile.rating': avg
-        }}
-    ); 
-    if(updatedArtist.matchedCount ===0 || updatedArtist.modifiedCount !== 1)
-        throw `Error: could not add commission to artist.`; 
+        { _id: new ObjectId(aid) },
+        {
+            $set: {
+                "artistProfile.reviewsReceived": artist.artistProfile.reviewsReceived,
+                "artistProfile.rating": avg,
+            },
+        }
+    );
 
-    //add review to user 
-    user.reviewsGiven.push(rid); 
+    if (updatedArtist.matchedCount === 0 || updatedArtist.modifiedCount !== 1) {
+        throw `Error: Could not update artist with ID ${aid}.`;
+    }
+
+    // Add the review to the user's reviewsGiven array
+    user.reviewsGiven.push(rid);
+
+    // Update the user in the database
     const updatedUser = await userCollection.updateOne(
-        {_id: new ObjectId(uid)}, 
-        {$set: {'reviewsGiven': user.reviewsGiven}}
-    ); 
+        { _id: new ObjectId(uid) },
+        { $set: { reviewsGiven: user.reviewsGiven } }
+    );
+
+    // Debug: Output the result of the update operation
+    console.log("Update result:", updatedUser);
+
     if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1)
         throw `Error: could not add commission to artist.`; 
 
@@ -110,17 +122,24 @@ export const updateReview = async(id, rating, comment) => {
     if(num>1) {
         avg = ((artist.artistProfile.rating * num) - prevRating + rating)/num;
     }
+    // Round to 2 places
+    avg = parseFloat(avg.toFixed(2));
 
-    //add review and updated rating to artist
+
+    // Perform the update operation
     const updatedArtist = await userCollection.updateOne(
-        {_id: new ObjectId(aid)}, 
-        {$set: {
-            "artistProfile.reviewsReceived": artist.artistProfile.reviewsReceived, 
-            'artistProfile.rating': avg
-        }}
-    ); 
-    if(updatedArtist.matchedCount ===0 || updatedArtist.modifiedCount !== 1)
-        throw `Error: could not add commission to artist.`; 
+        { _id: new ObjectId(aid) },
+        {
+            $set: {
+                "artistProfile.reviewsReceived": artist.artistProfile.reviewsReceived,
+                "artistProfile.rating": avg,
+            },
+        }
+    );
+
+    if (updatedArtist.matchedCount === 0 || updatedArtist.modifiedCount !== 1) {
+        throw `Error: Could not update artist with ID ${aid}.`;
+    }
     
     return await getReviewById(insertedReview.insertedId.toString()); 
 }
@@ -148,6 +167,17 @@ export const getReviewsByCommissionId = async(cid) => {
     cid = checkId(cid);
     const reviewCollection = await reviews();
     const reviewList = await reviewCollection.find({cid: cid}).toArray();
+    if (!reviewList) throw `Error: Could not get all reviews.`;
+    reviewList = reviewList.map((review) => {
+        review._id = review._id.toString(); 
+    });
+    return reviewList;
+}
+
+export const getReviewsByArtistId = async(aid) => {
+    aid = checkId(aid);
+    const reviewCollection = await reviews();
+    const reviewList = await reviewCollection.find({aid: aid}).toArray();
     if (!reviewList) throw `Error: Could not get all reviews.`;
     reviewList = reviewList.map((review) => {
         review._id = review._id.toString(); 
