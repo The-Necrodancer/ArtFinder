@@ -12,6 +12,7 @@ import { getUserById } from "../data/users.js";
 import cardRoutes from "./cards.js";
 import blogRoutes from "./blogs.js";
 import commentRoutes from "./comments.js";
+import commissionRoutes from "./commissions.js";
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -274,7 +275,7 @@ const constructorMethod = (app) => {
   app.use("/reports", reportRoutes);
 
   // Commission, Card, and Review routes
-  //app.use("/commissions", commissionRoutes);
+  app.use("/commission", commissionRoutes);
   app.use("/cards", cardRoutes);
   //app.use("/reviews", reviewRoutes);
 
