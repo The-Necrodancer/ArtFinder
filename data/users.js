@@ -176,3 +176,82 @@ export const login = async (username, password) => {
   delete user.password;
   return user;
 };
+
+/**
+ * Updates user status
+ * @param {string} id The ID of the user to update
+ * @param {string} status The new status ('active' or 'banned')
+ * @returns {Object} The updated user object
+ */
+export const updateUserStatus = async (id, status) => {
+  id = checkId(id);
+  if (!["active", "banned"].includes(status)) {
+    throw "Error: status must be either active or banned";
+  }
+
+  const userCollection = await users();
+  const updateInfo = await userCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { status } }
+  );
+
+  if (!updateInfo.matchedCount) throw "User not found";
+  if (!updateInfo.modifiedCount) throw "Status was not updated";
+
+  return await getUserById(id);
+};
+
+/**
+ * Updates user role
+ * @param {string} id The ID of the user to update
+ * @param {string} newRole The new role ('user', 'artist', or 'admin')
+ * @returns {Object} The updated user object
+ */
+export const updateUserRole = async (id, newRole) => {
+  id = checkId(id);
+  newRole = checkRole(newRole);
+
+  const userCollection = await users();
+  const user = await getUserById(id);
+
+  // If changing to/from artist role, handle artistProfile
+  if (user.role !== "artist" && newRole === "artist") {
+    // Add artist profile when changing to artist
+    await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          role: newRole,
+          artistProfile: {
+            bio: "",
+            portfolio: [],
+            pricingInfo: {},
+            tags: [],
+            availability: false,
+            tos: "",
+            createdCommissions: [],
+            reviewsReceived: [],
+            rating: 0,
+          },
+        },
+      }
+    );
+  } else if (user.role === "artist" && newRole !== "artist") {
+    // Remove artist profile when changing from artist
+    await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: { role: newRole },
+        $unset: { artistProfile: "" },
+      }
+    );
+  } else {
+    // Simple role update
+    await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { role: newRole } }
+    );
+  }
+
+  return await getUserById(id);
+};

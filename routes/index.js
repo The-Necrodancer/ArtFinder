@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb";
 import authRoutes from "./auth_routes.js";
 import { userMiddleware, roleMiddleware } from "../middleware.js";
 import { getUserMessages, getUnreadCount } from "../data/messages.js";
+import { getAllReports } from "../data/reports.js";
 import { getUserById } from "../data/users.js";
 import { getAllReports } from "../data/reports.js";
 import cardRoutes from "./cards.js";
@@ -51,9 +52,15 @@ const constructorMethod = (app) => {
   app.get("/dashboard/admin", roleMiddleware(["admin"]), async (req, res) => {
     try {
       const reports = await getAllReports();
+<<<<<<< HEAD
       const usernames = {};
 
       // Get usernames for all users involved in reports
+=======
+
+      // Create a map of user IDs to usernames
+      const usernames = {};
+>>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
       for (const report of reports) {
         if (!usernames[report.reportedBy]) {
           const user = await getUserById(report.reportedBy.toString());
@@ -72,7 +79,10 @@ const constructorMethod = (app) => {
         usernames,
         navLink: [
           { link: "/", text: "Home" },
+<<<<<<< HEAD
           { link: "/browse", text: "Browse Artists" },
+=======
+>>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
           { link: "/reports", text: "Reports" },
           { link: "/signout", text: "Sign Out" },
         ],
@@ -187,6 +197,84 @@ const constructorMethod = (app) => {
       });
     }
   });
+
+  // Admin routes for user management
+  app.get("/admin/users", roleMiddleware(["admin"]), async (req, res) => {
+    try {
+      const usersList = await getAllUsers();
+      return res.render("adminDashboard", {
+        pageTitle: "Admin Dashboard",
+        headerTitle: "Admin Dashboard",
+        users: usersList,
+        navLink: [
+          { link: "/", text: "Home" },
+          { link: "/reports", text: "Reports" },
+          { link: "/signout", text: "Sign Out" },
+        ],
+      });
+    } catch (e) {
+      return res.status(500).render("error", {
+        pageTitle: "Error",
+        headerTitle: "Error",
+        error: e.toString(),
+        navLink: [{ link: "/", text: "Home" }],
+      });
+    }
+  });
+
+  // Update user status
+  app.post(
+    "/admin/user/:id/status",
+    roleMiddleware(["admin"]),
+    async (req, res) => {
+      try {
+        const { status } = req.body;
+        const userId = req.params.id;
+        await updateUserStatus(userId, status);
+
+        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+          return res.json({ success: true });
+        }
+        return res.redirect("/admin/users");
+      } catch (e) {
+        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+          return res.status(400).json({ error: e.toString() });
+        }
+        return res.status(400).render("error", {
+          pageTitle: "Error",
+          headerTitle: "Error",
+          error: e.toString(),
+        });
+      }
+    }
+  );
+
+  // Update user role
+  app.post(
+    "/admin/user/:id/role",
+    roleMiddleware(["admin"]),
+    async (req, res) => {
+      try {
+        const { role } = req.body;
+        const userId = req.params.id;
+        await updateUserRole(userId, role);
+
+        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+          return res.json({ success: true });
+        }
+        return res.redirect("/admin/users");
+      } catch (e) {
+        if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+          return res.status(400).json({ error: e.toString() });
+        }
+        return res.status(400).render("error", {
+          pageTitle: "Error",
+          headerTitle: "Error",
+          error: e.toString(),
+        });
+      }
+    }
+  );
 
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);

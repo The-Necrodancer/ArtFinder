@@ -29,7 +29,7 @@ const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   next();
 };
 
-app.use("/public", express.static("public"));
+app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -65,6 +65,7 @@ app.use("/dashboard/admin", superuserMiddleware);
 // Add signout middleware
 app.use("/logout", signoutMiddleware);
 
+<<<<<<< HEAD
 // Configure Handlebars
 const hbs = exphbs.create({
   defaultLayout: "main",
@@ -83,6 +84,48 @@ const hbs = exphbs.create({
 });
 
 app.engine("handlebars", hbs.engine);
+=======
+app.engine(
+  "handlebars",
+  exphbs.engine({
+    helpers: {
+      times: function (n, block) {
+        var accum = "";
+        for (var i = 0; i < n; ++i) accum += block.fn(i);
+        return accum;
+      },
+      eq: function (a, b) {
+        return a === b;
+      },
+      truncate: function (str, len) {
+        if (str.length > len) {
+          return str.substring(0, len) + "...";
+        }
+        return str;
+      },
+      toLowerCase: function (str) {
+        return str.toLowerCase();
+      },
+      formatDate: function (date) {
+        if (!date) return "";
+        const d = new Date(date);
+        return d.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+      toString: function (obj) {
+        if (!obj) return "";
+        return obj.toString();
+      },
+    },
+    defaultLayout: "main",
+  })
+);
+>>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
 app.set("view engine", "handlebars");
 
 app.use("/messages", messageRoutes);
