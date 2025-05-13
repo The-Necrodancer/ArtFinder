@@ -75,11 +75,15 @@ document
   const searchInput = document.getElementById("search-input");
   const searchButton = document.getElementById("search-button");
   const availability = document.getElementById("availability-select");
+  
+  const selectedStyle = new URLSearchParams(window.location.search).get('style') || ''; // To Re-input value on re-direct
+  styleSelect.innerHTML = '';
 
   // add default option
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
   defaultOption.textContent = "Any Style";
+  if (selectedStyle === '') defaultOption.selected = true; // To Re-input value on re-direct
   styleSelect.appendChild(defaultOption);
 
   // create options from tag list
@@ -87,6 +91,9 @@ document
     const option = document.createElement("option");
     option.value = tag;
     option.textContent = tag;
+    if (tag === selectedStyle) { // To Re-input value on re-direct
+      option.selected = true;
+    }
     styleSelect.appendChild(option);
   });
 

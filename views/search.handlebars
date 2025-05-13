@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Browse Artists</title>
+  <title>Search Artists</title>
   <link rel="stylesheet" href="/public/css/styles.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
   <div id="sidebar-filter">
     <h3>Filter by Price Range</h3>
     <div>
-      <label>Min Budget: $<span id="min-price-value">0</span></label>
+      <label>Min Budget: $<span id="min-price-value">{{filters.minPrice}}</span></label>
       <input
         type="range"
         id="min-price"
@@ -19,11 +19,11 @@
         min="0"
         max="1000"
         step="10"
-        value="0"
+        value="{{filters.minPrice}}"
       />
     </div>
     <div>
-      <label>Max Budget: $<span id="max-price-value">1000</span></label>
+      <label>Max Budget: $<span id="max-price-value">{{filters.maxPrice}}</span></label>
       <input
         type="range"
         id="max-price"
@@ -31,12 +31,12 @@
         min="0"
         max="1000"
         step="10"
-        value="1000"
+        value="{{filters.maxPrice}}"
       />
     </div>
     <h3>Filter by Rating</h3>
     <div>
-      <label>Min Rating: <span id="min-rating-value">0</span></label>
+      <label>Min Rating: <span id="min-rating-value">{{filters.minRating}}</span></label>
       <input
         type="range"
         id="min-rating"
@@ -44,11 +44,11 @@
         min="0"
         max="5"
         step=".1"
-        value="0"
+        value="{{filters.minRating}}"
       />
     </div>
     <div>
-      <label>Max Rating: <span id="max-rating-value">5</span></label>
+      <label>Max Rating: <span id="max-rating-value">{{filters.maxRating}}</span></label>
       <input
         type="range"
         id="max-rating"
@@ -56,15 +56,15 @@
         min="0"
         max="5"
         step=".1"
-        value="5"
+        value="{{filters.maxRating}}"
       />
     </div>
     <h3>Availability</h3>
     <div>
-      <select name="availability" id="availability-select">
-        <option value="">Any Availability</option>
-        <option value="true">Open For Commissions</option>
-        <option value="false">Not Open For Commissions</option>
+      <select name="available" id="availability-select">
+        <option value="" {{#unless filters.available}}selected{{/unless}}>Any Availability</option>
+        <option value="true" {{#if (eq filters.available "true")}}selected{{/if}}>Open For Commissions</option>
+        <option value="false" {{#if (eq filters.available "false")}}selected{{/if}}>Not Open For Commissions</option>
       </select>
     </div>
   </div>  
@@ -74,11 +74,13 @@
         type="text"
         id="search-input"
         name="query"
+        value="{{filters.artist}}"
+        text="{{filters.artist}}"
         placeholder="Search for an artist..."
       />
       <select name="style" id="style-select">
         {{#each styles}}
-          <option value="{{this.value}}">{{this.name}}</option>
+          <option value="{{this.value}}" {{#if (eq this.value ../filters.style)}}selected{{/if}}>{{this.name}}</option>
         {{/each}}
       </select>
       <button type="submit" id="search-button">Search</button>
