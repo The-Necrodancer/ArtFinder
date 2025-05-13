@@ -71,6 +71,9 @@ router.get("/new", async (req, res) => {
     });
   }
 });*/
+
+// Create a new card
+// Ensure user is logged in to create a card
 router.get("/create", /*userMiddleware,*/ async (req, res) => {
   try {
     res.render("cardCreation", {error : null});
