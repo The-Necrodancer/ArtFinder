@@ -41,7 +41,7 @@ router
         headerTitle,
         navLink,
         hasError: true,
-        error: e,
+        loginError: e || e.message,
       });
     }
 
@@ -53,7 +53,7 @@ router
       headerTitle,
       navLink,
       hasError: true,
-      error: "Internal Server Error",
+      loginError: e || e.message,
     });
   });
 

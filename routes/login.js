@@ -29,7 +29,7 @@ router
         headerTitle,
         navLink,
         hasError: true,
-        error: e,
+        loginError: "Invalid Username or Password.",
       });
     }
     req.session.user = user;
