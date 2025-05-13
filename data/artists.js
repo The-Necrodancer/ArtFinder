@@ -27,6 +27,48 @@ export const pricingInfoItemMaxLength = 32;
 export const tagMinLength = 2; 
 export const tagMaxLength = 32; 
 
+export const possibleTagsList = [
+"2D",
+"3D",
+"Abstract",
+"Animals",
+"Anime",
+"Architecture",
+"Black/White",
+"Calligraphy",
+"Caricature",
+"Cartoon",
+"Chibi",
+"Classical",
+"Comic",
+"Concept Art",
+"Cyberpunk",
+"Doodle",
+"Fan Art",
+"Fantasy",
+"Fashion",
+"Food & Drink",
+"Game",
+"Gothic",
+"Graffiti",
+"Historical",
+"Horror",
+"Isometric",
+"Mythology",
+"Nature",
+"Pixel Art",
+"Pop",
+"Post-Apocalytic",
+"Realistic",
+"Retro",
+"Sci-Fi",
+"Sketch",
+"Sports",
+"Steampunk",
+"Technical"];
+
+export const lowerCaseTags = possibleTagsList.map(str => str.toLowerCase());
+
 export const priceMinValue = 3; 
 export const priceMaxValue = 150; 
 
@@ -54,6 +96,7 @@ export const getAllArtists = async() => {
 export const getArtistsByTag = async(tag) => {
     let artists = await getAllArtists();
     let result = [];
+    tag = checkTag(tag);
     for (let artist of artists)
         if(artist.tags.includes(tag))
             result.push(artist);
@@ -70,9 +113,11 @@ export const getArtistsByTags = async(tagArray) => {
     let result = [];
     for (let artist of artists) {
         let count = 0;
-        for (let tag of tagArray)
+        for (let tag of tagArray) {
+            tag = checkTag(tag);
             if(artist.tags.includes(tag))
                 count = count+1;
+        }
         result.push({
             object: artist,
             tagsMatched: count

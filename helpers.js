@@ -20,7 +20,8 @@ import {
     tagMinLength, 
     tagMaxLength, 
     tosMinLength, 
-    tosMaxLength
+    tosMaxLength,
+    lowerCaseTags
  } from './data/artists.js';
 
 import {
@@ -120,6 +121,11 @@ export const checkTag = (tag) => {
     if (specialCharRegex.test(tag)) {
         throw 'Tag can only contain letters, numbers, hyphens, and underscores!';
     }
+
+    if (!lowerCaseTags.includes(tag)) {
+        throw "Invalid Tag provided. Tag must exist in the possibleTagsList!";
+    }
+
     return tag;
 }
 

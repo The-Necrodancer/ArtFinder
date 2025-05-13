@@ -2169,3 +2169,70 @@ button:hover {
   color: #4a5568;
   padding: 2rem;
 }
+
+/* Filter Sidebar Used: https://www.w3schools.com/howto/howto_js_rangeslider.asp*/
+#sidebar-filter {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: var(--background); 
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--shadow);
+  z-index: 1000;
+}
+
+#sidebar-filter h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+#sidebar-filter div {
+  margin-bottom: 15px;
+}
+
+#sidebar-filter label {
+  font-size: 1rem;
+}
+
+#sidebar-filter input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 4px;
+  outline: none;
+  transition: background-color 0.3s ease;
+}
+
+#sidebar-filter input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#sidebar-filter input[type="range"]:disabled {
+  background-color: #ccc;
+}
+
+#sidebar-filter span {
+  font-weight: bold;
+}
+
+#sidebar-filter select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  color: var(--text);
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
