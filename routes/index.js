@@ -9,7 +9,6 @@ import { userMiddleware, roleMiddleware } from "../middleware.js";
 import { getUserMessages, getUnreadCount } from "../data/messages.js";
 import { getAllReports } from "../data/reports.js";
 import { getUserById } from "../data/users.js";
-import { getAllReports } from "../data/reports.js";
 import cardRoutes from "./cards.js";
 
 const constructorMethod = (app) => {
