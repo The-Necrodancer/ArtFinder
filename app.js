@@ -65,26 +65,6 @@ app.use("/dashboard/admin", superuserMiddleware);
 // Add signout middleware
 app.use("/logout", signoutMiddleware);
 
-<<<<<<< HEAD
-// Configure Handlebars
-const hbs = exphbs.create({
-  defaultLayout: "main",
-  extname: ".handlebars",
-  helpers: {
-    eq: (arg1, arg2) => arg1 === arg2,
-    equals: (arg1, arg2) => arg1 === arg2,
-    toLowerCase: (str) => str && str.toLowerCase(),
-    truncate: (str, len) =>
-      str && (str.length > len ? str.substring(0, len) + "..." : str),
-    formatDate: (date) => (date ? new Date(date).toLocaleDateString() : ""),
-  },
-  // Configure the layouts and partials directories
-  layoutsDir: "./views/layouts",
-  partialsDir: "./views/partials",
-});
-
-app.engine("handlebars", hbs.engine);
-=======
 app.engine(
   "handlebars",
   exphbs.engine({
@@ -125,7 +105,6 @@ app.engine(
     defaultLayout: "main",
   })
 );
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
 app.set("view engine", "handlebars");
 
 app.use("/messages", messageRoutes);

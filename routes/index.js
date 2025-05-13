@@ -52,15 +52,9 @@ const constructorMethod = (app) => {
   app.get("/dashboard/admin", roleMiddleware(["admin"]), async (req, res) => {
     try {
       const reports = await getAllReports();
-<<<<<<< HEAD
-      const usernames = {};
-
-      // Get usernames for all users involved in reports
-=======
 
       // Create a map of user IDs to usernames
       const usernames = {};
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
       for (const report of reports) {
         if (!usernames[report.reportedBy]) {
           const user = await getUserById(report.reportedBy.toString());
@@ -79,10 +73,6 @@ const constructorMethod = (app) => {
         usernames,
         navLink: [
           { link: "/", text: "Home" },
-<<<<<<< HEAD
-          { link: "/browse", text: "Browse Artists" },
-=======
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
           { link: "/reports", text: "Reports" },
           { link: "/signout", text: "Sign Out" },
         ],
