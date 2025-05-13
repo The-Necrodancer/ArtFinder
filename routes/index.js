@@ -13,6 +13,7 @@ import cardRoutes from "./cards.js";
 import blogRoutes from "./blogs.js";
 import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
+import apiRoutes from './api.js';
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -129,6 +130,7 @@ const constructorMethod = (app) => {
         commissions: activeCommissions,
         recentMessages,
         unreadCount,
+
       });
     } catch (e) {
       return res.status(500).render("error", {
@@ -275,6 +277,7 @@ const constructorMethod = (app) => {
     }
   );
 
+  app.use("/api", apiRoutes); 
   app.use("/register", registerRoutes);
   app.use("/login", loginRoutes);
   app.use("/reports", reportRoutes);
@@ -325,8 +328,10 @@ const constructorMethod = (app) => {
       artist,
       isArtist: false,
     };
-    if (req.session && req.session.user._id === artist._id)
+    if (req.session && req.session.user._id === artist._id) {
       toRender.isArtist = true;
+
+    }
     return res.render("artistProfile", toRender);
   });
   app.post(
