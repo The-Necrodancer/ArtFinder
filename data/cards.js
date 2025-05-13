@@ -32,7 +32,7 @@ export const socialMediaSites = [
   "Facebook",
   "Instagram",
   "TikTok",
-  "X (Twitter)",
+  "X-Twitter",
   "DeviantArt",
   "ArtStation",
   "Threads",
@@ -71,7 +71,7 @@ export const createCard = async (
 
   if (isUserRecommended) {
     await getUserById(uid);
-    newCard.uid = id.trim();
+    newCard.uid = uid.trim();
   } else {
     const artist = await getArtistById(uid);
     newCard.uid = uid.trim();
