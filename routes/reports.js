@@ -6,11 +6,8 @@ import {
   addReportComment,
   resolveReport,
   getUserReports,
-<<<<<<< HEAD
   getAllReports,
-=======
   deleteReport,
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
 } from "../data/reports.js";
 import { getUserById, getUserByUsername } from "../data/users.js";
 import { getCommissionById } from "../data/commissions.js";
@@ -207,14 +204,10 @@ router.post("/:id/comment", userMiddleware, async (req, res) => {
 
     res.redirect(`/reports/${req.params.id}`);
   } catch (e) {
-<<<<<<< HEAD
-    return res.status(400).render("error", {
-=======
     if (req.headers["content-type"] === "application/json") {
       return res.status(500).json({ error: e.toString() });
     }
     res.status(400).render("error", {
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
       pageTitle: "Error",
       headerTitle: "Error",
       error: e.toString(),
@@ -262,70 +255,6 @@ router.post("/:id/resolve", userMiddleware, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// Admin route to view all reports
-router.get("/admin", superuserMiddleware, async (req, res) => {
-  try {
-    const reports = await getAllReports();
-    const usernames = {};
-
-    // Get usernames for all users involved in reports
-    for (const report of reports) {
-      if (!usernames[report.reportedBy]) {
-        const user = await getUserById(report.reportedBy.toString());
-        usernames[report.reportedBy] = user.username;
-      }
-      if (!usernames[report.reportedUser]) {
-        const user = await getUserById(report.reportedUser.toString());
-        usernames[report.reportedUser] = user.username;
-      }
-    }
-
-    return res.render("adminDashboard", {
-      pageTitle: "Report Management",
-      headerTitle: "Report Management",
-      reports,
-      usernames,
-      isAdmin: true,
-      navLink: [
-        { link: "/dashboard/admin", text: "Admin Dashboard" },
-        { link: "/", text: "Home" },
-        { link: "/signout", text: "Sign Out" },
-      ],
-    });
-  } catch (e) {
-    return renderError(res, 500, e.toString());
-  }
-});
-
-// Admin route to update report status
-router.post("/:id/admin/status", superuserMiddleware, async (req, res) => {
-  try {
-    const { status } = req.body;
-    await updateReportStatus(req.params.id, status);
-    res.redirect(`/reports/${req.params.id}`);
-  } catch (e) {
-    return res.status(400).render("error", {
-      pageTitle: "Error",
-      headerTitle: "Error",
-      error: e.toString(),
-      navLink: [
-        { link: "/reports/admin", text: "Back to Reports" },
-        { link: `/reports/${req.params.id}`, text: "Back to Report" },
-      ],
-    });
-  }
-});
-
-// Admin route to resolve report
-router.post("/:id/admin/resolve", superuserMiddleware, async (req, res) => {
-  try {
-    const { resolution } = req.body;
-    await resolveReport(req.params.id, resolution);
-    res.redirect(`/reports/${req.params.id}`);
-  } catch (e) {
-    res.status(400).render("error", {
-=======
 // Delete report (creator only)
 router.delete("/:id", userMiddleware, async (req, res) => {
   try {
@@ -343,7 +272,6 @@ router.delete("/:id", userMiddleware, async (req, res) => {
       return res.status(403).json({ error: e.toString() });
     }
     res.status(403).render("error", {
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
       pageTitle: "Error",
       headerTitle: "Error",
       error: e.toString(),
