@@ -289,17 +289,35 @@ const constructorMethod = (app) => {
 
   app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
-    const { query, style } = req.query;
     res.render("browse", {
       pageTitle: "Browse Artists",
       headerTitle: "Browse Artists",
       navLink: [
-        { link: "/", text: "home" },
-        { link: "/add", text: "Add artist" },
+        { link: "/", text: "Home" },
+        { link: "/add", text: "Add Artist" },
       ],
     });
   });
-
+  app.get("/search", userMiddleware, async (req, res) => {
+    const { artist = '', style = '', "low-price": lowPrice = 0, "high-price": highPrice = 1000, "low-rating": lowRating = 0, "high-rating": highRating = 5, available = ''} = req.query;
+    res.render("search", {
+      pageTitle: "Search Artists",
+      headerTitle: "Search Artists",
+      navLink: [
+        { link: "/", text: "Home" },
+        { link: "/browse", text: "Browse Artists" },
+      ],
+      filters: {
+        artist: artist,
+        style: style,
+        minPrice: lowPrice,
+        maxPrice: highPrice,
+        minRating: lowRating,
+        maxRating: highRating,
+        availability: available
+      },
+    });
+  });
   app.get("/artist/:id", async (req, res) => {
     let artist;
     try {
@@ -309,8 +327,8 @@ const constructorMethod = (app) => {
         pageTitle: "Error",
         headerTitle: "Error",
         navLink: [
-          { link: "/", text: "home" },
-          { link: "/add", text: "Add artist" },
+          { link: "/", text: "Home" },
+          { link: "/add", text: "Add Artist" },
         ],
       });
     }
