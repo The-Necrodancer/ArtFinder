@@ -32,7 +32,7 @@ export const socialMediaSites = [
   "Facebook",
   "Instagram",
   "TikTok",
-  "X-Twitter",
+  "X",
   "DeviantArt",
   "ArtStation",
   "Threads",
