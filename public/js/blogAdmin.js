@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const formData = new FormData(editBlogForm);
 
       try {
-        const response = await fetch(`/blogs/${blogId}`, {
-          method: "PUT",
+        const response = await fetch(`/blogs/update/${blogId}`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -20,8 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to update blog");
+          throw new Error("Failed to update blog");
         }
         window.location.href = "/blogs";
       } catch (error) {
@@ -36,28 +35,25 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", async (e) => {
       e.preventDefault();
 
-      if (
-        !confirm(
-          "Are you sure you want to delete this blog post? This action cannot be undone."
-        )
-      ) {
+      if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) {
         return;
       }
 
       const blogId = button.dataset.blogId;
       try {
-        const response = await fetch(`/blogs/${blogId}?_method=DELETE`, {
+        const response = await fetch(`/blogs/delete/${blogId}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-          },
+          }
         });
 
-        // Server will handle the redirect, we just need to check for errors
         if (!response.ok) {
-          const result = await response.json();
-          throw new Error(result.error || "Failed to delete blog");
+          throw new Error("Failed to delete blog");
         }
+        
+        // Redirect to blogs list
+        window.location.href = "/blogs";
       } catch (error) {
         alert(error.message);
       }
