@@ -1,0 +1,77 @@
+<main>
+  <div class="message-details-container">
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <div class="message-header">
+      <h2>{{message.subject}}</h2>
+      <div class="message-meta">
+        <div class="message-participants">
+          <p><strong>From:</strong> {{message.sender.username}}</p>
+          <p><strong>To:</strong> {{message.recipient.username}}</p>
+        </div>
+        <p class="message-date">{{message.createdAt}}</p>
+      </div>
+    </div>
+
+    <div class="message-content">
+      {{message.content}}
+    </div>
+
+    <div class="message-actions">
+      {{#if (eq user._id message.recipientId)}}
+        {{#unless message.archived}}
+          <form
+            action="/messages/{{message._id}}/archive"
+            method="POST"
+            class="archive-form"
+          >
+            <button type="submit" class="archive-btn">Archive Message</button>
+          </form>
+        {{/unless}}
+
+        <a href="/messages/new/{{message.senderId}}" class="reply-btn">Reply</a>
+      {{/if}}
+
+      <a href="/messages" class="back-btn">Back to Messages</a>
+    </div>
+  </div>
+  <div class="message-container">
+    {{#if error}}
+      <div class="error-message">{{error}}</div>
+    {{/if}}
+
+    <div class="message-header">
+      <h2>{{message.subject}}</h2>
+      <div class="message-meta">
+        <p><strong>From:</strong> {{message.sender.username}}</p>
+        <p><strong>To:</strong> {{message.recipient.username}}</p>
+        <p><strong>Date:</strong> {{message.createdAt}}</p>
+      </div>
+    </div>
+
+    <div class="message-content">
+      {{message.content}}
+    </div>
+
+    <div class="message-actions">
+      {{#if (eq user._id message.recipientId)}}
+        <a
+          href="/messages/new/{{message.senderId}}"
+          class="reply-button"
+        >Reply</a>
+        {{#unless message.archived}}
+          <form
+            action="/messages/{{message._id}}/archive"
+            method="POST"
+            class="archive-form"
+          >
+            <button type="submit" class="archive-button">Archive</button>
+          </form>
+        {{/unless}}
+      {{/if}}
+      <a href="/messages" class="back-button">Back to Messages</a>
+    </div>
+  </div>
+</main>

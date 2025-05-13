@@ -375,3 +375,9 @@ const checkStringMinMax = (string, varName, min, max) =>  {
     if(string.length > max) throw `Error: ${varName} cannot contain more than ${max} characters.`
     return string; 
 }
+
+export const checkPost = (post, postMinLength, postMaxLength) => { 
+    post = checkString(post, 'post');
+    post = checkStringMinMax(post, 'post', postMinLength, postMaxLength); 
+    return post;
+}

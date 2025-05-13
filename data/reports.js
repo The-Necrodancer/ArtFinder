@@ -53,7 +53,6 @@ export const createReport = async (
       throw "User must be involved in the commission to report it";
     }
   }
-
   const report = {
     reportedBy: new ObjectId(reportedBy),
     reportedUser: new ObjectId(reportedUser),
@@ -63,6 +62,7 @@ export const createReport = async (
     createdAt: new Date(),
     comments: [],
     resolution: null,
+    deleted: false,
     commissionId: commissionId ? new ObjectId(commissionId) : null,
   };
 
@@ -89,9 +89,14 @@ export const getUserReports = async (userId) => {
   const reportCollection = await reports();
   return await reportCollection
     .find({
-      $or: [
-        { reportedBy: new ObjectId(userId) },
-        { reportedUser: new ObjectId(userId) },
+      $and: [
+        {
+          $or: [
+            { reportedBy: new ObjectId(userId) },
+            { reportedUser: new ObjectId(userId) },
+          ],
+        },
+        { deleted: { $ne: true } },
       ],
     })
     .toArray();
@@ -102,8 +107,14 @@ export const updateReportStatus = async (id, status) => {
   if (!reportStatusValues.includes(status)) {
     throw `Status must be one of: ${reportStatusValues.join(", ")}`;
   }
-
   const reportCollection = await reports();
+
+  // First check if the report exists and get its current status
+  const currentReport = await getReportById(id);
+  if (currentReport.status === status) {
+    return currentReport; // Return existing report if status hasn't changed
+  }
+
   const updateInfo = await reportCollection.updateOne(
     { _id: new ObjectId(id) },
     { $set: { status } }
@@ -164,4 +175,37 @@ export const resolveReport = async (id, resolution) => {
 export const getAllPendingReports = async () => {
   const reportCollection = await reports();
   return await reportCollection.find({ status: "Pending" }).toArray();
+};
+
+export const getAllReports = async () => {
+  const reportCollection = await reports();
+  return await reportCollection.find({}).sort({ createdAt: -1 }).toArray();
+};
+
+/**
+ * Delete a report from the database
+ * @param {string} id The ID of the report to delete
+ * @param {string} userId The ID of the user attempting to delete the report
+ * @returns {boolean} True if deletion was successful
+ */
+export const deleteReport = async (id, userId) => {
+  id = checkId(id);
+  userId = checkId(userId);
+
+  // First get the report to verify permissions
+  const report = await getReportById(id);
+  // Only the report creator can delete the report
+  if (report.reportedBy.toString() !== userId) {
+    throw "Access denied: Only the creator of the report can delete it";
+  }
+  const reportCollection = await reports();
+  const updateInfo = await reportCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { deleted: true } }
+  );
+
+  if (!updateInfo.matchedCount) throw "Report not found";
+  if (!updateInfo.modifiedCount) throw "Could not mark report as deleted";
+
+  return true;
 };

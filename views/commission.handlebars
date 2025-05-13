@@ -12,10 +12,37 @@
       <p><strong>Price:</strong> ${{commission.price}}</p>
       <p><strong>Status:</strong> {{commission.status}}</p>
 
+      {{#if commission.progressUpdates.length}}
+        <div class="progress-updates">
+          <h4>Progress Updates</h4>
+          <div class="progress-timeline">
+            {{#each commission.progressUpdates}}
+              <div class="update-item">
+                <div class="update-date">{{this.date}}</div>
+                <div class="update-note">{{this.note}}</div>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      {{/if}}
+
       {{#if (or (eq user._id commission.uid) (eq user._id commission.aid))}}
         <div class="action-buttons">
           {{#if (not (eq commission.status "Completed"))}}
             <a href="/reports/new?commissionId={{commission._id}}" class="report-button">Report Issue</a>
+          {{/if}}
+
+          {{#if (eq user._id commission.aid)}}
+            <form action="/commission/update-status" method="POST" class="status-form">
+              <input type="hidden" name="commissionId" value="{{commission._id}}">
+              <select name="status">
+                <option value="Pending" {{#if (equals commission.status "Pending")}}selected{{/if}}>Pending</option>
+                <option value="In Progress" {{#if (equals commission.status "In Progress")}}selected{{/if}}>In Progress</option>
+                <option value="Completed" {{#if (equals commission.status "Completed")}}selected{{/if}}>Completed</option>
+                <option value="Cancelled" {{#if (equals commission.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+              </select>
+              <button type="submit">Update Status</button>
+            </form>
           {{/if}}
         </div>
       {{/if}}

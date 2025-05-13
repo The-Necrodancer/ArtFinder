@@ -6,7 +6,7 @@
     tags -> array of strings 
     availability: -> boolean 
     tos -> string 
-    rating -> 
+    rating -> float
     createdCommissions -> an array of commission ids that the user is creating/ed for someone else 
     reviewsReceived -> an array of review ids that the artist has received 
     }
@@ -15,6 +15,7 @@ import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
 import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
+import { createCard } from "./cards.js";
 
 //exported variables:
 export const bioMinLength = 0; 
@@ -44,6 +45,109 @@ export const getAllArtists = async() => {
     users = users.filter((user) => user.role === 'artist'); 
     return users; 
 }; 
+
+/**
+ * Gets all artists that have a tag
+ * @param {String} tag The search tag
+ * @returns {Array} The array of artists that have the search tag.
+ */
+export const getArtistsByTag = async(tag) => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists)
+        if(artist.tags.includes(tag))
+            result.push(artist);
+    return result; 
+}
+
+/**
+ * Gets artists by all the tags
+ * @param {String} tagArray The array of search tags.
+ * @returns {Array} An ordered array of artists by the tags.
+ */
+export const getArtistsByTags = async(tagArray) => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let count = 0;
+        for (let tag of tagArray)
+            if(artist.tags.includes(tag))
+                count = count+1;
+        result.push({
+            object: artist,
+            tagsMatched: count
+        });
+    }
+    result.sort((a, b) => b.tagsMatched - a.tagsMatched);
+    return result; 
+};
+
+/**
+ * Gets artists in an ordered list of the number of commissions accepted.
+ * @returns {Array} An ordered array of artists by the commissions accepted.
+ */
+export const getArtistsByCommissions = async() => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let count = artist.createdCommissions.length;
+        result.push({
+            object: artist,
+            commissionCount: count
+        });
+    }
+    result.sort((a, b) => b.commissionCount - a.commissionCount);
+    return result; 
+};
+
+/**
+ * Gets artists in an ordered list based on rating.
+ * @returns {Array} An ordered array of artists by their ratings.
+ */
+export const getArtistsByRating = async() => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let count = artist.rating;
+        result.push({
+            object: artist,
+            rating: count
+        });
+    }
+    result.sort((a, b) => b.rating - a.rating);
+    return result; 
+}
+
+/**
+ * Gets artists by all the tags
+ * @param {String} lowPrice The low end of the price filter.
+ * @param {String} highPrice The high end of the price filter.
+ * @param {String} lowRating The low end of the rating filter.
+ * @param {String} highRating The high end of the rating filter.
+ * @param {String} availability The availability status of the filter.
+ * @returns {Array} An array of artists that match the filters provided.
+ */
+export const filterArtists = async(lowPrice, highPrice, lowRating, highRating, availability) => {
+    let artists = await getAllArtists();
+    let result = [];
+    for (let artist of artists) {
+        let pass = false;
+        if(artist.availability === availability) { // Availability
+            if (artist.rating >= lowRating && artist.rating <= highRating) { //Rating
+                for (let price in artist.pricingInfo) {
+                    if (artist.pricingInfo[price] >= lowPrice && artist.pricingInfo[price] <= highPrice) { //Any singular item is within the range
+                        pass = true;
+                    }
+                }
+            }
+        }
+        if (pass) {
+            result.push(artist);
+        }
+    }
+    return result; 
+}
+
 
 /**
  * Gets an artist by their id

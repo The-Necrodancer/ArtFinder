@@ -5,6 +5,24 @@ const app = express();
 import configRoutes from "./routes/index.js";
 import exphbs from "express-handlebars";
 import addMiddleware from "./middleware.js";
+import messageRoutes from "./routes/messages.js";
+import {
+  loggingMiddleware,
+  registerRedirectMiddleware,
+  loginRedirectMiddleware,
+  userMiddleware,
+  superuserMiddleware,
+  signoutMiddleware,
+} from "./middleware.js";
+
+/************************************************************************************/ 
+// Adding hanblebars helpers
+import handlebarsHelpers from "handlebars-helpers";
+import Handlebars from "handlebars";
+
+// Register all helpers
+handlebarsHelpers({ handlebars: Handlebars });
+/************************************************************************************/
 
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   // If the user posts to the server with a property called _method, rewrite the request's method
@@ -19,21 +37,39 @@ const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   next();
 };
 
-app.use("/public", express.static("public"));
+app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(
   session({
     name: "AuthenticationState",
-
     secret: "some secret string!",
-
     resave: false,
-
-    saveUninitialized: false,
+  saveUninitialized: false,
   })
 );
 app.use(rewriteUnsupportedBrowserMethods);
+
+// Apply logging middleware to all routes
+app.use(loggingMiddleware);
+
+// Apply authentication redirects for register and login routes
+app.use("/register", registerRedirectMiddleware);
+app.use("/login", loginRedirectMiddleware);
+
+// Protect user routes
+app.use("/dashboard/user", userMiddleware);
+app.use("/dashboard/artist", userMiddleware);
+app.use("/commission", userMiddleware);
+app.use("/messages", userMiddleware);
+app.use("/reports", userMiddleware);
+
+// Protect admin routes
+app.use("/dashboard/admin", superuserMiddleware);
+
+// Add signout middleware
+app.use("/logout", signoutMiddleware);
 
 app.engine(
   "handlebars",
@@ -44,11 +80,41 @@ app.engine(
         for (var i = 0; i < n; ++i) accum += block.fn(i);
         return accum;
       },
+      eq: function (a, b) {
+        return a === b;
+      },
+      // Was getting an error with this helper.
+      // Unsure if eq will work or not.
+      equals: function (a, b) {
+        return a === b;
+      },
+      truncate: function (str, len) {
+        if (str.length > len) {
+          return str.substring(0, len) + "...";
+        }
+        return str;
+      },
+      toLowerCase: function (str) {
+        return str.toLowerCase();
+      },
+      formatDate: function (date) {
+        if (!date) return "";
+        const d = new Date(date);
+        return d.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
     },
     defaultLayout: "main",
   })
 );
 app.set("view engine", "handlebars");
+
+app.use("/messages", messageRoutes);
 
 addMiddleware(app);
 

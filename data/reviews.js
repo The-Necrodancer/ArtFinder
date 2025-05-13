@@ -72,6 +72,60 @@ export const createReview = async(cid, rating, comment) => {
 }
 
 /**
+ * Updates review with given ID
+ * @param {String} id Id of review
+ * @param {rating} rating Updated rating
+ * @param {comment} comment Updated comment
+ * @returns {Object} Updated review with given ID
+ */
+export const updateReview = async(id, rating, comment) => { 
+    rating = checkRating(rating); 
+    comment = checkComment(comment); 
+    id = checkId(id);
+
+    const reviewCollection = await reviews(); 
+    const review = await reviewCollection.findOne({_id: new ObjectId(id)}); 
+    if (!review) throw `Error: review not found.`; 
+
+    //Following makes sure that all are valid and exist in databases 
+    let prevRating = review.rating;
+    let cid = review.cid;
+    let aid = review.aid; 
+    let uid = review.uid; 
+    let artist = await getArtistById(aid); 
+    let user = await getUserById(uid);
+
+    const updatedReview = {cid, aid, uid, rating, comment}
+
+    let editedReview = await reviewCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: updatedReview}, {returnDocument: "after"});
+    if(editedReview.acknowledged != true || !editedReview.insertedId) 
+        throw 'Error: could not insert review in database'; 
+
+    let rid = insertedReview.insertedId.toString(); 
+    let userCollection = await users(); 
+
+    //recalculates artist's average rating 
+    let num = artist.artistProfile.reviewsReceived.length; 
+    let avg = rating; 
+    if(num>1) {
+        avg = ((artist.artistProfile.rating * num) - prevRating + rating)/num;
+    }
+
+    //add review and updated rating to artist
+    const updatedArtist = await userCollection.updateOne(
+        {_id: new ObjectId(aid)}, 
+        {$set: {
+            "artistProfile.reviewsReceived": artist.artistProfile.reviewsReceived, 
+            'artistProfile.rating': avg
+        }}
+    ); 
+    if(updatedArtist.matchedCount ===0 || updatedArtist.modifiedCount !== 1)
+        throw `Error: could not add commission to artist.`; 
+    
+    return await getReviewById(insertedReview.insertedId.toString()); 
+}
+
+/**
  * Gets review with given ID 
  * @param {String} id Id of review
  * @returns {Object} Review with given ID
@@ -83,4 +137,20 @@ export const getReviewById = async(id) => {
     if (!review) throw `Error: review not found.`; 
     review._id = review._id.toString(); 
     return review; 
+}
+
+// UNTESTED
+/**
+ * Gets all reviews for a given commission
+ * @param {String} cid Id of commission
+ */
+export const getReviewsByCommissionId = async(cid) => {
+    cid = checkId(cid);
+    const reviewCollection = await reviews();
+    const reviewList = await reviewCollection.find({cid: cid}).toArray();
+    if (!reviewList) throw `Error: Could not get all reviews.`;
+    reviewList = reviewList.map((review) => {
+        review._id = review._id.toString(); 
+    });
+    return reviewList;
 }

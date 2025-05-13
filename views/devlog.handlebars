@@ -1,0 +1,47 @@
+<main class="devlog-container">
+  {{#if isAdmin}}
+    <section class="create-blog-section">
+      <h2>Create New Blog Post</h2>
+      <form action="/blogs" method="POST" class="blog-form">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea id="content" name="content" required rows="10"></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Post Update</button>
+      </form>
+    </section>
+  {{/if}}
+  <section class="blogs-section">
+    <div class="section-header">
+      <h2>Latest Updates</h2>
+      {{#unless isAdmin}}
+        <p class="info-text">Welcome to the ArtFinder DevLog! Here you can find
+          the latest updates and announcements about our platform.</p>
+      {{/unless}}
+    </div>
+    {{#if blogs.length}}
+      <div class="blog-list">
+        {{#each blogs}}
+          <article class="blog-card">
+            <h3>{{this.title}}</h3>
+            <div class="blog-meta">
+              <span class="date">{{formatDate this.createdAt}}</span>
+            </div>
+            <div class="blog-preview">
+              {{truncate this.content 200}}
+            </div>
+            <div class="blog-actions">
+              <a href="/blogs/{{this._id}}" class="read-more">Read More</a>
+            </div>
+          </article>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="no-blogs">No updates available yet.</p>
+    {{/if}}
+  </section>
+</main>

@@ -1,5 +1,6 @@
 <main>
   <h2>Artist Dashboard</h2>
+  <div class="welcome-message">Welcome, {{artist.username}} (Artist)</div>
   
   <section class="profile-section">
     <h3>My Profile</h3>
@@ -21,6 +22,30 @@
 
       <button type="submit">Update Profile</button>
     </form>
+  </section>
+
+  <section class="messages-section">
+    <h3>Messages {{#if unreadCount}}<span class="unread-count">({{unreadCount}} unread)</span>{{/if}}</h3>
+    <div class="messages-preview">
+      {{#if recentMessages}}
+        {{#each recentMessages}}
+          <div class="message-preview-card {{#unless this.read}}unread{{/unless}}">
+            <div class="message-header">
+              <h4>{{this.subject}}</h4>
+              {{#unless this.read}}
+                <span class="unread-badge">New</span>
+              {{/unless}}
+            </div>
+            <p class="message-meta">From: {{this.sender.username}}</p>
+            <p class="message-excerpt">{{truncate this.content 50}}</p>
+            <a href="/messages/{{this._id}}" class="view-message">View Message</a>
+          </div>
+        {{/each}}
+      {{else}}
+        <p>No recent messages</p>
+      {{/if}}
+      <a href="/messages" class="view-all-messages">View All Messages</a>
+    </div>
   </section>
 
   <section class="portfolio-section">

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/css/styles.css">
+    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>{{{pageTitle}}}</title>
 </head>
 <body>
@@ -18,6 +18,9 @@
                 {{/each}}
             </ul>
         </div>
-    </header>
-    {{{body}}}
+    </header>    {{{body}}}
+    <script src="/js/password-toggle.js"></script>
+    {{#if isAdmin}}
+    <script src="/js/blogAdmin.js"></script>
+    {{/if}}
 </body>
