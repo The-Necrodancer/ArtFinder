@@ -13,6 +13,7 @@ import cardRoutes from "./cards.js";
 import blogRoutes from "./blogs.js";
 import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
+import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
 
 const constructorMethod = (app) => {
@@ -168,7 +169,7 @@ const constructorMethod = (app) => {
   // Commission, Card, and Review routes
   app.use("/commission", commissionRoutes);
   app.use("/cards", cardRoutes);
-  //app.use("/reviews", reviewRoutes);
+  app.use("/reviews", reviewRoutes);
 
   app.use("/blogs", blogRoutes);
   app.use("/comments", commentRoutes);
