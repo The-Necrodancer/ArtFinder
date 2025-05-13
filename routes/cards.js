@@ -49,29 +49,6 @@ router.get("/new", async (req, res) => {
   }
 });
 
-// Create new card
-/*router.post("/", userMiddleware, async (req, res) => {
-  try {
-    const { name, socialsLinks, portfolio, tags, isUserRecommended } = req.body;
-    const card = await createCard(
-      name,
-      socialsLinks,
-      portfolio,
-      tags,
-      isUserRecommended,
-      req.session.user._id
-    );
-    res.redirect(`/cards/${card._id}`);
-  } catch (e) {
-    res.status(400).render("error", {
-      pageTitle: "Error",
-      headerTitle: "Error",
-      error: e.toString(),
-      navLink: [{ link: "/", text: "Home" }],
-    });
-  }
-});*/
-
 // Create a new card
 // Ensure user is logged in to create a card
 router.get("/create", /*userMiddleware,*/ async (req, res) => {
@@ -87,18 +64,18 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
     console.log(req.body);
     const {name, socials} = req.body;
 
-    const socialLinks = Object.values(socials || {}).filter((url) => url.trim() !== "");
-
+    const socialLinks = Object.entries(socials || {})
+      .filter(([site, url]) => url.trim() !== "")
+      .map(([site, url]) => ({ site, url }));
+    
     const card = await createCard(
       name,
-      socials,
+      socialLinks,
       [],
       [],
       true,
       req.session.user._id
     );
-
-    console.log(card);
 
   } catch (e) {
     res.status(500).render("error", {error: e.toString()});
