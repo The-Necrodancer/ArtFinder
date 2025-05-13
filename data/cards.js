@@ -306,3 +306,15 @@ export const getCardsByRating = async() => {
     result.sort((a, b) => b.rating - a.rating);
     return result; 
 }
+
+
+export const getNewestCards = async () => {
+  let maxElements = 50;
+  let cardCollection = await cards();
+  //https://stackoverflow.com/questions/13847766/how-to-sort-a-collection-by-date-in-mongodb
+  let cardList = await cardCollection.find({}).sort({ _id: -1 });
+  if (cardList.length > 50) {
+    cardList = cardList.slice(0, maxElements);
+  }
+  return cardList;
+};

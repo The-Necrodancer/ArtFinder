@@ -59,7 +59,7 @@ const constructorMethod = (app) => {
   });
 
   
-  app.use("api", apiRoutes);
+  app.use("/api", apiRoutes);
   app.use("/dashboard/artist", artistDashboardRoutes); 
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {

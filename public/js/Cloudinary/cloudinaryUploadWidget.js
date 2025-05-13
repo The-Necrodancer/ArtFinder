@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           errorMsg.innerText = "Error: only jpg, jpeg, png, and webp types are accepted.";
         } else {
           imgUrls.push(result.info.url); 
-          document.getElementById('upload_form_images_div').innerHTML += `<img src="${result.info.url}" alt="New Artwork" />`;
+          document.getElementById('upload_form_images_div').innerHTML += `<img src="${result.info.url}" alt="New Artwork" class="img-upload-img"/>`;
         }
     }
   }

@@ -2294,3 +2294,13 @@ button:hover {
   padding-bottom: .5rem;
   margin-bottom: 0.5rem;
 }
+
+.upload_form_images_div {
+  display: flex;
+  flex-direction: column;
+}
+
+.img-upload-img {
+  max-width: 400px;
+  height: auto;
+}
