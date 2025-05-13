@@ -2172,9 +2172,6 @@ button:hover {
   text-align: center;
 }
 
-.view-details:hover {
-  background: #e2e8f0;
-}
 
 .no-reports {
   text-align: center;
@@ -2190,22 +2187,51 @@ button:hover {
   width: 250px;
   height: 80%;
   background-color: var(--background); 
-  padding: 20px;
+  padding: 30px;
   box-shadow: 0 2px 8px var(--shadow);
   z-index: 1000;
+  transition: width 0.3s, min-width 0.3s;
+  overflow: hidden;
+}
+
+#sidebar-filter.collapsed {
+  width: 50px;
+  min-width: 50px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#sidebar-toggle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center+1px;
+  justify-content: center;
+  padding: 0;
+  z-index: 1101;
+}
+
+#sidebar-filter.collapsed > *:not(#sidebar-toggle) {
+  display: none;
 }
 
 #sidebar-filter h3 {
+  margin-top: 30px;
   font-size: 1.5rem;
   margin-bottom: 20px;
 }
 
 #sidebar-filter div {
   margin-bottom: 15px;
-}
-
-#sidebar-filter label {
-  font-size: 1rem;
 }
 
 #sidebar-filter input[type="range"] {
