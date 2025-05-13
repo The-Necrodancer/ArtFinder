@@ -84,13 +84,38 @@
       <button type="submit" id="search-button">Search</button>
     </form>
     <section id="artist-list">
-      <h2>Featured Artists</h2>
+      <h2>Recommended Artists</h2>
       <ul id="artists">
-        {{#each artists}}
+        {{#each cards}}
           <li class="artist-card">
             <h3>{{this.name}}</h3>
-            <p>Style: {{this.style}}</p>
-            <p>Price: ${{this.price}}</p>
+            {{#if this.isOfficial}}
+              <span class="recommended-badge">Verified</span>
+            {{else}}
+              <span class="recommended-badge">Fan Profile</span>
+            {{/if}}
+
+            {{#if this.artistProfile}}
+              <p>Rating: {{this.artistProfile.rating}}</p>
+              <p>Availability: {{#if this.artistProfile.availability}}Open{{else}}Closed{{/if}}</p>
+              <p>Price Range: {{this.artistProfile.MinPrice}} - {{this.artistProfile.HighPrice}}</p>
+            {{/if}}
+
+            {{#if this.socialLinks}}
+              <div class="social-links">
+                {{#each this.socialLinks}}
+                  <a href="{{this}}" target="_blank" rel="noopener noreferrer">{{this}}</a>
+                {{/each}}
+              </div>
+            {{/if}}
+
+            {{#if this.tags}}
+              <div class="tags">
+                {{#each this.tags}}
+                  <span class="tag">{{this}}</span>
+                {{/each}}
+              </div>
+            {{/if}}
           </li>
         {{/each}}
       </ul>

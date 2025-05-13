@@ -1,0 +1,35 @@
+<main>
+  <h2>User Management</h2>
+  <form method="GET" action="/dashboard/admin" class="user-search-form">
+    <input type="text" name="search" placeholder="Search users..." value="{{search}}" />
+    <button type="submit">Search</button>
+  </form>
+
+  <table class="user-list-table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+        <tr>
+          <td>{{this.username}}</td>
+          <td>{{this.role}}</td>
+          <td>
+            <a href="/dashboard/admin/user/{{this._id}}/edit-username" class="edit-btn">Edit Username</a>
+            <a href="/dashboard/admin/user/{{this._id}}/edit-role" class="edit-btn">Edit Role</a>
+            {{#if (eq this.role "artist")}}
+              <a href="/dashboard/admin/user/{{this._id}}/edit-artist" class="edit-artist-btn">Edit Artist Profile</a>
+            {{/if}}
+            <form action="/dashboard/admin/user/{{this._id}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this account?');">
+              <button type="submit" class="delete-user-btn">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</main>

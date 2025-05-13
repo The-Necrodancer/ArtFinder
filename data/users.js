@@ -263,3 +263,44 @@ export const updateUserRole = async (id, newRole) => {
 
   return await getUserById(id);
 };
+
+/**
+ * Updates a user's username.
+ * @param {string} id The user's id.
+ * @param {string} newUsername The new username.
+ * @returns {Object} The updated user object.
+ */
+export const updateUsername = async (id, newUsername) => {
+  id = checkId(id);
+  newUsername = checkUsername(newUsername, "username");
+  const userCollection = await users();
+
+  // Check if username is already taken
+  if (await containsUsername(newUsername)) {
+    throw `Error: username already taken.`;
+  }
+
+  const updateInfo = await userCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { username: newUsername } }
+  );
+  if (!updateInfo.matchedCount) throw "User not found";
+  if (!updateInfo.modifiedCount) throw "Username was not updated";
+
+  return await getUserById(id);
+};
+
+/**
+ * Deletes a user by id.
+ * @param {string} id The user's id.
+ * @returns {boolean} True if deleted, false otherwise.
+ */
+export const deleteUser = async (id) => {
+  id = checkId(id);
+  const userCollection = await users();
+  const deletionInfo = await userCollection.deleteOne({ _id: new ObjectId(id) });
+  if (deletionInfo.deletedCount === 0) {
+    throw `Error: Could not delete user with id ${id}`;
+  }
+  return true;
+};

@@ -95,46 +95,6 @@ router.post("/", userMiddleware, async (req, res) => {
   }
 });
 
-// Admin route to view all reports
-router.get("/admin", superuserMiddleware, async (req, res) => {
-  try {
-    const reports = await getAllReports();
-    const usernames = {};
-
-    // Get usernames for all users involved in reports
-    for (const report of reports) {
-      if (!usernames[report.reportedBy]) {
-        const user = await getUserById(report.reportedBy.toString());
-        usernames[report.reportedBy] = user.username;
-      }
-      if (!usernames[report.reportedUser]) {
-        const user = await getUserById(report.reportedUser.toString());
-        usernames[report.reportedUser] = user.username;
-      }
-    }
-
-    return res.render("adminDashboard", {
-      pageTitle: "Report Management",
-      headerTitle: "Report Management",
-      reports,
-      usernames,
-      isAdmin: true,
-      navLink: [
-        { link: "/dashboard/admin", text: "Admin Dashboard" },
-        { link: "/", text: "Home" },
-        { link: "/signout", text: "Sign Out" },
-      ],
-    });
-  } catch (e) {
-    return res.render("error", {
-      pageTitle: "Error",
-      headerTitle: "Error",
-      error: e.toString(),
-      navLink: [{ link: "/dashboard/admin", text: "Back to Dashboard" }],
-    });
-  }
-});
-
 // View report details
 router.get("/:id", userMiddleware, async (req, res) => {
   try {

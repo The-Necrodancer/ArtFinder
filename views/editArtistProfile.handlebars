@@ -1,0 +1,19 @@
+<main>
+  <h2>Edit Artist Profile</h2>
+  {{#if error}}
+    <div class="error-message">{{error}}</div>
+  {{/if}}
+  <form action="/dashboard/admin/user/{{user._id}}/edit-artist" method="POST">
+    <label for="bio">Bio:</label>
+    <textarea id="bio" name="bio">{{user.artistProfile.bio}}</textarea>
+
+    <label for="tos">Terms of Service:</label>
+    <textarea id="tos" name="tos">{{user.artistProfile.tos}}</textarea>
+
+    <label for="availability">Available for Commissions:</label>
+    <input type="checkbox" id="availability" name="availability" value="true" {{#if user.artistProfile.availability}}checked{{/if}}>
+
+    <button type="submit">Update Profile</button>
+    <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+  </form>
+</main>

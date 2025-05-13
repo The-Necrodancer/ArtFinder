@@ -4,23 +4,37 @@
 
   <section class="user-management">
     <h3>User Management</h3>
-    <div class="user-list">
-      {{#each users}}
-        <div class="user-card">
-          <h4>{{this.username}}</h4>
-          <p>Role: {{this.role}}</p>
-          <p>Email: {{this.email}}</p>
-          <form action="/admin/user/update" method="POST">
-            <input type="hidden" name="userId" value="{{this._id}}">
-            <select name="status">
-              <option value="active" {{#if (equals this.status "active")}}selected{{/if}}>Active</option>
-              <option value="banned" {{#if (equals this.status "banned")}}selected{{/if}}>Banned</option>
-            </select>
-            <button type="submit">Update Status</button>
-          </form>
-        </div>
-      {{/each}}
-    </div>
+    <form method="GET" action="/dashboard/admin" class="user-search-form">
+      <input type="text" name="search" placeholder="Search users..." value="{{search}}" />
+      <button type="submit">Search</button>
+    </form>
+    <table class="user-list-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr>
+            <td>{{this.username}}</td>
+            <td>{{this.role}}</td>
+            <td>
+              <a href="/dashboard/admin/user/{{this._id}}/edit-username" class="edit-admin-btn">Edit Username</a>
+              <a href="/dashboard/admin/user/{{this._id}}/edit-role" class="edit-admin-btn">Edit Role</a>
+              <form action="/dashboard/admin/user/{{this._id}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this account?');">
+                <button type="submit" class="delete-user-btn">Delete</button>
+              </form>
+              {{#if (eq this.role "artist")}}
+                <a href="/dashboard/admin/user/{{this._id}}/edit-artist" class="edit-admin-btn">Edit Artist Profile</a>
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </section>
 
   <section class="reports-management">
