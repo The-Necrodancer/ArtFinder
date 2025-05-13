@@ -143,12 +143,17 @@ const constructorMethod = (app) => {
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {
       const commissionCollection = await commissions();
+
+      // NOTE: The uid is stored as a string on our database within commissions
+      // MAKE SURE THAT THE UID IS A STRING
       const activeCommissions = await commissionCollection
         .find({
-          uid: new ObjectId(req.session.user._id),
+          // uid: new ObjectId(req.session.user._id),
+          uid: req.session.user._id, // UID is stored as a string on our database within commissions
           status: { $in: ["Pending", "In Progress", "Completed"] },
         })
         .toArray();
+      console.log("Active commissions:", activeCommissions);
 
       for (let commission of activeCommissions) {
         const artist = await getArtistById(commission.aid);
