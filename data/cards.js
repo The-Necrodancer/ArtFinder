@@ -1,12 +1,15 @@
 import { ObjectId } from "mongodb";
 import {
+    checkBio,
   checkName,
+  checkRating,
   checkSocialsLinks,
+  checkTos,
   throwWrongTypeError,
 } from "../helpers.js";
 import { getUserById } from "./users.js";
 import { cards } from "../config/mongoCollection.js";
-import { de } from "@faker-js/faker";
+import { artistProfileKeys } from "./artists.js";
 /*
 fields: 
 -name 
@@ -20,9 +23,12 @@ fields:
     bio
     tos 
     rating 
-    modifiableByUsers
     }
 */
+export const cardKeys = ['name', 'socialsLinks',  'artistProfile']; 
+export const cardArtistProfileKeys = ['availability', 'bio', 'tos', 'rating', 'portfolio'];
+export const filterKeys = ['priceRange', 'tags', 'isOfficial', 'rating', 'availability'];  
+//min max 
 
 export const nameMinLength = 4;
 export const nameMaxLength = 32;
@@ -46,7 +52,6 @@ export const socialMediaSites = [
 export const createCard = async (
   name,
   socialsLinks,
-  portfolio,
   tags,
   isUserRecommended,
   uid
@@ -64,7 +69,6 @@ export const createCard = async (
   let newCard = {
     name,
     socialsLinks,
-    portfolio,
     tags,
     isUserRecommended,
   };
@@ -123,3 +127,71 @@ export const getNewestCards = async () => {
   return cardList;
 };
 
+export const updateCardById = async(cid, updates) => {
+    cid = checkId(cid); 
+    if(!updates || typeof updates !== 'object') 
+        throwWrongTypeError('card updates', 'Object', typeof updates); 
+    if(updates.constructor !== Object) 
+        throwWrongTypeError('card updates', 'Object', String(updates.constructor)); 
+    if(Object.keys(updates).length<1)
+        throw 'Error: at least one update field must be provided.'; 
+    for(const key of Object.keys(updates)) {
+        if(!cardKeys.includes(key)) {
+            throw `Error: ${key} is not a valid profile key`;
+        }
+    }
+    let validatedObj = {}
+    if('name' in updates) 
+        validatedObj.name = checkName(updates.name); 
+    if('socialsLinks' in updates) 
+        validatedObj.socialsLinks = checkSocialsLinks(updates.socialsLinks); 
+    if('artistProfile' in updates) {
+        if(!updates.artistProfile || typeof updates.artistProfile !== 'object') 
+            throwWrongTypeError('card updates artist profile', 'Object', typeof updates); 
+        if(updates.artistProfile.constructor !== Object) 
+            throwWrongTypeError('card updates artist profile', 'Object', String(updates.constructor)); 
+        if(Object.keys(updates.artistProfile).length<1)
+            throw 'Error: at least one artist profile field must be provided.'; 
+        for(const key of Object.key(updates.artistProfile)) 
+            if(! cardArtistProfileKeys.includes(key)) 
+                throw `Error: artistProfile.${key} is not a valid update field for cards.`
+        if('portfolio' in updates.artistProfile) {
+            //check portfolio 
+        }
+        if('availability' in updates.artistProfile) {
+            if (typeof updates.artistProfile.availability !== 'boolean') 
+                throwWrongTypeError("artist card's availability", 'boolean', typeof updates.artistProfile.availability); 
+        }
+        if('bio' in updates.artistProfile) 
+            validatedObj["artistProfile.bio"] = checkBio(updates.artistProfile.bio) 
+        if('tos' in updates.artistProfile) 
+            validatedObj["artistProfile.tos"] = checkTos(updates.artistProfile.tos) 
+        if('rating' in updates.artistProfile) 
+            validatedObj["artistProfile.rating"] = checkRating(updates.artistProfile.rating) 
+    }
+    let cardCollection = await cards(); 
+        const updatedCard = await cardCollection.findOneAndUpdate(
+            {_id: new ObjectId(aid)}, 
+            {$set: validatedObj},
+            {returnDocument: "after"}
+        ); 
+        if(!updatedCard) throw 'Error: no card exists with given id.'; 
+        updatedArtist._id = updatedArtist._id.toString(); 
+        delete updatedArtist.password;
+        return updatedArtist; 
+}
+
+export const filterCards = async(filters) => {
+    if(!filters || typeof filters !== 'object')
+        throwWrongTypeError("card filters", 'Object', typeof filters)
+    if(filters.constructor !== Object)
+        throwWrongTypeError("card filters", "Object", String(filters.constructor)); 
+    if(Object.keys(filters).length<1)   
+        throw `Error: at least one filter must be provided.`; 
+    for(const key of Objeect.keys(filters)) 
+        if(!filterKeys.includes(key))
+            throw `Error: ${key} is not a valid filter key.`; 
+    if('tags' in filters) {
+        //if(tags)
+    }
+}
