@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { createReview } from "../data/reviews.js";
+import { get } from "lodash";
 
 const router = Router();
 
@@ -15,13 +16,30 @@ const ensureAuthenticated = (req, res, next) => {
     next();
 };
 
-// Lists all reviews for a certain artist
+// Get all reviews
+// User does not need to be logged in to view reviews
 router.get("/", async (req, res) => {
-
-});
+    try {
+        const reviews = await getAllReviews();
+        res.render("reviews", {
+            pageTitle: "All Reviews",
+            headerTitle: "All Reviews",
+            reviews,
+            navLink: [{ link: "/", text: "Home" }],
+        });
+    }
+    catch (e) {
+        res.status(500).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: e.toString(),
+            navLink: [{ link: "/", text: "Home" }],
+          });
+    }
+})
 
 // Create a new review
-router.post("/", /*ensureAuthenticated,*/ async (req, res) => { 
+router.post("/", ensureAuthenticated, async (req, res) => { 
     try {
         const { commissionId, rating, comment } = req.body;
 
@@ -43,3 +61,5 @@ router.post("/", /*ensureAuthenticated,*/ async (req, res) => {
         */
     }
 });
+
+export default router;

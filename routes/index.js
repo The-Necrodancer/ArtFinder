@@ -193,9 +193,10 @@ const constructorMethod = (app) => {
   app.use("/reports", reportRoutes);
 
   // Commission, Card, and Review routes
-  app.use("/commissions", commissionRoutes);
+  //app.use("/commissions", commissionRoutes);
   app.use("/cards", cardRoutes);
-  app.use("/reviews", reviewRoutes);
+  //app.use("/reviews", reviewRoutes);
+
   
   app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {

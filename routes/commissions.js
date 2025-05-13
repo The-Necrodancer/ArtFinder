@@ -128,5 +128,6 @@ router.post("/:id/status", ensureAuthenticated, async (req, res) => {
         });
         */
     }
-    
 })
+
+export default router;
