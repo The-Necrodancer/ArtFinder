@@ -6,7 +6,7 @@ import {
   addReportComment,
   resolveReport,
   getUserReports,
-  deleteReport
+  deleteReport,
 } from "../data/reports.js";
 import { getUserById, getUserByUsername } from "../data/users.js";
 import { getCommissionById } from "../data/commissions.js";
@@ -119,10 +119,13 @@ router.get("/:id", userMiddleware, async (req, res) => {
     // Add admin dashboard link for admin users
     if (req.session.user.role === "admin") {
       navLinks.push({ link: "/dashboard/admin", text: "Admin Dashboard" });
-    }    // Log values to verify what we're passing
-    console.log('Report creator:', report.reportedBy.toString());
-    console.log('Current user:', req.session.user._id.toString());
-    console.log('Are they equal?', report.reportedBy.toString() === req.session.user._id.toString());
+    } // Log values to verify what we're passing
+    console.log("Report creator:", report.reportedBy.toString());
+    console.log("Current user:", req.session.user._id.toString());
+    console.log(
+      "Are they equal?",
+      report.reportedBy.toString() === req.session.user._id.toString()
+    );
 
     res.render("reportDetails", {
       pageTitle: "Report Details",

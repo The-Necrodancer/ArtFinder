@@ -1347,3 +1347,25 @@ button:hover {
 .delete-report-btn:hover {
   background-color: #c82333;
 }
+
+/* Deleted Report Styles */
+.report-deleted-badge {
+  background-color: #dc3545;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.report-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.report-card.deleted {
+  opacity: 0.8;
+  border-left: 4px solid #dc3545;
+}

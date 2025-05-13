@@ -20,24 +20,29 @@
         </div>
       {{/each}}
     </div>
-  </section>
-  <section class="reports-management">
+  </section>  <section class="reports-management">
     <h3>Reports and Disputes</h3>    <div class="reports-filters">
       <button class="filter-btn active" data-filter="all">All Reports</button>
       <button class="filter-btn" data-filter="pending">Pending</button>
       <button class="filter-btn" data-filter="under-review">Under Review</button>
       <button class="filter-btn" data-filter="resolved">Resolved</button>
       <button class="filter-btn" data-filter="dismissed">Dismissed</button>
+      <button class="filter-btn" data-filter="deleted">Deleted</button>
     </div>
 
     <div class="reports-list">
       {{#if reports}}
-        {{#each reports}}          <div class="report-card {{#if (eq this.status "Under Review")}}under-review{{else}}{{toLowerCase this.status}}{{/if}}">
+        {{#each reports}}          <div class="report-card {{#if (eq this.status "Under Review")}}under-review{{else}}{{toLowerCase this.status}}{{/if}} {{#if this.deleted}}deleted{{/if}}">
             <div class="report-header">
               <h4>{{this.subject}}</h4>
-              <span class="report-type {{#if this.commissionId}}commission{{else}}general{{/if}}">
-                {{#if this.commissionId}}Commission Dispute{{else}}General Report{{/if}}
-              </span>
+              <div class="report-badges">
+                <span class="report-type {{#if this.commissionId}}commission{{else}}general{{/if}}">
+                  {{#if this.commissionId}}Commission Dispute{{else}}General Report{{/if}}
+                </span>
+                {{#if this.deleted}}
+                  <span class="report-deleted-badge">Deleted by User</span>
+                {{/if}}
+              </div>
             </div>
             
             <div class="report-details">

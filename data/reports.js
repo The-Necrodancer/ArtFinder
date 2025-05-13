@@ -53,7 +53,6 @@ export const createReport = async (
       throw "User must be involved in the commission to report it";
     }
   }
-
   const report = {
     reportedBy: new ObjectId(reportedBy),
     reportedUser: new ObjectId(reportedUser),
@@ -63,6 +62,7 @@ export const createReport = async (
     createdAt: new Date(),
     comments: [],
     resolution: null,
+    deleted: false,
     commissionId: commissionId ? new ObjectId(commissionId) : null,
   };
 
@@ -89,9 +89,14 @@ export const getUserReports = async (userId) => {
   const reportCollection = await reports();
   return await reportCollection
     .find({
-      $or: [
-        { reportedBy: new ObjectId(userId) },
-        { reportedUser: new ObjectId(userId) },
+      $and: [
+        {
+          $or: [
+            { reportedBy: new ObjectId(userId) },
+            { reportedUser: new ObjectId(userId) },
+          ],
+        },
+        { deleted: { $ne: true } },
       ],
     })
     .toArray();
@@ -193,15 +198,14 @@ export const deleteReport = async (id, userId) => {
   if (report.reportedBy.toString() !== userId) {
     throw "Access denied: Only the creator of the report can delete it";
   }
-
   const reportCollection = await reports();
-  const deleteInfo = await reportCollection.deleteOne({
-    _id: new ObjectId(id),
-  });
+  const updateInfo = await reportCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { deleted: true } }
+  );
 
-  if (!deleteInfo.deletedCount) {
-    throw "Could not delete report";
-  }
+  if (!updateInfo.matchedCount) throw "Report not found";
+  if (!updateInfo.modifiedCount) throw "Could not mark report as deleted";
 
   return true;
 };
