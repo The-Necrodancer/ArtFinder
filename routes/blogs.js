@@ -90,9 +90,14 @@ router.put("/:id", roleMiddleware(["admin"]), async (req, res) => {
 router.delete("/:id", roleMiddleware(["admin"]), async (req, res) => {
   try {
     await deleteBlog(req.params.id);
-    return res.json({ deleted: true });
+    return res.redirect("/blogs");
   } catch (e) {
-    return res.status(400).json({ error: e.toString() });
+    return res.status(400).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString(),
+      navLink: [{ link: "/", text: "Home" }],
+    });
   }
 });
 

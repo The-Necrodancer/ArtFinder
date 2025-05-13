@@ -35,8 +35,8 @@
             </div>
             <div class="blog-actions">
               <a href="/blogs/{{this._id}}" class="read-more">Read More</a>
-              {{#if ../isAdmin}}
-                <form action="/blogs/{{this._id}}?_method=DELETE" method="POST" class="delete-form">
+              {{#if ../isAdmin}}                <form action="/blogs/{{this._id}}" method="POST" class="delete-form">
+                  <input type="hidden" name="_method" value="DELETE">
                   <button type="submit" class="delete-btn">Delete</button>
                 </form>
               {{/if}}

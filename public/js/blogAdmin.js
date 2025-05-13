@@ -46,17 +46,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const blogId = button.dataset.blogId;
       try {
-        const response = await fetch(`/blogs/${blogId}`, {
-          method: "DELETE",
+        const response = await fetch(`/blogs/${blogId}?_method=DELETE`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
 
+        // Server will handle the redirect, we just need to check for errors
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to delete blog");
+          const result = await response.json();
+          throw new Error(result.error || "Failed to delete blog");
         }
-
-        // Always redirect to blogs list after successful deletion
-        window.location.href = "/blogs";
       } catch (error) {
         alert(error.message);
       }
