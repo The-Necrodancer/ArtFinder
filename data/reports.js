@@ -181,8 +181,6 @@ export const getAllReports = async () => {
   const reportCollection = await reports();
   return await reportCollection.find({}).sort({ createdAt: -1 }).toArray();
 };
-<<<<<<< HEAD
-=======
 
 /**
  * Delete a report from the database
@@ -211,4 +209,3 @@ export const deleteReport = async (id, userId) => {
 
   return true;
 };
->>>>>>> 1b55f2f5f63e934984a6515b119a67763928092a
