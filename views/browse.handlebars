@@ -1,24 +1,102 @@
-<form id="search-form" action="/search" method="GET">
-  <input
-    type="text"
-    id="search-input"
-    name="query"
-    placeholder="Search for an artist..."
-  />
-  <select name="style">
-    <option value="">Any Style</option>
-    <option value="anime">Anime</option>
-    <option value="chibi">Chibi</option>
-    <option value="realism">Realism</option>
-  </select>
-  <button type="submit">Search</button>
-</form>
-<section id="artist-list">
-  <h2>Artists</h2>
-  <ul id="artists">
-    {{#each artists}}
-      {{> artistCard this}}
-    {{/each}}
-  </ul>
-</section>
-<script src="/js/browse.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Artists</title>
+  <link rel="stylesheet" href="/public/css/styles.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div id="sidebar-filter">
+    <h3>Filter by Price Range</h3>
+    <div>
+      <label>Min Budget: $<span id="min-price-value">0</span></label>
+      <input
+        type="range"
+        id="min-price"
+        name="minPrice"
+        min="0"
+        max="1000"
+        step="10"
+        value="0"
+      />
+    </div>
+    <div>
+      <label>Max Budget: $<span id="max-price-value">1000</span></label>
+      <input
+        type="range"
+        id="max-price"
+        name="maxPrice"
+        min="0"
+        max="1000"
+        step="10"
+        value="1000"
+      />
+    </div>
+    <h3>Filter by Rating</h3>
+    <div>
+      <label>Min Rating: <span id="min-rating-value">0</span></label>
+      <input
+        type="range"
+        id="min-rating"
+        name="minRating"
+        min="0"
+        max="5"
+        step=".1"
+        value="0"
+      />
+    </div>
+    <div>
+      <label>Max Rating: <span id="max-rating-value">5</span></label>
+      <input
+        type="range"
+        id="max-rating"
+        name="maxRating"
+        min="0"
+        max="5"
+        step=".1"
+        value="5"
+      />
+    </div>
+    <h3>Availability</h3>
+    <div>
+      <select name="availability" id="availability-select">
+        <option value="">Any Availability</option>
+        <option value="true">Open For Commissions</option>
+        <option value="false">Not Open For Commissions</option>
+      </select>
+    </div>
+  </div>  
+  <main>
+    <form id="search-form" action="/search" method="GET">
+      <input
+        type="text"
+        id="search-input"
+        name="query"
+        placeholder="Search for an artist..."
+      />
+      <select name="style" id="style-select">
+        <option value="">Any Style</option>
+        {{#each styles}}
+          <option value="{{this.value}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      <button type="submit" id="search-button">Search</button>
+    </form>
+    <section id="artist-list">
+      <h2>Featured Artists</h2>
+      <ul id="artists">
+        {{#each artists}}
+          <li class="artist-card">
+            <h3>{{this.name}}</h3>
+            <p>Style: {{this.style}}</p>
+            <p>Price: ${{this.price}}</p>
+          </li>
+        {{/each}}
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="/js/browse.js"></script>
+</body>
+</html>

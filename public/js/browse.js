@@ -1,23 +1,163 @@
+const possibleTagsList = [
+"2D",
+"3D",
+"Abstract",
+"Animals",
+"Anime",
+"Architecture",
+"Black/White",
+"Calligraphy",
+"Caricature",
+"Cartoon",
+"Chibi",
+"Classical",
+"Comic",
+"Concept Art",
+"Cyberpunk",
+"Doodle",
+"Fan Art",
+"Fantasy",
+"Fashion",
+"Food & Drink",
+"Game",
+"Gothic",
+"Graffiti",
+"Historical",
+"Horror",
+"Isometric",
+"Mythology",
+"Nature",
+"Pixel Art",
+"Pop",
+"Post-Apocalytic",
+"Realistic",
+"Retro",
+"Sci-Fi",
+"Sketch",
+"Sports",
+"Steampunk",
+"Technical"];
+
 document
   .getElementById("search-form")
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const searchInput = document.getElementById("search-input").value;
-    const searchType = document.querySelector(
-      'input[name="search-type"]:checked'
-    ).value;
+    const artist = document.getElementById("search-input").value.trim();
+    const style = document.getElementById("style-select").value.trim();
+    const minPriceInput = document.getElementById("min-price");
+    const maxPriceInput = document.getElementById("max-price");
+    const minRatingInput = document.getElementById("min-rating");
+    const maxRatingInput = document.getElementById("max-rating");
+    const availability = document.getElementById("availability-select").value.trim();
 
+    const lowPrice = minPriceInput.value.trim();
+    const highPrice = maxPriceInput.value.trim();
+    const lowRating = minRatingInput.value.trim();
+    const highRating = maxRatingInput.value.trim();
     // https:stackoverflow.com/questions/21937353/javascript-passing-an-encoded-url-to-window-location-href/21937720
     // Redirect to the search results page with the search input and type as query parameters
-    window.location.href = `/search?query=${encodeURIComponent(
-      searchInput
-    )}&type=${encodeURIComponent(searchType)}`;
-  });
-document.getElementById("search-input").addEventListener("input", function () {
-  const searchInput = document.getElementById("search-input").value;
-  const searchButton = document.getElementById("search-button");
+    const params = new URLSearchParams();
+    if (artist) params.append("artist", artist);
+    if (style !== "") params.append("style", style);
+    params.append("low-price", lowPrice);
+    params.append("high-price", highPrice);
+    params.append("low-rating", lowRating);
+    params.append("high-rating", highRating);
+    params.append("available", availability);
 
-  // Enable the search button only if there is input in the search field
-  searchButton.disabled = searchInput.trim() === "";
+    // Redirect with all query parameters
+    window.location.href = `/search?${params.toString()}`;
+  });
+document
+  .addEventListener("DOMContentLoaded", () => {
+  const styleSelect = document.querySelector('select[name="style"]');
+  const searchInput = document.getElementById("search-input");
+  const searchButton = document.getElementById("search-button");
+  const availability = document.getElementById("availability-select");
+
+  // add default option
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Any Style";
+  styleSelect.appendChild(defaultOption);
+
+  // create options from tag list
+  possibleTagsList.forEach(tag => {
+    const option = document.createElement("option");
+    option.value = tag;
+    option.textContent = tag;
+    styleSelect.appendChild(option);
+  });
+
+  const minPriceInput = document.getElementById("min-price");
+  const maxPriceInput = document.getElementById("max-price");
+  const minPriceValue = document.getElementById("min-price-value");
+  const maxPriceValue = document.getElementById("max-price-value");
+  
+  function updatePriceLabels() {
+    let minVal = parseInt(minPriceInput.value);
+    let maxVal = parseInt(maxPriceInput.value);
+
+    // Basic math to prevent negative range for min/max
+    if (minVal > maxVal) {
+      minVal = maxVal;
+      minPriceInput.value = minVal;
+    } else if (maxVal < minVal) {
+      maxVal = minVal;
+      maxPriceInput.value = maxVal;
+    }
+
+    minPriceValue.textContent = minVal;
+    maxPriceValue.textContent = maxVal;
+
+    toggleSearchButton();
+  }
+
+  const minRatingInput = document.getElementById("min-rating");
+  const maxRatingInput = document.getElementById("max-rating");
+  const minRatingValue = document.getElementById("min-rating-value");
+  const maxRatingValue = document.getElementById("max-rating-value");
+  
+  function updateRatingLabels() {
+    let minVal = parseFloat(minRatingInput.value);
+    let maxVal = parseFloat(maxRatingInput.value);
+
+    // Basic math to prevent negative range for min/max
+    if (minVal > maxVal) {
+      minVal = maxVal;
+      minRatingInput.value = minVal;
+    } else if (maxVal < minVal) {
+      maxVal = minVal;
+      maxRatingInput.value = maxVal;
+    }
+
+    minRatingValue.textContent = minVal;
+    maxRatingValue.textContent = maxVal;
+
+    toggleSearchButton();
+  }
+  
+  function toggleSearchButton() {
+    const artist = searchInput.value.trim();
+    const style = styleSelect.value.trim();
+    const lowPrice = minPriceInput.value.trim();
+    const highPrice = maxPriceInput.value.trim();
+    const lowRating = minRatingInput.value.trim();
+    const highRating = maxRatingInput.value.trim();
+    const available = availability.value.trim();
+    searchButton.disabled = artist === "" && style === "" && lowPrice === "0" && highPrice === "1000" && lowRating === "0" && highRating === "5" && available === "";
+  }
+
+  searchInput.addEventListener("input", toggleSearchButton);
+  styleSelect.addEventListener("change", toggleSearchButton);
+  minPriceInput.addEventListener("input", updatePriceLabels);
+  maxPriceInput.addEventListener("input", updatePriceLabels);
+  minRatingInput.addEventListener("input", updateRatingLabels);
+  maxRatingInput.addEventListener("input", updateRatingLabels);
+  availability.addEventListener("input", toggleSearchButton);
+
+  // Activate on startup
+  updatePriceLabels();
+  updateRatingLabels();
 });
