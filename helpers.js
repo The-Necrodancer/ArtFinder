@@ -487,6 +487,5 @@ export const getMinMaxPriceString = (artistObj) => {
         if(prices[i]<min) min = prices[i]; 
         if(prices[i]>max) max = prices[i]; 
     }
-    console.log("returning " + `${String(min)} - ${String(max)}` + " for " + artistObj.name)
     return `${String(min)} - ${String(max)}`; 
 }

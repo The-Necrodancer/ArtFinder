@@ -15,10 +15,11 @@ import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
 import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
-import apiRoutes from "./api.js";
-import artistDashboardRoutes from "./artistDashboard.js";
+import apiRoutes from './api.js';
+import artistDashboardRoutes from "./artistDashboard.js"
 import browseRoutes from './browse.js'
 import { getCardsByRating, getNewestCards } from "../data/cards.js";
+
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -59,8 +60,9 @@ const constructorMethod = (app) => {
     res.render("home", renderObj);
   });
 
+  
   app.use("/api", apiRoutes);
-  app.use("/dashboard/artist", artistDashboardRoutes);
+  app.use("/dashboard/artist", artistDashboardRoutes); 
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {
@@ -144,7 +146,7 @@ const constructorMethod = (app) => {
       maxPrice = 1000,
       minRating = 0,
       maxRating = 5,
-      available = "",
+      available = ""
     } = req.query;
 
     // Build filters object for filterCards
@@ -163,13 +165,13 @@ const constructorMethod = (app) => {
     // Price range filter
     filters.priceRange = {
       min: Number(minPrice),
-      max: Number(maxPrice),
+      max: Number(maxPrice)
     };
 
     // Rating filter
     filters.rating = {
       min: Number(minRating),
-      max: Number(maxRating),
+      max: Number(maxRating)
     };
 
     // Availability filter
@@ -189,7 +191,7 @@ const constructorMethod = (app) => {
       headerTitle: "Search Artists",
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/browse", text: "Browse Artists" },
+        { link: "/browse", text: "Browse Artists" }
       ],
       filters: {
         artist: query,
@@ -198,20 +200,25 @@ const constructorMethod = (app) => {
         maxPrice,
         minRating,
         maxRating,
-        available,
+        available
       },
-      cards,
+      cards
     });
   });
-
   app.get("/artist/:id", async (req, res) => {
+    let artist;
     try {
-      const artist = await getArtistById(req.params.id);
+      artist = await getArtistById(req.params.id);
       if (!artist) {
         throw new Error("Artist not found");
       }
       console.log("Artist data:", JSON.stringify(artist, null, 2));
-
+      let newPricingInfo = []; 
+      for(const [key, value] of Object.entries(artist.artistProfile.pricingInfo)) {
+        newPricingInfo.push({type: key, price: value});
+      }
+      artist.artistProfile.pricingInfo = newPricingInfo;
+      console.log("NEW PRICING: " , newPricingInfo);
       let toRender = {
         pageTitle: `${artist.username}'s Profile`,
         headerTitle: `${artist.username}'s Profile`,

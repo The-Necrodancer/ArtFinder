@@ -31,6 +31,7 @@ import {
   checkRole,
 } from "../helpers.js";
 import { createCard } from "./cards.js";
+import { getAllArtists } from "./artists.js";
 
 /* exported const */
 export const usernameMinLength = 3;
@@ -97,7 +98,6 @@ export const createUser = async (role, username, email, password) => {
       { $set: { "artistProfile.cid": cid } },
       {returnDocument: "after"}
     );
-    console.log(updateInfo.artistProfile.cid);
     return updateInfo._id.toString(); 
   }
   return insertedUser.insertedId.toString();
