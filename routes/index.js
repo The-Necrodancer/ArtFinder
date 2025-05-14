@@ -277,6 +277,19 @@ const constructorMethod = (app) => {
       }
     }
   );
+
+  // Catch-all route for invalid paths
+  app.use((req, res) => {
+    res.status(404).render("error", {
+      pageTitle: "404 - Page Not Found",
+      headerTitle: "Page Not Found",
+      error: "The page you are looking for does not exist.",
+      navLink: [
+        { link: "/", text: "Home" },
+        { link: "/browse", text: "Browse Artists" },
+      ],
+    });
+  });
 };
 
 export default constructorMethod;
