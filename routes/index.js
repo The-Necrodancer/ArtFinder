@@ -230,7 +230,8 @@ const constructorMethod = (app) => {
         headerTitle: "Error",
         navLink: [
           { link: "/", text: "Home" },
-          { link: "/add", text: "Add Artist" },
+          // THIS IS WHAT LINKS TO IT
+          { link: "/cards/create", text: "Add Artist" },
         ],
       });
     }
