@@ -55,8 +55,51 @@
         <p class="no-messages">No messages found.</p>
       {{/if}}
     </div>
+
+    {{#if messages.length}}
+      <div class="pagination">
+        {{#if pagination.hasPrevPage}}
+          <a href="/messages?page={{subtract pagination.currentPage 1}}" class="page-link">&laquo; Previous</a>
+        {{/if}}
+        
+        <span class="page-info">
+          Page {{pagination.currentPage}} of {{pagination.totalPages}}
+        </span>
+        
+        {{#if pagination.hasNextPage}}
+          <a href="/messages?page={{add pagination.currentPage 1}}" class="page-link">Next &raquo;</a>
+        {{/if}}
+      </div>
+    {{/if}}
   </div>
 </main>
+
+<style>
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.page-link {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+}
+
+.page-link:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.page-info {
+  color: var(--text);
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

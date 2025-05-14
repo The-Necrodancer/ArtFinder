@@ -6,6 +6,7 @@ import {
   getNewestCards,
 } from "../data/cards.js";
 import { userMiddleware } from "../middleware.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -66,29 +67,53 @@ router.get("/create", /*userMiddleware,*/ async (req, res) => {
 router.post("/create", /*userMiddleware,*/ async (req, res) => {
   try {
     console.log(req.body);
-    // portfolio & tags are work in progress
 
-    // REMEMBER TO SANITIZE THE DATA INPUTS
-    const {name, socials, portfolio, tags} = req.body;
+    // Destructure inputs
+    const { name, socials, portfolio, tags } = req.body;
 
-    const socialLinks = Object.entries(socials || {})
+    const cleanedName = xss(name);
+
+    let cleanedSocials = [];
+    if (Array.isArray(socials)) {
+      for (let i = 0; i < socials.length; i++) {
+        cleanedSocials.push(xss(socials[i]));
+      }
+    }
+    let cleanedPortfolio = [];
+    if (Array.isArray(portfolio)) {
+      for (let i = 0; i < portfolio.length; i++) {
+        cleanedPortfolio.push(xss(portfolio[i]));
+      }
+    }
+    let cleanedTags = [];
+    if (Array.isArray(tags)) {
+      for (let i = 0; i < tags.length; i++) {
+        cleanedTags.push(xss(tags[i]));
+      }
+    }
+
+    const socialLinks = Object.entries(cleanedSocials || {})
       .filter(([site, url]) => url.trim() !== "")
-      .map(([site, url]) => ({ site, url }));
-    
+      .map(([site, url]) => ({
+            site: xss(site), // Sanitize site name
+        url: xss(url), // Sanitize URL
+      }));
+
+    // Create the card
     const card = await createCard(
-      name,
+      cleanedName,
       socialLinks,
-      portfolio,
-      tags,
+      cleanedPortfolio,
+      cleanedTags,
       true,
       req.session.user._id
     );
 
-    // Redirect to the card details page after creation!
-    // Still needs to be implemented
-
+    // Redirect to the card details page after creation
+    res.redirect(`/cards/${card._id}`);
   } catch (e) {
-    res.status(500).render("error", {error: e.toString()});
+    console.log("Error creating card:", e);
+    res.status(500).render("error", { error: e.toString() });
   }
 })
 

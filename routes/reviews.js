@@ -4,6 +4,7 @@ import { createReview, getReviewsByArtistId, updateReview } from "../data/review
 import { checkRating } from "../helpers.js"
 import { getCommissionById } from "../data/commissions.js";
 import { getArtistById } from "../data/artists.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -79,19 +80,24 @@ router.post("/create", async (req, res) => {
             throw new Error("All fields are required.");
         }
 
+        // Sanitize inputs
+        const cleanedCommissionId = xss(commissionId);
+        const cleanedRating = xss(rating);
+        const cleanedComment = xss(comment);
+
         // Validate and parse rating
-        const checkedRating = checkRating(parseFloat(rating));
+        const checkedRating = checkRating(parseFloat(cleanedRating));
 
         // Create the review
-        const review = await createReview(commissionId, checkedRating, comment);
+        const review = await createReview(cleanedCommissionId, checkedRating, cleanedComment);
         if (!review) {
-            throw new Error("Review creation failed.");
+            throw `Review creation failed.`;
         }
 
         // Get the artist ID from the commission
-        const commission = await getCommissionById(commissionId);
+        const commission = await getCommissionById(cleanedCommissionId);
         if (!commission) {
-            throw new Error("Commission not found.");
+            throw `Commission not found.`;
         }
 
         // Redirect to the artist's reviews page

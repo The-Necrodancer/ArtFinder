@@ -11,6 +11,7 @@ import {
 } from "../data/reports.js";
 import { getUserById, getUserByUsername } from "../data/users.js";
 import { getCommissionById } from "../data/commissions.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -43,7 +44,9 @@ router.get("/new", userMiddleware, async (req, res) => {
     let reportedUser = null;
 
     if (commissionId) {
-      commission = await getCommissionById(commissionId);
+      const cleanedCommissionId = xss(commissionId); // Sanitize commissionId
+      commission = await getCommissionById(cleanedCommissionId);
+
       // Set the reported user as the other party in the commission
       reportedUser =
         commission.uid.toString() === req.session.user._id
@@ -72,15 +75,21 @@ router.post("/", userMiddleware, async (req, res) => {
   try {
     const { reportedUsername, subject, description, commissionId } = req.body;
 
+    // Sanitize inputs
+    const cleanedReportedUsername = xss(reportedUsername);
+    const cleanedSubject = xss(subject);
+    const cleanedDescription = xss(description);
+    const cleanedCommissionId = commissionId ? xss(commissionId) : null;
+
     // Get the reported user's ID from their username
-    const reportedUser = await getUserByUsername(reportedUsername);
+    const reportedUser = await getUserByUsername(cleanedReportedUsername);
 
     const report = await createReport(
       req.session.user._id,
       reportedUser._id,
-      subject,
-      description,
-      commissionId
+      cleanedSubject,
+      cleanedDescription,
+      cleanedCommissionId
     );
 
     return res.redirect(`/reports/${report._id}`);
@@ -154,7 +163,12 @@ router.get("/:id", userMiddleware, async (req, res) => {
 router.post("/:id/comment", userMiddleware, async (req, res) => {
   try {
     const { comment } = req.body;
-    await addReportComment(req.params.id, req.session.user._id, comment);
+
+    // Sanitize input
+    const cleanedComment = xss(comment);
+
+    await addReportComment(req.params.id, req.session.user._id, cleanedComment);
+
     if (req.headers["content-type"] === "application/json") {
       return res.json({
         success: true,
@@ -180,12 +194,17 @@ router.post("/:id/comment", userMiddleware, async (req, res) => {
 router.post("/:id/status", superuserMiddleware, async (req, res) => {
   try {
     const { status } = req.body;
-    await updateReportStatus(req.params.id, status);
+
+    // Sanitize input
+    const cleanedStatus = xss(status);
+
+    await updateReportStatus(req.params.id, cleanedStatus);
 
     // If it's a JSON request (AJAX), send JSON response
     if (req.xhr || req.headers.accept.indexOf("json") > -1) {
       return res.json({ success: true });
     }
+
     // Otherwise redirect to admin dashboard
     res.redirect("/dashboard/admin");
   } catch (e) {
@@ -203,8 +222,12 @@ router.post("/:id/resolve", userMiddleware, async (req, res) => {
     if (req.session.user.role !== "admin") {
       throw "Only administrators can resolve reports";
     }
+
     const { resolution } = req.body;
-    await resolveReport(req.params.id, resolution);
+
+    const cleanedResolution = xss(resolution);
+
+    await resolveReport(req.params.id, cleanedResolution);
     res.redirect(`/reports/${req.params.id}`);
   } catch (e) {
     res.status(400).render("error", {

@@ -8,7 +8,7 @@
     "test": "node test/test.js",
     "start": "node app.js",
     "drop": "node tasks/drop.js",
-    "seed": "node tasks/seed.js"
+    "seed": "node tasks/seedFaker.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "handlebars-helpers": "^0.10.0",
     "lodash": "^4.17.21",
     "mongodb": "^6.16.0",
-    "unique-username-generator": "^1.4.0"
+    "unique-username-generator": "^1.4.0",
+    "xss": "^1.0.15"
   }
 }

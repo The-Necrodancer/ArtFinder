@@ -196,6 +196,9 @@ export const updateCardById = async(cid, updates) => {
 
 
 export const filterCards = async(filters) => {
+    if ('name' in filters) {
+      cards = cards.filter(card => card.name.toLowerCase().includes(filters.name.toLowerCase()));
+    }
     if(!filters || typeof filters !== 'object')
         throwWrongTypeError("card filters", 'Object', typeof filters)
     if(filters.constructor !== Object)
@@ -303,20 +306,17 @@ export const filterCards = async(filters) => {
  * Gets cards in an ordered list based on rating.
  * @returns {Array} An ordered array of cards by their ratings.
  */
-export const getCardsByRating = async() => {
-    let cards = await filterCards({rating: {min: 1, max: 5}});
-    console.log("cards after basic filter", cards); 
-    let result = [];
-    for (let card of cards) {
-        let count = card.artistProfile.rating;
-        result.push({
-            object: artist,
-            rating: count
-        });
-    }
-    result.sort((a, b) => b.rating - a.rating);
-    return result; 
-}
+export const getCardsByRating = async () => {
+  let cards = await filterCards({ rating: { min: 1, max: 5 } });
+  // Sort cards by rating descending
+  cards.sort((a, b) => {
+    // Defensive: if artistProfile or rating is missing, treat as 0
+    const aRating = a.artistProfile?.rating ?? 0;
+    const bRating = b.artistProfile?.rating ?? 0;
+    return bRating - aRating;
+  });
+  return cards;
+};
 
 
 export const getNewestCards = async () => {
