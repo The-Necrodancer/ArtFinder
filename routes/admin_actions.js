@@ -15,7 +15,7 @@ router.get("/", roleMiddleware(["admin"]), async (req, res) => {
       const searchLower = search.trim().toLowerCase();
       users = users.filter(u => u.username.toLowerCase().includes(searchLower));
     }
-
+    users = users.slice(0, 20);
     // Fetch reports and usernames for the reports section
     const reports = await getAllReports();
     const usernames = {};
