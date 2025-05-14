@@ -3,6 +3,8 @@ import { createCommission, getCommissionById, updateCommissionStatus } from "../
 import { getArtistById } from "../data/artists.js";
 const router = Router();
 
+import xss from "xss";
+
 // Middleware to check if user is logged in
 /*const ensureAuthenticated = (req, res, next) => {
     if (!req.session.user) {
@@ -37,28 +39,34 @@ router.post("/request", async (req, res) => {
     try {
         console.log(req.body);
 
-        const { artistId, title, details, price } = req.body;
-        //console.log("Artist ID:", artistId);
-        //console.log("Title:", title);
-        //console.log("Details:", details);
-        //console.log("Price:", price);
-        // Validate input
-        if (!title || !details || !price) {
-            throw new Error("All fields are required.");
+        // Sanitize inputs
+        const cleanedArtistId = xss(req.body.artistId);
+        const cleanedTitle = xss(req.body.title);
+        const cleanedDetails = xss(req.body.details);
+        const cleanedPrice = xss(req.body.price);
+
+        if (!cleanedTitle || !cleanedDetails || !cleanedPrice) {
+            throw `All fields are required.`;
         }
 
-        // Note: price should be a number. This is a temporary fix.
-        const priceNum = parseFloat(price);
+        // Convert price to a number
+        const priceNum = parseFloat(cleanedPrice);
 
         // Create a commission request
-        const commission = await createCommission(artistId, req.session.user._id, title, details, priceNum);
+        const commission = await createCommission(
+            cleanedArtistId,
+            req.session.user._id,
+            cleanedTitle,
+            cleanedDetails,
+            priceNum
+        );
+
         console.log("Commission id:", commission._id);
         console.log("Commission created:", commission);
-        
-        // Redirect to the commission page after creation...
+
+        // Redirect to the commission page after creation
         return res.redirect(`/commission/${commission._id}`);
     } catch (e) {
-        // Idk if this is the right error
         console.log("Error creating commission:", e);
         res.status(400).render("error", {
             pageTitle: "Error",
@@ -98,18 +106,19 @@ router.get("/:id", async (req, res) => {
 // Ensure user is logged in to update commission status.
 router.post("/update-status", async (req, res) => {
     try {
-        const { commissionId, status } = req.body;
-        console.log(req.body);
+        // Sanitize
+        const cleanedCommissionId = xss(req.body.commissionId);
+        const cleanedStatus = xss(req.body.status);
 
-        if (!commissionId || !status) { throw `All fields are required.`;}
+        if (!cleanedCommissionId || !cleanedStatus) {
+            throw `All fields are required.`;
+        }
 
-        // Update the commission status!
-        await updateCommissionStatus(commissionId, status);
+        // Update the commission status
+        await updateCommissionStatus(cleanedCommissionId, cleanedStatus);
 
-        // Redirect to the commission page after updating status!
-        res.redirect(`/commission/${commissionId}`);
-
-
+        // Redirect to the commission page after updating status
+        res.redirect(`/commission/${cleanedCommissionId}`);
     } catch (e) {
         console.log("Error updating commission status:", e);
         res.status(400).render("error", {

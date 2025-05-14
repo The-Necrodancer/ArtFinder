@@ -7,6 +7,7 @@ import {
   deleteBlog,
 } from "../data/blogs.js";
 import { roleMiddleware } from "../middleware.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -59,7 +60,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", roleMiddleware(["admin"]), async (req, res) => {
   try {
     const { title, content } = req.body;
-    await createBlog(title, content, req.session.user._id);
+
+    // Sanitizing...
+    const cleanedTitle = xss(title);
+    const cleanedContent = xss(content);
+
+    await createBlog(cleanedTitle, cleanedContent, req.session.user._id);
     res.redirect("/blogs");
   } catch (e) {
     res.status(400).render("error", {
@@ -75,11 +81,17 @@ router.post("/", roleMiddleware(["admin"]), async (req, res) => {
 router.post("/update/:id", roleMiddleware(["admin"]), async (req, res) => {
   try {
     const { title, content } = req.body;
+
     if (!title || !content) {
       throw "Title and content are required";
     }
 
-    await updateBlog(req.params.id, title, content);
+    // Sanitize inputs
+    const cleanedBlogId = xss(req.params.id); // Sanitize blog ID
+    const cleanedTitle = xss(title);
+    const cleanedContent = xss(content);
+
+    await updateBlog(cleanedBlogId, cleanedTitle, cleanedContent);
     return res.redirect("/blogs");
   } catch (e) {
     return res.status(400).render("error", {

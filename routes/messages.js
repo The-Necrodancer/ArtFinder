@@ -8,6 +8,7 @@ import {
   getUnreadCount,
 } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -72,7 +73,10 @@ router.get("/new/:recipientId", userMiddleware, async (req, res) => {
 router.post("/", userMiddleware, async (req, res) => {
   try {
     const { recipientId, subject, content } = req.body;
-    await createMessage(req.session.user._id, recipientId, subject, content);
+    const cleanedRecipientId = xss(recipientId);
+    const cleanedSubject = xss(subject);
+    const cleanedContent = xss(content);
+    await createMessage(req.session.user._id, cleanedRecipientId, cleanedSubject, cleanedContent);
     res.redirect("/messages");
   } catch (e) {
     res.status(400).render("error", {

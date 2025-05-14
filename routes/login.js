@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validateLoginForm } from "../public/js/form_validate.js";
 import { login } from "../data/users.js";
 const router = Router();
+import xss from "xss";
 
 import { loginRedirectMiddleware } from "../middleware.js";
 
@@ -21,8 +22,13 @@ router
   .post(loginRedirectMiddleware, async (req, res) => {
     let user;
     try {
-      validateLoginForm(req.body.username_input, req.body.password_input);
-      user = await login(req.body.username_input, req.body.password_input);
+      const cleanedUsername = xss(req.body.username_input);
+      const cleanedPassword = xss(req.body.password_input);
+    
+      validateLoginForm(cleanedUsername, cleanedPassword);
+
+      // Use sanitized inputs for login
+      user = await login(cleanedUsername, cleanedPassword);
     } catch (e) {
       return res.status(400).render("login", {
         pageTitle,
