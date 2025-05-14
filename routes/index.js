@@ -135,45 +135,89 @@ const constructorMethod = (app) => {
 
   //app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
-    const featuredCards = await getNewestCards();
-    featuredCards.map((elem) => {
-      console.log(elem); 
-      elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url); 
-      console.log(elem);
-      return elem; 
-    })
-    console.log("FEATURED CARDS: ", featuredCards);
-    res.render("browse", {
-      pageTitle: "Browse Artists",
-      headerTitle: "Browse Artists",
-      navLink: [
-        { link: "/", text: "Home" },
-        { link: "/add", text: "Add Artist" },
-      ],
-      cards: featuredCards,
-    });
+  let featuredCards = await getCardsByRating();
+  featuredCards = featuredCards.slice(0, 50);
+  featuredCards.forEach((elem) => {
+    if (Array.isArray(elem.socialsLinks)) {
+      elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
+    }
   });
+  res.render("browse", {
+    pageTitle: "Browse Artists",
+    headerTitle: "Browse Artists",
+    navLink: [
+      { link: "/", text: "Home" },
+      { link: "/add", text: "Add Artist" },
+    ],
+    cards: featuredCards,
+  });
+});
   app.get("/search", userMiddleware, async (req, res) => {
-    const { artist = '', style = '', "low-price": lowPrice = 0, "high-price": highPrice = 1000, "low-rating": lowRating = 0, "high-rating": highRating = 5, available = ''} = req.query;
-    const filteredCards = await getfilteredCards(artist, style, lowPrice, highPrice, lowRating, highRating, available);
-    
+    // Parse query parameters
+    const {
+      query = "",
+      style = "",
+      minPrice = 0,
+      maxPrice = 1000,
+      minRating = 0,
+      maxRating = 5,
+      available = ""
+    } = req.query;
+
+    // Build filters object for filterCards
+    const filters = {};
+
+    // Artist name search (if implemented in filterCards)
+    if (query.trim()) {
+      filters.name = query.trim();
+    }
+
+    // Style/tag filter
+    if (style) {
+      filters.tags = [style];
+    }
+
+    // Price range filter
+    filters.priceRange = {
+      min: Number(minPrice),
+      max: Number(maxPrice)
+    };
+
+    // Rating filter
+    filters.rating = {
+      min: Number(minRating),
+      max: Number(maxRating)
+    };
+
+    // Availability filter
+    if (available === "true") filters.availability = true;
+    else if (available === "false") filters.availability = false;
+
+    // Get filtered cards
+    let cards = [];
+    try {
+      cards = await filterCards(filters);
+    } catch (e) {
+      // handle error if needed
+    }
+
     res.render("search", {
       pageTitle: "Search Artists",
       headerTitle: "Search Artists",
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/browse", text: "Browse Artists" },
+        { link: "/browse", text: "Browse Artists" }
       ],
       filters: {
-        artist: artist,
-        style: style,
-        minPrice: lowPrice,
-        maxPrice: highPrice,
-        minRating: lowRating,
-        maxRating: highRating,
-        availability: available
+        artist: query,
+        style,
+        minPrice,
+        maxPrice,
+        minRating,
+        maxRating,
+        available
       },
-      cards: filteredCards,
+      cards
     });
   });
   app.get("/artist/:id", async (req, res) => {
