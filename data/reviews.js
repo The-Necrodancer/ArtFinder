@@ -15,42 +15,42 @@ export const commentMaxLength = 512;
  * @param {Comment} comment Comment being made
  * @returns {Object} Review object that was added to database
  */
-export const createReview = async(cid, rating, comment) => { 
-    rating = checkRating(rating); 
-    comment = checkComment(comment); 
+export const createReview = async (cid, rating, comment) => {
+    rating = checkRating(rating);
+    comment = checkComment(comment);
 
-    //Following makes sure that all are valid and exist in databases 
-    let com = await getCommissionById(cid); 
-    let aid = com.aid; 
-    let uid = com.uid; 
-    let artist = await getArtistById(aid); 
-    let user = await getUserById(uid);
+    // Validate and fetch related data
+    const com = await getCommissionById(cid);
+    const aid = com.aid;
+    const uid = com.uid;
 
-    let reviewCollection = await reviews(); 
-    let insertedReview = await reviewCollection.insertOne({cid, aid, uid, rating, comment}); 
-    if(insertedReview.acknowledged != true || !insertedReview.insertedId) 
-        throw 'Error: could not insert review in database'; 
-
-    let rid = insertedReview.insertedId.toString(); 
-    let userCollection = await users(); 
-
-    //make sure review hasn't already been made by user for given commission 
-    if(user.requestedCommissions.find((e) => e._id === cid)) {
-        throw 'Error: user has already made a review for this commission'; 
+    // Check if the user has already reviewed this artist
+    const existingReviews = await reviews();
+    const existingReview = await existingReviews.findOne({ aid, uid });
+    if (existingReview) {
+        throw "Error: You have already reviewed this artist. Please update your existing review.";
     }
 
-    //creates new array w/ added review
-    artist.artistProfile.reviewsReceived.push(rid); 
-    //recalculates artist's average rating 
-    let num = artist.artistProfile.reviewsReceived.length; 
-    let avg = rating; 
-    if(num>1) {
-        avg = artist.artistProfile.rating * ((num-1)/num) + rating/num; 
+    // Proceed with creating the review
+    const reviewCollection = await reviews();
+    const insertedReview = await reviewCollection.insertOne({ cid, aid, uid, rating, comment });
+    if (!insertedReview.acknowledged || !insertedReview.insertedId) {
+        throw "Error: Could not insert review in database.";
     }
-    // Round to 2 places
+
+    const rid = insertedReview.insertedId.toString();
+
+    // Update the artist's reviewsReceived array and recalculate the rating
+    const artist = await getArtistById(aid);
+    artist.artistProfile.reviewsReceived.push(rid);
+    const num = artist.artistProfile.reviewsReceived.length;
+    let avg = rating;
+    if (num > 1) {
+        avg = artist.artistProfile.rating * ((num - 1) / num) + rating / num;
+    }
     avg = parseFloat(avg.toFixed(2));
 
-    // Perform the update operation
+    const userCollection = await users();
     const updatedArtist = await userCollection.updateOne(
         { _id: new ObjectId(aid) },
         {
@@ -66,22 +66,26 @@ export const createReview = async(cid, rating, comment) => {
     }
 
     // Add the review to the user's reviewsGiven array
+    const user = await getUserById(uid);
     user.reviewsGiven.push(rid);
-
-    // Update the user in the database
     const updatedUser = await userCollection.updateOne(
         { _id: new ObjectId(uid) },
         { $set: { reviewsGiven: user.reviewsGiven } }
     );
 
+<<<<<<< HEAD
     // Debug: Output the result of the update operation
     //console.log("Update result:", updatedUser);
+=======
+    if (updatedUser.matchedCount === 0 || updatedUser.modifiedCount !== 1) {
+        throw "Error: Could not add review to user.";
+    }
+>>>>>>> 2bf20d3aa23abd884b548637d1d8a4bf0ed3dec0
 
-    if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1)
-        throw `Error: could not add commission to artist.`; 
+    const a = await updateCommissionReviewStatus(cid, true);
 
-    return await getReviewById(insertedReview.insertedId.toString()); 
-}
+    return await getReviewById(insertedReview.insertedId.toString());
+};
 
 /**
  * Updates review with given ID
@@ -183,4 +187,22 @@ export const getReviewsByArtistId = async(aid) => {
         review._id = review._id.toString(); 
     });
     return reviewList;
+}
+
+export const updateCommissionReviewStatus = async (id, hasReview) => {
+    id = checkId(id);
+    if (typeof hasReview !== "boolean") {
+        throw `Error: hasReview must be a boolean!`
+    }
+
+    const commissionCollection = await commissions();
+    const updateInfo = await commissionCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: {review: hasReview } }
+    );
+
+    if (!updateInfo.matchedCount) throw "Commision not found!"
+    if (!updateInfo.modifiedCount) throw "Review status was not updated!"
+
+    return await getCommissionById(id);
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createReview, getReviewsByArtistId } from "../data/reviews.js";
+import { createReview, getReviewsByArtistId, updateReview } from "../data/reviews.js";
 // import { get } from "lodash";
 import { checkRating } from "../helpers.js"
 import { getCommissionById } from "../data/commissions.js";
@@ -106,5 +106,26 @@ router.post("/create", async (req, res) => {
     }
 });
 
+router.post("/update", async (req, res) => {
+    try {
+        const { reviewId, rating, comment } = req.body;
+
+        if (!reviewId || !rating || !comment) { throw `All fields are required.`; }
+
+        const checkedRating = checkRating(parseFloat(rating));
+
+        const updatedReview = await updateReview(reviewId, checkedRating, comment);
+        if (!updatedReview) { throw `Review updated failed.`; }
+
+        res.redirect(`/artist/${updatedReview.aid}`);
+    } catch (e) {
+        console.log("Error updating review:", e);
+        res.status(400).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: e.toString(),
+        });
+    }
+})
 
 export default router;
