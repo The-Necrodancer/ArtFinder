@@ -63,6 +63,7 @@ const testUpdateArtistProfile = async(artistList) => {
                     hasErrors = true; 
                     console.log("FAILURE IN updateArtistProfile"); 
                     console.log("Key with error (update): ", key); 
+                    console.log("to change: ",  profileUpdates[key]);
                     console.log("Before: ", artist.artistProfile[key]); 
                     console.log("After: ", updatedArtist.artistProfile[key]); 
                 }

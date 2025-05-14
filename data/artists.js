@@ -13,7 +13,7 @@
 */
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
-import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos, checkImageUrl} from '../helpers.js'; 
+import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos, checkImageUrl, checkTagList} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
 import { createCard } from "./cards.js";
 
@@ -254,7 +254,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
         //validates the input and then adds it to pricingInfo
         for (let [key, value] of Object.entries(newProfile.pricingInfo)) {
             //check that didn't submit duplicate keys: 
-            if(Object.keys(validatedObj.artistProfile.pricingInfo).contains(key)) {
+            if(Object.keys(validatedObj.artistProfile.pricingInfo).includes(key)) {
                 throw `Error: cannot have duplicate keys.`; 
             }
             key = checkPricingInfoItem(key);  
@@ -264,15 +264,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
     }
     //checks tags if in newProfile 
     if('tags' in newProfile) {
-        //makes sure given tags is correctly an array 
-        if(!Array.isArray(newProfile.tags)) {
-            throwWrongTypeError('tag list', 'Array', typeof tags); 
-        }
-        validatedObj.artistProfile.tags = []; 
-        //validates every tag given 
-        for(const t of newProfile.tags) {
-            validatedObj.artistProfile.tags.push(checkTag(t)); 
-        }
+        validatedObj.artistProfile.tags = checkTagList(newProfile.tags);
     }
     //checks availability if in newProfile 
     if('availability' in newProfile) {

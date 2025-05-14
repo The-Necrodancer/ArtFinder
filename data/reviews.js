@@ -75,7 +75,7 @@ export const createReview = async(cid, rating, comment) => {
     );
 
     // Debug: Output the result of the update operation
-    console.log("Update result:", updatedUser);
+    //console.log("Update result:", updatedUser);
 
     if(updatedUser.matchedCount ===0 || updatedUser.modifiedCount !== 1)
         throw `Error: could not add commission to artist.`; 

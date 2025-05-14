@@ -8,7 +8,8 @@ import {
   checkTos,
   throwWrongTypeError,
   checkId,
-  checkImageUrl
+  checkImageUrl,
+  checkTagList
 } from "../helpers.js";
 import { getUserById } from "./users.js";
 import { cards } from "../config/mongoCollection.js";
@@ -28,19 +29,17 @@ fields:
     rating 
     }
 */
-export const cardKeys = ['name', 'socialsLinks',  'artistProfile']; 
+export const cardKeys = ['name', 'socialsLinks',  'artistProfile', 'tags']; 
 export const cardArtistProfileKeys = ['availability', 'bio', 'tos', 'rating', 'portfolio', 'pricingInfo'];
 export const filterKeys = ['priceRange', 'tags', 'rating', 'availability'];  
 //min max 
 
-export const nameMinLength = 4;
+export const nameMinLength = 2;
 export const nameMaxLength = 32;
 
 export const socialMediaSites = [
-  "YouTube",
   "Facebook",
   "Instagram",
-  "TikTok",
   "X",
   "DeviantArt",
   "ArtStation",
@@ -60,15 +59,14 @@ export const createCard = async (
   uid
 ) => {
   name = checkName(name);
-  socialsLinks = checkSocialsLinks(socialsLinks);
-  if (!Array.isArray(tags))
-    throwWrongTypeError("artist tags", "Array", typeof tags);
+  tags = checkTagList(tags);
   if (typeof isUserRecommended !== "boolean")
     throwWrongTypeError(
       "is-user-recommended",
       "boolean",
       typeof isUserRecommended
     );
+    socialsLinks = checkSocialsLinks(socialsLinks, isUserRecommended);
   let newCard = {
     name,
     socialsLinks,
@@ -137,6 +135,8 @@ export const updateCardById = async(cid, updates) => {
         validatedObj.name = checkName(updates.name); 
     if('socialsLinks' in updates) 
         validatedObj.socialsLinks = checkSocialsLinks(updates.socialsLinks); 
+    if('tags' in updates) 
+        validatedObj.tags = checkTagList(updates.tags);
     if('artistProfile' in updates) {
         validatedObj.artistProfile = {}; 
         if(!updates.artistProfile || typeof updates.artistProfile !== 'object') 
@@ -204,11 +204,7 @@ export const filterCards = async(filters) => {
         if(!filterKeys.includes(key))
             throw `Error: ${key} is not a valid filter key.`; 
     if('tags' in filters) {
-        if(!Array.isArray(filters.tags)) 
-          throwWrongTypeError("tags", "Array", typeof filters.tags); 
-        for(let i=0; i<filters.tags.length; i++) {
-          filters.tags[i] = checkTag(filters.tags[i]); 
-        }
+        filters.tags = checkTagList(filters.tags);
     }
     if('priceRange' in filters) {
       if(!filters.priceRange || typeof filters.priceRange !== 'object') 

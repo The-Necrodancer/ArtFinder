@@ -17,6 +17,7 @@ import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from './api.js';
 import artistDashboardRoutes from "./artistDashboard.js"
+import { getCardsByRating } from "../data/cards.js";
 
 
 const constructorMethod = (app) => {
@@ -134,7 +135,7 @@ const constructorMethod = (app) => {
 
   app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
-    const featuredCards = await getRecommendedCards();
+    const featuredCards = await getCardsByRating();
     res.render("browse", {
       pageTitle: "Browse Artists",
       headerTitle: "Browse Artists",
