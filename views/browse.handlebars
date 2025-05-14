@@ -89,10 +89,11 @@
         {{#each cards}}
           <li class="artist-card">
             <h3>{{this.name}}</h3>
-            {{#if this.isOfficial}}
-              <span class="recommended-badge">Verified</span>
-            {{else}}
+            
+            {{#if this.isUserRecommended}}
               <span class="recommended-badge">Fan Profile</span>
+            {{else}}
+              <span class="recommended-badge">Verified</span>
             {{/if}}
 
             {{#if this.artistProfile}}
@@ -101,9 +102,9 @@
               <p>Price Range: {{this.artistProfile.MinPrice}} - {{this.artistProfile.HighPrice}}</p>
             {{/if}}
 
-            {{#if this.socialLinks}}
+            {{#if this.socialsLinks}}
               <div class="social-links">
-                {{#each this.socialLinks}}
+                {{#each this.socialsLinks}}
                   <a href="{{this}}" target="_blank" rel="noopener noreferrer">{{this}}</a>
                 {{/each}}
               </div>
