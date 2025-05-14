@@ -9,7 +9,8 @@ import {
   throwWrongTypeError,
   checkId,
   checkImageUrl,
-  checkTagList
+  checkTagList,
+checkCardList
 } from "../helpers.js";
 import { getUserById } from "./users.js";
 import { cards } from "../config/mongoCollection.js";
@@ -306,8 +307,11 @@ export const filterCards = async(filters) => {
  * Gets cards in an ordered list based on rating.
  * @returns {Array} An ordered array of cards by their ratings.
  */
-export const getCardsByRating = async () => {
-  let cards = await filterCards({ rating: { min: 1, max: 5 } });
+export const getCardsByRating = async (cards ) => {
+  if(typeof cards !== 'undefined') 
+    cards = checkCardList(cards); 
+  else 
+    cards = await filterCards({ rating: { min: 0, max: 5 } });
   // Sort cards by rating descending
   cards.sort((a, b) => {
     // Defensive: if artistProfile or rating is missing, treat as 0
@@ -334,8 +338,11 @@ export const getNewestCards = async () => {
  * Gets cards in an ordered list based on rating.
  * @returns {Array} An ordered array of cards by their ratings.
  */
-export const getCardsByCommissions = async() => {
-    let cards = await filterCards({rating: {min: 1, max: 5}});
+export const getCardsByCommissions = async(cards) => {
+    if(typeof cards !== 'undefined') 
+      cards = checkCardList(cards);
+    else 
+      cards = await filterCards({numCommissions: {min: 0}});
     let result = [];
     for (let card of cards) {
         let count = card.artistProfile.numCommissions;
@@ -368,3 +375,5 @@ export const updateCardArtistProfile = async(aid) => {
   updatedCard._id = updatedCard._id.toString(); 
   return updatedCard;
 }
+
+
