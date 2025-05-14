@@ -474,3 +474,19 @@ export const checkCardList = (cardList) => {
   }
   return cardList;
 }
+
+export const getMinMaxPriceString = (artistObj) => {
+    if(Object.keys(artistObj.artistProfile.pricingInfo).length==0) {
+        console.log("returning N/A for " + artistObj.name)
+        return "N/A"; 
+    }
+    let prices = Object.values(artistObj.artistProfile.pricingInfo); 
+    let min = prices[0]; 
+    let max = prices[0]; 
+    for(let i=0; i<prices.length; i++) {
+        if(prices[i]<min) min = prices[i]; 
+        if(prices[i]>max) max = prices[i]; 
+    }
+    console.log("returning " + `${String(min)} - ${String(max)}` + " for " + artistObj.name)
+    return `${String(min)} - ${String(max)}`; 
+}

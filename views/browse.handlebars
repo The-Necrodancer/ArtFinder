@@ -148,7 +148,8 @@
                 {{#if this.artistProfile}}
                   <p>Rating: {{this.artistProfile.rating}}</p>
                   <p>Availability: {{#if this.artistProfile.availability}}Open{{else}}Closed{{/if}}</p>
-                  <p>Price Range: {{this.artistProfile.MinPrice}} - {{this.artistProfile.HighPrice}}</p>
+                  <p>Price Range: {{this.priceRange}} </p>
+                  <p><a href="/artist/{{this._id}}"> Click here to see profile! </a> </p>
                 {{/if}}
 
                 {{#if this.socialsLinks}}
