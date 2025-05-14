@@ -218,7 +218,7 @@ const constructorMethod = (app) => {
         newPricingInfo.push({type: key, price: value});
       }
       artist.artistProfile.pricingInfo = newPricingInfo;
-      console.log("NEW PRICING: " , newPricingInfo);
+      console.log("NEW PRICING: " , artist.artistProfile.pricingInfo);
       let toRender = {
         pageTitle: `${artist.username}'s Profile`,
         headerTitle: `${artist.username}'s Profile`,
