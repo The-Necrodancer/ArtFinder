@@ -1,47 +1,62 @@
 import { Router } from "express";
 import {
   createMessage,
-  getUserMessages,
+  getPaginatedUserMessages,
   getMessageById,
   markMessageRead,
   archiveMessage,
   getUnreadCount,
+  deleteMessage
 } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
 
 const router = Router();
-
 import { userMiddleware } from "../middleware.js";
 
-// Get messages inbox
+// Get messages inbox with pagination
 router.get("/", userMiddleware, async (req, res) => {
   try {
-    const messages = await getUserMessages(req.session.user._id);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    
+    const { messages: messageList, pagination } = await getPaginatedUserMessages(
+      req.session.user._id,
+      page,
+      limit
+    );
     const unreadCount = await getUnreadCount(req.session.user._id);
 
-    // Get user details for each message
-    for (let message of messages) {
-      message.sender = await getUserById(message.senderId.toString());
-      message.recipient = await getUserById(message.recipientId.toString());
-    }
+    // Get user details for displayed messages only
+    const userDetailsPromises = messageList.map(async message => {
+      const [sender, recipient] = await Promise.all([
+        getUserById(message.senderId.toString()),
+        getUserById(message.recipientId.toString())
+      ]);
+      message.sender = sender;
+      message.recipient = recipient;
+      return message;
+    });
+
+    const messages = await Promise.all(userDetailsPromises);
 
     res.render("messages", {
       pageTitle: "Messages",
       headerTitle: "Messages",
       messages,
       unreadCount,
+      pagination,
       user: req.session.user,
       navLink: [
         { link: "/", text: "Home" },
         { link: "/dashboard/" + req.session.user.role, text: "Dashboard" },
-        { link: "/signout", text: "Sign Out" },
-      ],
+        { link: "/signout", text: "Sign Out" }
+      ]
     });
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      error: e.toString()
     });
   }
 });
@@ -56,14 +71,14 @@ router.get("/new/:recipientId", userMiddleware, async (req, res) => {
       recipient,
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/messages", text: "Messages" },
-      ],
+        { link: "/messages", text: "Messages" }
+      ]
     });
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      error: e.toString()
     });
   }
 });
@@ -78,7 +93,7 @@ router.post("/", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      error: e.toString()
     });
   }
 });
@@ -115,14 +130,14 @@ router.get("/:id", userMiddleware, async (req, res) => {
       user: req.session.user,
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/messages", text: "Messages" },
-      ],
+        { link: "/messages", text: "Messages" }
+      ]
     });
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      error: e.toString()
     });
   }
 });
@@ -143,7 +158,27 @@ router.post("/:id/archive", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      error: e.toString()
+    });
+  }
+});
+
+// Delete a message
+router.delete("/:id", userMiddleware, async (req, res) => {
+  try {
+    await deleteMessage(req.params.id, req.session.user._id);
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      return res.json({ success: true });
+    }
+    res.redirect("/messages");
+  } catch (e) {
+    if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+      return res.status(400).json({ error: e.toString() });
+    }
+    res.status(400).render("error", {
+      pageTitle: "Error",
+      headerTitle: "Error",
+      error: e.toString()
     });
   }
 });

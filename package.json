@@ -30,6 +30,7 @@
     "handlebars-helpers": "^0.10.0",
     "lodash": "^4.17.21",
     "mongodb": "^6.16.0",
-    "unique-username-generator": "^1.4.0"
+    "unique-username-generator": "^1.4.0",
+    "xss": "^1.0.15"
   }
 }
