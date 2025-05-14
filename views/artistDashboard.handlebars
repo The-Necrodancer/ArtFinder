@@ -25,8 +25,7 @@
   </section>
 
   <section class="messages-section">
-    <h3>Messages {{#if unreadCount}}<span class="unread-count">({{unreadCount}} unread)</span>{{/if}}</h3>
-    <div class="messages-preview">
+    <h3>Messages {{#if unreadCount}}<span class="unread-count">({{unreadCount}} unread)</span>{{/if}}</h3>    <div class="messages-preview">
       {{#if recentMessages}}
         {{#each recentMessages}}
           <div class="message-preview-card {{#unless this.read}}unread{{/unless}}">
@@ -36,7 +35,10 @@
                 <span class="unread-badge">New</span>
               {{/unless}}
             </div>
-            <p class="message-meta">From: {{this.sender.username}}</p>
+            <p class="message-meta">
+              From: {{this.sender.username}}
+              <span class="message-date">{{formatDate this.createdAt}}</span>
+            </p>
             <p class="message-excerpt">{{truncate this.content 50}}</p>
             <a href="/messages/{{this._id}}" class="view-message">View Message</a>
           </div>

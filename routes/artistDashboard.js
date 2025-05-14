@@ -27,14 +27,20 @@ router
       // Get recent messages and user details
       const allMessages = await getUserMessages(req.session.user._id);
       const recentMessages = allMessages
-        .filter((msg) => !msg.archived)
+        .filter(
+          (msg) =>
+            !msg.archived && msg.recipientId.toString() === req.session.user._id
+        )
         .sort((a, b) => b.createdAt - a.createdAt)
         .slice(0, 3);
 
-      console.log("recent m ", recentMessages);
       for (let message of recentMessages) {
-        message.sender = await getUserById(message.senderId.toString());
-        message.recipient = await getUserById(message.recipientId.toString());
+        const [sender, recipient] = await Promise.all([
+          getUserById(message.senderId.toString()),
+          getUserById(message.recipientId.toString()),
+        ]);
+        message.sender = sender;
+        message.recipient = recipient;
       }
 
       const unreadCount = await getUnreadCount(req.session.user._id);
