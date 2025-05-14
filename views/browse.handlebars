@@ -79,7 +79,7 @@
           />
         </div>
         <div>
-          <label>Max Number: <span id="max-rating-value">5</span></label>
+          <label>Max Number: <span id="max-rating-value">100</span></label>
           <input
             type="range"
             id="max-commission-number"
@@ -100,7 +100,7 @@
         </div>
         <!-- modified from https://stackoverflow.com/questions/30190588/html-select-multiple-as-dropdown -->
         <h3>Tags</h3>
-          <select data-placeholder="Begin typing a tag to filter..." multiple class="chosen-select" name="test">
+          <select data-placeholder="Begin typing a tag to filter..." multiple class="chosen-select" name="tags">
           <option value=""></option>
           {{#each possibleTagsList}} 
           <option> {{this}} </option>
@@ -109,9 +109,9 @@
         <h3>Sort Method</h3> 
         <div>
           <select name="sorting-method" id="sorting-method-select">
-            <option value="">By Rating</option>
-            <option value="true">By Newest First</option>
-            <option value="false">By Commissions</option>
+            <option value="byRating">By Rating</option>
+            <option value="newest">By Newest First</option>
+            <option value="byCommissions">By Number of Commissions</option>
           </select>
         </div>
         <div id="filter-form-submit-div">
