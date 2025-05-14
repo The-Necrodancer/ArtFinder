@@ -10,6 +10,8 @@ import { usernameMaxLength } from "../data/users.js";
 import { getAllArtists, priceMaxValue, priceMinValue, updateArtistProfile } from "../data/artists.js";
 import { createCommission } from "../data/commissions.js";
 import { createRandomArtistProfile, createRandomCard } from "../test/helper.js";
+import { getCardById } from "../data/cards.js";
+import { createReview } from "../data/reviews.js";
 
 const NUM_ADMINS = 10;
 const NUM_USERS = 100;
@@ -120,6 +122,22 @@ const seed = async () => {
       }
   }
 
+  let reviewList = []; 
+    for(let i=0; i<commissionList.length; i++) {
+        let review = {
+            cid: commissionList[i]._id, 
+            rating: faker.number.int({min:1, max:5}), 
+            comment: faker.lorem.words({min: 10, max:50})
+        }
+
+        let insertedReview = await createReview(
+            review.cid, 
+            review.rating, 
+            review.comment
+        ); 
+        reviewList.push(insertedReview); 
+    }
+
   for(let i=0; i<NUM_CARDS; i++) {
     try {
       let card = await createRandomCard(userList);
@@ -130,7 +148,12 @@ const seed = async () => {
     
   }
 
-
+  artistList = await getAllArtists();
+  for(const a of artistList) {
+    let cid = a.artistProfile.cid; 
+    let card = await getCardById(cid); 
+    console.log(card.artistProfile.rating, a.artistProfile.rating);
+  }
   await closeConnection();
 };
 
