@@ -44,7 +44,8 @@ document
     event.preventDefault();
 
     const artist = document.getElementById("search-input").value.trim();
-    const style = document.getElementById("style-select").value.trim();
+    const styleSelect = document.getElementById("style-select");
+    const styles = Array.from(styleSelect.selectedOptions).map(opt => opt.value).filter(v => v);
     const minPriceInput = document.getElementById("min-price");
     const maxPriceInput = document.getElementById("max-price");
     const minRatingInput = document.getElementById("min-rating");
@@ -59,7 +60,9 @@ document
     // Redirect to the search results page with the search input and type as query parameters
     const params = new URLSearchParams();
     if (artist) params.append("artist", artist);
-    if (style !== "") params.append("style", style);
+    if (styles.length > 0) {
+      styles.forEach(style => params.append("style", style));
+    }
     params.append("low-price", lowPrice);
     params.append("high-price", highPrice);
     params.append("low-rating", lowRating);
@@ -71,19 +74,19 @@ document
   });
 document
   .addEventListener("DOMContentLoaded", () => {
-  const styleSelect = document.querySelector('select[name="style"]');
-  const searchInput = document.getElementById("search-input");
+  const styleSelect = document.querySelector('select[name="tags"]');
   const searchButton = document.getElementById("search-button");
   const availability = document.getElementById("availability-select");
-  
-  const selectedStyle = new URLSearchParams(window.location.search).get('style') || ''; // To Re-input value on re-direct
+  const searchInput = document.getElementById("search-input");
+  const params = new URLSearchParams(window.location.search);
+  const selectedStyles = params.getAll('style').concat(params.getAll('tags'));
   styleSelect.innerHTML = '';
 
   // add default option
   const defaultOption = document.createElement("option");
   defaultOption.value = "";
   defaultOption.textContent = "Any Style";
-  if (selectedStyle === '') defaultOption.selected = true; // To Re-input value on re-direct
+  defaultOption.selected = selectedStyles.length === 0;
   styleSelect.appendChild(defaultOption);
 
   // create options from tag list
@@ -91,7 +94,7 @@ document
     const option = document.createElement("option");
     option.value = tag;
     option.textContent = tag;
-    if (tag === selectedStyle) { // To Re-input value on re-direct
+    if (selectedStyles.includes(tag)) {
       option.selected = true;
     }
     styleSelect.appendChild(option);
@@ -144,17 +147,41 @@ document
 
     toggleSearchButton();
   }
-  
+
+  const minCommissionInput = document.getElementById("min-commission-number");
+  const maxCommissionInput = document.getElementById("max-commission-number");
+  const minCommissionValue = document.getElementById("min-commission-number-value");
+  const maxCommissionValue = document.getElementById("max-commission-number-value");
+
+  function updateCommissionLabels() {
+    let minVal = parseInt(minCommissionInput.value);
+    let maxVal = parseInt(maxCommissionInput.value);
+
+    if (minVal > maxVal) {
+      minVal = maxVal;
+      minCommissionInput.value = minVal;
+    } else if (maxVal < minVal) {
+      maxVal = minVal;
+      maxCommissionInput.value = maxVal;
+    }
+
+    minCommissionValue.textContent = minVal;
+    maxCommissionValue.textContent = maxVal;
+  }
   function toggleSearchButton() {
     const artist = searchInput.value.trim();
-    const style = styleSelect.value.trim();
+    const styles = Array.from(styleSelect.selectedOptions).map(opt => opt.value).filter(v => v);
     const lowPrice = minPriceInput.value.trim();
     const highPrice = maxPriceInput.value.trim();
     const lowRating = minRatingInput.value.trim();
     const highRating = maxRatingInput.value.trim();
     const available = availability.value.trim();
-    searchButton.disabled = artist === "" && style === "" && lowPrice === "0" && highPrice === "1000" && lowRating === "0" && highRating === "5" && available === "";
+    searchButton.disabled = artist === "" && styles.length === 0 && lowPrice === "0" && highPrice === "1000" && lowRating === "0" && highRating === "5" && available === "";
   }
+  // Activate on startup
+  updatePriceLabels();
+  updateRatingLabels();
+  updateCommissionLabels();
 
   searchInput.addEventListener("input", toggleSearchButton);
   styleSelect.addEventListener("change", toggleSearchButton);
@@ -163,18 +190,6 @@ document
   minRatingInput.addEventListener("input", updateRatingLabels);
   maxRatingInput.addEventListener("input", updateRatingLabels);
   availability.addEventListener("input", toggleSearchButton);
-
-  // Activate on startup
-  updatePriceLabels();
-  updateRatingLabels();
-
-  const sidebar = document.getElementById('sidebar-filter');
-  const toggleBtn = document.getElementById('sidebar-toggle');
-  if (sidebar && toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const collapsed = sidebar.classList.toggle('collapsed');
-      toggleBtn.innerHTML = collapsed ? '\u2192' : '\u2190'; // → or ←
-      toggleBtn.setAttribute('aria-label', collapsed ? 'Show sidebar' : 'Hide sidebar');
-    });
-  }
+  minCommissionInput.addEventListener("input", updateCommissionLabels);
+  maxCommissionInput.addEventListener("input", updateCommissionLabels);
 });
