@@ -13,7 +13,7 @@
 */
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
-import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos} from '../helpers.js'; 
+import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos, checkImageUrl} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
 import { createCard } from "./cards.js";
 
@@ -237,7 +237,10 @@ export const updateArtistProfile = async(aid, newProfile) => {
     //checks portfolio if in newProfile 
     if('portfolio' in newProfile) {
         if(!Array.isArray(newProfile.portfolio)) throwWrongTypeError('portfolio', 'Array', typeof newProfile.portfolio); 
-        //validate images here 
+        for(let i=0; i<newProfile.portfolio.length; i++) {
+            newProfile.portfolio[i] = checkImageUrl(newProfile.portfolio[i]); 
+        }
+        validatedObj.artistProfile.portfolio = newProfile.portfolio; 
     }
     //checks pricing info if in newProfile 
     if('pricingInfo' in newProfile) {
@@ -297,3 +300,15 @@ export const updateArtistProfile = async(aid, newProfile) => {
     delete updatedArtist.password;
     return updatedArtist; 
 };
+
+
+/**
+ *  A wrapper function for updateArtistProfile (therefore error checking is done by other functions)
+ * @param {String} aid The artist's aid
+ * @param {Array of Strings} portfolio A list of images to add 
+ */
+export const addPhotosToPortfolio = async(aid, portfolio) => {
+    const artist = await getArtistById(aid); 
+    const newPortfolio = [...artist.artistProfile.portfolio, ...portfolio]; 
+    return await updateArtistProfile(aid, {portfolio: newPortfolio}); 
+}

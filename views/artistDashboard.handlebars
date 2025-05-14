@@ -4,7 +4,7 @@
   
   <section class="profile-section">
     <h3>My Profile</h3>
-    <form id="profile-form" action="/artist/profile/update" method="POST">
+    <form id="profile-form" action="/dashboard/artist" method="POST">
       <div class="form-group">
         <label for="bio">Bio:</label>
         <textarea id="bio" name="bio">{{artist.artistProfile.bio}}</textarea>
@@ -56,7 +56,7 @@
           {{#each artist.artistProfile.portfolio}}
             <div class="portfolio-item">
               <img src="{{this}}" alt="Portfolio piece" />
-              <form action="/artist/portfolio/remove" method="POST" class="remove-image">
+              <form action="/dashboard/artist/" method="POST" class="remove-image">
                 <input type="hidden" name="imageUrl" value="{{this}}" />
                 <button type="submit" class="remove-btn">Remove</button>
               </form>
@@ -68,6 +68,17 @@
       {{/if}}
     </div>
 
+    <p id="add-img-form-error"></p>
+    <form id="add-img-form" action="/dashboard/artist" method="POST" enctype="multipart/form-data" class="add-portfolio">
+      <label for="upload_widget">Add New Artwork:</label>
+      <button id="upload_widget" class="submit" type="button" >Upload Files</button>
+      <div id="upload_form_images_div">
+        
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+
+<!--
     <form action="/artist/portfolio/add" method="POST" enctype="multipart/form-data" class="add-portfolio">
       <div class="form-group">
         <label for="artwork">Add New Artwork:</label>
@@ -80,6 +91,7 @@
       <button type="submit">Upload Artwork</button>
     </form>
   </section>
+-->
 
   <section class="commissions-section">
     <h3>Active Commissions</h3>
@@ -105,3 +117,7 @@
     </div>
   </section>
 </main>
+<!-- cloudinary upload widget -->
+<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+
+<script src="/js/Cloudinary/cloudinaryUploadWidget.js" type="text/javascript"></script>

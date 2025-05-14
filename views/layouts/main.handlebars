@@ -23,4 +23,7 @@
     {{#if isAdmin}}
     <script src="/js/blogAdmin.js"></script>
     {{/if}}
+    {{#each bodyScriptLinks}} 
+        <script src={{{this}}} type="text/javascript"></script>
+    {{/each}}
 </body>
