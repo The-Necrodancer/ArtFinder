@@ -147,7 +147,7 @@ const constructorMethod = (app) => {
     headerTitle: "Browse Artists",
     navLink: [
       { link: "/", text: "Home" },
-      { link: "/add", text: "Add Artist" },
+      { link: "/cards/create", text: "Add Artist" },
     ],
     cards: featuredCards,
   });
