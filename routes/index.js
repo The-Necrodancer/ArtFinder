@@ -15,10 +15,9 @@ import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
 import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
-import apiRoutes from './api.js';
-import artistDashboardRoutes from "./artistDashboard.js"
+import apiRoutes from "./api.js";
+import artistDashboardRoutes from "./artistDashboard.js";
 import { getCardsByRating, getNewestCards } from "../data/cards.js";
-
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -59,9 +58,8 @@ const constructorMethod = (app) => {
     res.render("home", renderObj);
   });
 
-  
   app.use("/api", apiRoutes);
-  app.use("/dashboard/artist", artistDashboardRoutes); 
+  app.use("/dashboard/artist", artistDashboardRoutes);
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {
@@ -135,23 +133,25 @@ const constructorMethod = (app) => {
 
   //app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.get("/browse", userMiddleware, async (req, res) => {
-  let featuredCards = await getCardsByRating();
-  featuredCards = featuredCards.slice(0, 50);
-  featuredCards.forEach((elem) => {
-    if (Array.isArray(elem.socialsLinks)) {
-      elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
-    }
+    let featuredCards = await getCardsByRating();
+    featuredCards = featuredCards.slice(0, 50);
+    featuredCards.forEach((elem) => {
+      if (Array.isArray(elem.socialsLinks)) {
+        elem.socialsLinks = elem.socialsLinks.map(
+          (linkObj) => linkObj.url || linkObj
+        );
+      }
+    });
+    res.render("browse", {
+      pageTitle: "Browse Artists",
+      headerTitle: "Browse Artists",
+      navLink: [
+        { link: "/", text: "Home" },
+        { link: "/cards/create", text: "Add Artist" },
+      ],
+      cards: featuredCards,
+    });
   });
-  res.render("browse", {
-    pageTitle: "Browse Artists",
-    headerTitle: "Browse Artists",
-    navLink: [
-      { link: "/", text: "Home" },
-      { link: "/cards/create", text: "Add Artist" },
-    ],
-    cards: featuredCards,
-  });
-});
   app.get("/search", userMiddleware, async (req, res) => {
     // Parse query parameters
     const {
@@ -161,7 +161,7 @@ const constructorMethod = (app) => {
       maxPrice = 1000,
       minRating = 0,
       maxRating = 5,
-      available = ""
+      available = "",
     } = req.query;
 
     // Build filters object for filterCards
@@ -180,13 +180,13 @@ const constructorMethod = (app) => {
     // Price range filter
     filters.priceRange = {
       min: Number(minPrice),
-      max: Number(maxPrice)
+      max: Number(maxPrice),
     };
 
     // Rating filter
     filters.rating = {
       min: Number(minRating),
-      max: Number(maxRating)
+      max: Number(maxRating),
     };
 
     // Availability filter
@@ -206,7 +206,7 @@ const constructorMethod = (app) => {
       headerTitle: "Search Artists",
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/browse", text: "Browse Artists" }
+        { link: "/browse", text: "Browse Artists" },
       ],
       filters: {
         artist: query,
@@ -215,42 +215,49 @@ const constructorMethod = (app) => {
         maxPrice,
         minRating,
         maxRating,
-        available
+        available,
       },
-      cards
+      cards,
     });
   });
+
   app.get("/artist/:id", async (req, res) => {
-    let artist;
     try {
-      artist = await getArtistById(req.params.id);
-    } catch (e) {
-      return res.status(400).render("error", {
-        pageTitle: "Error",
-        headerTitle: "Error",
+      const artist = await getArtistById(req.params.id);
+      if (!artist) {
+        throw new Error("Artist not found");
+      }
+      console.log("Artist data:", JSON.stringify(artist, null, 2));
+
+      let toRender = {
+        pageTitle: `${artist.username}'s Profile`,
+        headerTitle: `${artist.username}'s Profile`,
         navLink: [
           { link: "/", text: "Home" },
-          // THIS IS WHAT LINKS TO IT
-          { link: "/cards/create", text: "Add Artist" },
+          { link: "/browse", text: "Browse Artists" },
+        ],
+        artist: artist,
+        user: req.session.user,
+      };
+
+      if (req.session && req.session.user) {
+        toRender.navLink.push({ link: "/signout", text: "Sign Out" });
+        if (req.session.user._id === artist._id) {
+          toRender.isArtist = true;
+        }
+      }
+      return res.render("artistprofile", toRender);
+    } catch (e) {
+      return res.status(404).render("error", {
+        pageTitle: "Artist Not Found",
+        headerTitle: "Artist Not Found",
+        error: e.toString(),
+        navLink: [
+          { link: "/", text: "Home" },
+          { link: "/browse", text: "Browse Artists" },
         ],
       });
     }
-    let toRender = {
-      pageTitle: `${artist.username}'s Profile`,
-      headerTitle: `${artist.username}'s Profile`,
-      navLink: [
-        { link: "/", text: "Home" },
-        { link: "/browse", text: "Browse Artists" },
-        { link: "/signout", text: "Sign Out" },
-      ],
-      artist,
-      isArtist: false,
-    };
-    if (req.session && req.session.user._id === artist._id) {
-      toRender.isArtist = true;
-
-    }
-    return res.render("artistProfile", toRender);
   });
   app.post(
     "/commission/update-status",
