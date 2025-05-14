@@ -2443,3 +2443,13 @@ button:hover {
   margin-bottom: 1rem;
   text-align: center;
 }
+.cancel-btn {
+        display: inline-block;
+        margin-left: 1em;
+        padding: 0.5em 1em;
+        background: var(--primary);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        border: 1px solid #d1d5db;
+}
