@@ -29,6 +29,7 @@
     "express-session": "^1.18.1",
     "handlebars-helpers": "^0.10.0",
     "lodash": "^4.17.21",
-    "mongodb": "^6.16.0"
+    "mongodb": "^6.16.0",
+    "unique-username-generator": "^1.4.0"
   }
 }

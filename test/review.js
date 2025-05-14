@@ -58,12 +58,18 @@ const testCreateReview = async(commissionList) => {
             sum += (await getReviewById(rev)).rating;  
             num++; 
         }
-        if(artist.artistProfile.rating !== sum/num) {
+        let calcedAvg = parseFloat((sum/num).toFixed(2));
+        if(artist.artistProfile.rating !== calcedAvg) {
             hasErrorThisTime=true; 
             hasErrors=true; 
             console.log("ERROR IN createReview"); 
             console.log("Artist average was incorrectly calculated"); 
-            console.log("Artist has rating ", String(artist.artistProfile.rating), ", but expected rating ", String(num/sum)); 
+            console.log("Artist has rating ", String(artist.artistProfile.rating), ", but expected rating ", String(calcedAvg)); 
+            let ratingArr = []; 
+            for(const rev of artist.artistProfile.reviewsReceived ) {
+                ratingArr.push((await getReviewById(rev)).rating);
+            }
+            console.log("Ratings received: ", ratingArr)
         }
         if(!hasErrorThisTime) reviewList.push(insertedReview); 
     }

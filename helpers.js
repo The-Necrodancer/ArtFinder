@@ -21,7 +21,8 @@ import {
     tagMaxLength, 
     tosMinLength, 
     tosMaxLength,
-    lowerCaseTags
+    lowerCaseTags,
+    possibleTagsList
  } from './data/artists.js';
 
 import {
@@ -113,20 +114,35 @@ export const checkTag = (tag) => {
     * Should the tags be all lowercase? Or should there be a mix of cases?
     * - Owen
     */
-    tag = tag.toLowerCase(); // Convert to lowercase
+    //tag = tag.toLowerCase(); // Convert to lowercase
 
     // A valid tag can only be a string of letters, numbers, and underscores
+    /*
     const specialCharRegex = /[^a-zA-Z0-9-\s]/;
     
     if (specialCharRegex.test(tag)) {
         throw 'Tag can only contain letters, numbers, hyphens, and underscores!';
     }
-
-    if (!lowerCaseTags.includes(tag)) {
+    */
+    if (!possibleTagsList.includes(tag)) {
         throw "Invalid Tag provided. Tag must exist in the possibleTagsList!";
     }
 
     return tag;
+}
+
+export const checkTagList = (tags) => {
+    if(!Array.isArray(tags)) {
+        throwWrongTypeError("tag list", "Array", typeof tags); 
+    }
+    const checktedTags = []; 
+    for(let tag of tags) {
+        tag = checkTag(tag); 
+        if(checktedTags.includes(tag)) 
+            throw `Error: cannot have duplicate tags`; 
+        checktedTags.push(tag); 
+    }
+    return checktedTags; 
 }
 
 export const throwWrongTypeError = (varName, expected, received) => {
@@ -160,10 +176,10 @@ export const checkUsername = (username) => {
     username = checkStringMinMaxNaN(username, 'username', usernameMinLength, usernameMaxLength); 
     if (username.match(/\s/))
         throw "Error: username cannot contain whitespace"; 
-    /*
+    
     if (username.match(/\W/))
         throw "Error: username can only contain alphanumeric characters and underscores"; 
-    */
+    
     return username; 
 }
 
@@ -297,6 +313,8 @@ export const checkEmail = (email) => {
  */
 export const checkName = (name) => {
     name = checkStringMinMaxNaN(name, 'artist name', nameMinLength, nameMaxLength);
+    if(name.match(/[^\w-]/)) 
+        throw "Error: name can only contain alphanumeric characters, underscores, and dashes";
     return name; 
 }
 
@@ -333,10 +351,10 @@ export const checkUrl = (url) => {
  * @param {Array} socialsLinks An array of objects with form {site: {string}, url: {string}}
  * @returns {Array} socialsLinks, with all strings trimeed
  */
-export const checkSocialsLinks = (socialsLinks) => {
+export const checkSocialsLinks = (socialsLinks, isUserRecommended) => {
     if(!Array.isArray(socialsLinks)) 
         throwWrongTypeError('Socials Links', 'Array', typeof socialsLinks); 
-    if(socialsLinks.length === 0)
+    if(socialsLinks.length === 0 && isUserRecommended)
         throw `Error: at least one social link must be provided.`; 
     let keyArr = []; 
     for(let i=0; i<socialsLinks.length; i++) {
@@ -346,12 +364,39 @@ export const checkSocialsLinks = (socialsLinks) => {
         }
         link.site = checkSocialLinkSite(link.site); 
         link.url = checkUrl(link.url); 
+        if(!siteIsUrlMatch(link.site, link.url)) 
+            throw "Error: please provide a valid link for the site"; 
         keyArr.push(link.site); 
     }
-    if(Set(keyArr).length !== keyArr.length) {
+    if((new Set(keyArr)).size !== keyArr.length) {
         throw "Error: cannot have more than 1 link per site."; 
     }
     return socialsLinks; 
+}
+
+const siteIsUrlMatch = (site, url) => {
+    if (site === "Facebook") 
+        return url.match(/facebook/); 
+    if (site === "Instagram") 
+        return url.match(/instagram/); 
+    if (site === "X") 
+        return url.match(/twitter|x\.com/); 
+    if (site === "DeviantArt") 
+        return url.match(/deviantart/); 
+    if (site === "ArtStation") 
+        return url.match(/artstation/); 
+    if (site === "Threads") 
+        return url.match(/threads\.net/); 
+    if (site === "BlueSky") 
+        return url.match(/bsky\.app/); 
+    if (site === "Pillowfort") 
+        return url.match(/pillowfort/); 
+    if (site === "Newgrounds") 
+        return url.match(/newgrounds/); 
+    if (site === "Unvale") 
+        return url.match(/unvale\.net/); 
+    if (site === "Tumblr") 
+        return url.match(/tumblr/); 
 }
 
 /**

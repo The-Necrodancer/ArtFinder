@@ -8,7 +8,8 @@ import {
   checkTos,
   throwWrongTypeError,
   checkId,
-  checkImageUrl
+  checkImageUrl,
+  checkTagList
 } from "../helpers.js";
 import { getUserById } from "./users.js";
 import { cards } from "../config/mongoCollection.js";
@@ -26,21 +27,20 @@ fields:
     bio
     tos 
     rating 
+    numCommissions
     }
 */
-export const cardKeys = ['name', 'socialsLinks',  'artistProfile']; 
+export const cardKeys = ['name', 'socialsLinks',  'artistProfile', 'tags']; 
 export const cardArtistProfileKeys = ['availability', 'bio', 'tos', 'rating', 'portfolio', 'pricingInfo'];
-export const filterKeys = ['priceRange', 'tags', 'rating', 'availability'];  
+export const filterKeys = ['priceRange', 'tags', 'rating', 'availability', 'numCommissions'];  
 //min max 
 
-export const nameMinLength = 4;
+export const nameMinLength = 2;
 export const nameMaxLength = 32;
 
 export const socialMediaSites = [
-  "YouTube",
   "Facebook",
   "Instagram",
-  "TikTok",
   "X",
   "DeviantArt",
   "ArtStation",
@@ -60,15 +60,14 @@ export const createCard = async (
   uid
 ) => {
   name = checkName(name);
-  socialsLinks = checkSocialsLinks(socialsLinks);
-  if (!Array.isArray(tags))
-    throwWrongTypeError("artist tags", "Array", typeof tags);
+  tags = checkTagList(tags);
   if (typeof isUserRecommended !== "boolean")
     throwWrongTypeError(
       "is-user-recommended",
       "boolean",
       typeof isUserRecommended
     );
+    socialsLinks = checkSocialsLinks(socialsLinks, isUserRecommended);
   let newCard = {
     name,
     socialsLinks,
@@ -87,7 +86,8 @@ export const createCard = async (
       bio: artist.artistProfile.bio,
       tos: artist.artistProfile.tos,
       rating: artist.artistProfile.rating,
-      pricingInfo: artist.artistProfile.pricingInfo
+      pricingInfo: artist.artistProfile.pricingInfo,
+      numCommissions: artist.artistProfile.createdCommissions.length
     };
   }
 
@@ -137,6 +137,8 @@ export const updateCardById = async(cid, updates) => {
         validatedObj.name = checkName(updates.name); 
     if('socialsLinks' in updates) 
         validatedObj.socialsLinks = checkSocialsLinks(updates.socialsLinks); 
+    if('tags' in updates) 
+        validatedObj.tags = checkTagList(updates.tags);
     if('artistProfile' in updates) {
         validatedObj.artistProfile = {}; 
         if(!updates.artistProfile || typeof updates.artistProfile !== 'object') 
@@ -204,11 +206,7 @@ export const filterCards = async(filters) => {
         if(!filterKeys.includes(key))
             throw `Error: ${key} is not a valid filter key.`; 
     if('tags' in filters) {
-        if(!Array.isArray(filters.tags)) 
-          throwWrongTypeError("tags", "Array", typeof filters.tags); 
-        for(let i=0; i<filters.tags.length; i++) {
-          filters.tags[i] = checkTag(filters.tags[i]); 
-        }
+        filters.tags = checkTagList(filters.tags);
     }
     if('priceRange' in filters) {
       if(!filters.priceRange || typeof filters.priceRange !== 'object') 
@@ -227,26 +225,31 @@ export const filterCards = async(filters) => {
         filters.priceRange[key] = Math.trunc(filters.priceRange[key] * 100) / 100; 
       } 
     }
-  if('rating' in filters) {
-      if(!filters.rating || typeof filters.rating !== 'object') 
-        throwWrongTypeError("rating", "object", typeof filters.rating); 
-      if(filters.rating.constructor !== Object) 
-        throwWrongTypeError("rating", "object", filters.rating.constructor); 
-      if(Object.keys(filters.rating).length <1 || Object.keys(filters.rating).length > 2) 
-        throw "Error: rating range must have either one or two keys."; 
-      for(const key of Object.keys(filters.rating)) {
-        if(key !== 'min' && key !== 'max') 
-          throw `Error: ${key} is an unacceptable key value (must be either 'min' or 'max')`; 
-        if(typeof filters.rating[key] !== 'number') 
-          throwWrongTypeError('rating', 'number', typeof filters.rating[key]); 
-        if(filters.rating[key]< 1 || filters.rating[key] > 5) 
-          throw "Error: rating must be between 1 and 5"; 
-        filters.rating[key] = Math.trunc(filters.rating[key]* 100) / 100; 
-      } 
+  if ('numCommissions' in filters) {
+    if (!filters.numCommissions || typeof filters.numCommissions !== 'object')
+      throwWrongTypeError("numCommissions", "object", typeof filters.numCommissions);
+    if (filters.numCommissions.constructor !== Object)
+      throwWrongTypeError("numCommissions", "object", filters.numCommissions.constructor);
+    const keys = Object.keys(filters.numCommissions);
+    if (keys.length < 1 || keys.length > 2)
+      throw "Error: numCommissions range must have either one or two keys.";
+    for (const key of keys) {
+      if (key !== 'min' && key !== 'max')
+        throw `Error: ${key} is an unacceptable key value (must be either 'min' or 'max')`;
+      if (typeof filters.numCommissions[key] !== 'number')
+        throwWrongTypeError('numCommissions', 'number', typeof filters.numCommissions[key]);
+      filters.numCommissions[key] = Math.floor(filters.numCommissions[key]); 
+      if (filters.numCommissions[key] < 0)
+        throw "Error: numCommissions must be zero or a positive integer";
     }
+  }
   if('availability' in filters) {
     if(typeof filters.availability !== 'boolean')
       throwWrongTypeError("availability", 'boolean', typeof filters.availability); 
+  }
+
+  if('numCommissions' in filters) {
+
   }
 
   let isOfficial = ('rating' in filters) || ('priceRange' in filters) || ('availability' in filters); 
@@ -254,7 +257,6 @@ export const filterCards = async(filters) => {
   let cards = await getAllCards();
   let result = [];
   for (let card of cards) {
-    let pass=false; 
     if(isOfficial) {
       if(card.isUserRecommended) continue; 
       if('priceRange' in filters) {
@@ -278,7 +280,15 @@ export const filterCards = async(filters) => {
         if(filters.availability !== card.artistProfile.availability)
           continue; 
       }
-      
+      if ('numCommissions' in filters) {
+        const commissions = card.artistProfile.numCommissions;
+
+        if (typeof filters.numCommissions.min === 'number' && commissions < filters.numCommissions.min)
+          continue;
+
+        if (typeof filters.numCommissions.max === 'number' && commissions > filters.numCommissions.max)
+          continue;
+      }
     }
     if('tags' in filters) {
         let cardTags = card.tags; 
@@ -295,6 +305,7 @@ export const filterCards = async(filters) => {
  */
 export const getCardsByRating = async() => {
     let cards = await filterCards({rating: {min: 1, max: 5}});
+    console.log("cards after basic filter", cards); 
     let result = [];
     for (let card of cards) {
         let count = card.artistProfile.rating;
@@ -312,9 +323,27 @@ export const getNewestCards = async () => {
   let maxElements = 50;
   let cardCollection = await cards();
   //https://stackoverflow.com/questions/13847766/how-to-sort-a-collection-by-date-in-mongodb
-  let cardList = await cardCollection.find({}).sort({ _id: -1 });
+  let cardList = await cardCollection.find({}).sort({ _id: -1 }).toArray();
   if (cardList.length > 50) {
     cardList = cardList.slice(0, maxElements);
   }
   return cardList;
 };
+
+/**
+ * Gets cards in an ordered list based on rating.
+ * @returns {Array} An ordered array of cards by their ratings.
+ */
+export const getCardsByCommissions = async() => {
+    let cards = await filterCards({rating: {min: 1, max: 5}});
+    let result = [];
+    for (let card of cards) {
+        let count = card.artistProfile.numCommissions;
+        result.push({
+            object: artist,
+            numCommissions: count
+        });
+    }
+    result.sort((a, b) => b.numCommissions - a.numCommissions);
+    return result; 
+}
