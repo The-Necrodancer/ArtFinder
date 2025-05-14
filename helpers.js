@@ -442,3 +442,35 @@ export const checkPost = (post, postMinLength, postMaxLength) => {
     post = checkStringMinMax(post, 'post', postMinLength, postMaxLength); 
     return post;
 }
+
+
+export const checkCardList = (cardList) => {
+  if(!Array.isArray(cardList)) 
+    throwWrongTypeError("card list", "Array", typeof cardList); 
+  for(let i=0; i<cardList.length; i++) {
+    if(typeof cardList[i] !== 'object')
+      throwWrongTypeError("card", "Object", typeof cardList[i]); 
+    if(cardList[i].constructor !== Object)
+      throwWrongTypeError("card", "Object", String(cardList[i].constructor)); 
+    cardList[i].name = checkName(cardList[i].name); 
+    cardList[i].tags = checkTagList(cardList[i].tags); 
+    checkId(cardList[i].uid); 
+    if(!cardList[i].artistProfile) {
+      cardList[i].socialsLinks = checkSocialsLinks(cardList[i].socialsLinks);
+    } else {
+      cardList[i].artistProfile.bio = checkBio(cardList[i].artistProfile.bio); 
+      checkTos(cardList[i].artistProfile.tos); 
+      if(typeof cardList[i].artistProfile.rating !== 'number' 
+        || cardList[i].artistProfile.rating < 0 
+        || cardList[i].artistProfile.rating > 5) 
+        throw "Error: rating is not valid";
+      if(typeof cardList[i].artistProfile.numCommissions !== "number" 
+        || cardList[i].artistProfile.numCommissions < 0
+      )
+      throw "Error: numCommissions is not valid"; 
+      if(cardList[i].socialsLinks) 
+        cardList[i].socialsLinks = checkSocialsLinks(cardList[i].socialsLinks);
+    }
+  }
+  return cardList;
+}
