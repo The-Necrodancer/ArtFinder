@@ -97,6 +97,7 @@ export const createUser = async (role, username, email, password) => {
       { $set: { "artistProfile.cid": cid } },
       {returnDocument: "after"}
     );
+    console.log(updateInfo.artistProfile.cid);
     return updateInfo._id.toString(); 
   }
   return insertedUser.insertedId.toString();

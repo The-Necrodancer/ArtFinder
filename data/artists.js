@@ -283,6 +283,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
     }
     //updates artist 
     let userCollection = await users(); 
+    console.log(validatedObj.artistProfile.cid);
     const updatedArtist = await userCollection.findOneAndUpdate(
         {_id: new ObjectId(aid)}, 
         {$set: validatedObj},
