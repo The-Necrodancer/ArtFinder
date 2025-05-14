@@ -63,6 +63,19 @@ const exampleProfiles = {
   ]
 };
 
+const imgLinks = [
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747175758/signed_upload_demo_uw/tbucdp5ac88nspwuh1c0.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747175742/signed_upload_demo_uw/rh0edwnizwhvw66qjwn2.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747175492/signed_upload_demo_uw/ywumkqr0woc0qfpi5zkm.png', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747166976/signed_upload_demo_uw/pdhrhwnpy01xyisvdk0b.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747166771/signed_upload_demo_uw/m3erxpavrwpt5lm5tce9.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747164703/signed_upload_demo_uw/lbvpksdueosu7kznuhwc.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747164182/signed_upload_demo_uw/vzzigw0zewdulf8zjjz0.png', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747161968/signed_upload_demo_uw/ttvr0g6ofrbnek9qoee3.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747157941/signed_upload_demo_uw/cgy22vcuyyq8smygt4ao.jpg', 
+    'https://res.cloudinary.com/dbozj84g9/image/upload/v1747156274/signed_upload_demo_uw/xrmnzvbygjbl2sz1iadt.png'
+]
+
 /**
  * 
  * @returns A randomly generated user obj that can be added to the database. 
@@ -87,28 +100,26 @@ export const createRandomArtistProfile = () => {
     let profileObj = {}; 
 
     //maybe randomly generate pricing info
-    const numItems = faker.number.int({min: 0, max: 10}); 
-    if(numItems) {
-        profileObj.pricingInfo = {}; 
-        for(let i=0; i<numItems; i++) {
-            profileObj.pricingInfo[faker.commerce.productName()] = Number(faker.commerce.price({min: priceMinValue, max:priceMaxValue})); 
-        }
-    }
-    
-    //maybe randomly generate a bio
-    if(faker.number.int({min:0, max:1})) {
-        profileObj.bio = faker.person.bio(); 
+    const numItems = faker.number.int({min: 1, max: 10}); 
+
+    profileObj.pricingInfo = {}; 
+    for(let i=0; i<numItems; i++) {
+        profileObj.pricingInfo[faker.commerce.productName()] = Number(faker.commerce.price({min: priceMinValue, max:priceMaxValue})); 
     }
 
+    
+    //maybe randomly generate a bio
+
+    profileObj.bio = faker.person.bio(); 
+
+
     //maybe randomly generate tags 
-    const numTags = faker.number.int({min: 0, max: 10}); 
-    if(numTags) {
-        profileObj.tags = []; 
-        while(profileObj.length < numTags) {
-            let tag = faker.helpers.arrayElement(possibleTagsList); 
-            if(!profileObj.tags.includes(tag))
-                profileObj.tags.push(tag); 
-        }
+    const numTags = faker.number.int({min: 1, max: 10}); 
+    profileObj.tags = []; 
+    while(profileObj.length < numTags) {
+        let tag = faker.helpers.arrayElement(possibleTagsList); 
+        if(!profileObj.tags.includes(tag))
+            profileObj.tags.push(tag); 
     }
 
     //maybe randomly generates availability 
@@ -117,9 +128,16 @@ export const createRandomArtistProfile = () => {
     }
 
     //maybe randomly generates tos 
-    if(faker.number.int({min:0, max:1})) { 
-        profileObj.tos = faker.word.words({min: 10, max: 50}); 
+    profileObj.tos = faker.word.words({min: 10, max: 50}); 
+
+    const numArt = faker.number.int({min:0, max:5}); 
+    profileObj.portfolio = []; 
+    while(profileObj.portfolio.length < numArt) {
+        let imgUrl = faker.helpers.arrayElement(imgLinks); 
+        if(!profileObj.portfolio.includes(imgUrl))
+            profileObj.portfolio.push(imgUrl); 
     }
+
     return profileObj; 
 }
 
