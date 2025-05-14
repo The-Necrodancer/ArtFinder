@@ -2198,7 +2198,7 @@ button:hover {
   box-shadow: 0 2px 8px var(--shadow);
   /* z-index: 1000; */
   transition: width 0.3s, min-width 0.3s;
- /*  overflow: hidden; */
+  /*  overflow: hidden; */
   overflow-x: hidden;
   overflow-y: scroll;
 }
@@ -2480,12 +2480,38 @@ button:hover {
   text-align: center;
 }
 .cancel-btn {
-        display: inline-block;
-        margin-left: 1em;
-        padding: 0.5em 1em;
-        background: var(--primary);
-        color: white;
-        border-radius: 6px;
-        text-decoration: none;
-        border: 1px solid #d1d5db;
+  display: inline-block;
+  margin-left: 1em;
+  padding: 0.5em 1em;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid #d1d5db;
+}
+
+/* Message System Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.page-link {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+}
+
+.page-link:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.page-info {
+  color: var(--text);
 }
