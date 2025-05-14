@@ -69,23 +69,23 @@
                     </li>
                 </ul>
             </div>
-
             <div class="form-group">
                 <label for="description">Portfolio:</label>"
                 <inputy type="file" id="portfolio" name="portfolio" multiple accept="image/*" />
                 <small>You can upload multiple images. Only image files are allowed.</small>
-                <!-- Add specific formats, this ties into the fact that we need links for the images to show them on the website. -->
             </div>
 
             <div class="form-group">
                 <label for="tags">Tags:</label>
-                <div id="tags-container">
-                    <!-- Add tags dynamically here... -->
-                </div>
-                <input type="text" id="tag-input" placeholder="Enter a tag and press Add" />
+                <div id="selected-tags"></div>
+                <select id="tag-dropdown">
+                    <option value="" disabled selected>Select a tag</option>
+                </select>
                 <button type="button" id="add-tag-button">Add Tag</button>
+                <input type="hidden" name="tags" id="tags-hidden" />
             </div>
 
             <button type="submit">Create Card</button>
     </div> 
 </main>
+<script type="module" src="/js/addTagsArtistCard.js"></script>
