@@ -41,6 +41,7 @@ export const createCommission = async (aid, uid, title, details, price) => {
   let status = "Pending";
   let dateCreated = new Date().toLocaleDateString();
   let progressUpdates = [];
+  let reviewed = false;
 
   //inserts commission in database
   let commissionCollection = await commissions();
@@ -53,6 +54,7 @@ export const createCommission = async (aid, uid, title, details, price) => {
     status,
     dateCreated,
     progressUpdates,
+    reviewed,
   });
   if (insertedCommission.acknowledged != true || !insertedCommission.insertedId)
     throw `Error: could not insert commission in database`;
@@ -132,6 +134,7 @@ export const updateCommissionStatus = async (id, status) => {
   );
 
   if (!updateInfo.matchedCount) throw "Commission not found";
+  // FIX THIS I THINK
   if (!updateInfo.modifiedCount) throw "Status was not updated";
 
   return await getCommissionById(id);
