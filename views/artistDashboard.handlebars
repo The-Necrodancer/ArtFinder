@@ -51,14 +51,14 @@
   <section class="portfolio-section">
     <h3>My Portfolio</h3>
     <div class="current-portfolio">
-      {{#if artist.artistProfile.portfolio.length}}
-        <div class="portfolio-grid">
+      {{#if artist.artistProfile.portfolio.length}}        
+      <div class="portfolio-grid">
           {{#each artist.artistProfile.portfolio}}
             <div class="portfolio-item">
-              <img src="{{this}}" alt="Portfolio piece" />
-              <form action="/dashboard/artist/" method="POST" class="remove-image">
+              <img src="{{this}}" alt="Portfolio piece" class="portfolio-image" />
+              <form action="/dashboard/artist" method="POST" class="remove-image">
                 <input type="hidden" name="imageUrl" value="{{this}}" />
-                <button type="submit" class="remove-btn">Remove</button>
+                <button type="submit" class="remove-btn" aria-label="Remove Image">×</button>
               </form>
             </div>
           {{/each}}

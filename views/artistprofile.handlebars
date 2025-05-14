@@ -7,19 +7,22 @@
       class="profile-pic"
     />
     --->
-    <div>      <h2>{{artist.name}}</h2>
-      <p class="tags">{{artist.artistProfile.tags}}</p>
+    <div>      
+      <h2>{{artist.username}}</h2>
+      <p class="tags">{{artist.artistProfile.tags}}</p>      
       <p class="availability">{{#if artist.artistProfile.availability}}Available for
           Commissions{{else}}Currently Unavailable{{/if}}</p>
-      {{#if artist.artistProfile.availability}}
       <div class="action-buttons">
-        <button
-          class="commission-btn"
-          onclick="requestCommission('{{artist._id}}')"
-        >Request Commission</button>
-        <a href="/messages/new/{{artist._id}}" class="message-btn">Send Message</a>
+        {{#if artist.artistProfile.availability}}
+          <button
+            class="commission-btn"
+            onclick="requestCommission('{{artist._id}}')"
+          >Request Commission</button>
+        {{/if}}
+        {{#if user}}
+          <a href="/messages/new/{{artist._id}}" class="message-btn">Send Message</a>
+        {{/if}}
       </div>
-      {{/if}}
       <p class="rating">⭐
         {{artist.artistProfile.rating}}
         ({{length artist.artistProfile.reviewsReceived}}
@@ -29,16 +32,16 @@
 
   <section class="bio-tos">
     <h3>About the Artist</h3>
-    <p>{{artist.bio}}</p>
+    <p>{{artist.artistProfile.bio}}</p>
 
     <h3>Terms of Service</h3>
-    <p>{{artist.tos}}</p>
+    <p>{{artist.artistProfile.tos}}</p>
   </section>
 
   <section class="artwork-gallery">
     <h3>Sample Artworks</h3>
-    <div class="gallery-grid">
-      {{#each artist.portfolio}}
+    <div class="gallery-grid">      
+      {{#each artist.artistProfile.portfolio}}
         <img src="{{this}}" alt="Artwork sample" />
       {{/each}}
     </div>
