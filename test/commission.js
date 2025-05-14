@@ -37,6 +37,7 @@ const testCreateCommission = async(userList, artistList) => {
         commission.status = insertedCommission.status; 
         commission.dateCreated = insertedCommission.dateCreated; 
         commission.progressUpdates = insertedCommission.progressUpdates; 
+        commission.reviewed = false; 
         if(! lodash.isMatch(commission, insertedCommission)) {
             hasErrors = true; 
             console.log("ERROR IN createCommission"); 

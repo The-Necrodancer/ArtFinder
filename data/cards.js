@@ -347,3 +347,24 @@ export const getCardsByCommissions = async() => {
     result.sort((a, b) => b.numCommissions - a.numCommissions);
     return result; 
 }
+
+export const updateCardArtistProfile = async(aid) => {
+  let artist = await getArtistById(aid); 
+  let newArtistProfile = {
+      availability: artist.artistProfile.availability,
+      bio: artist.artistProfile.bio,
+      tos: artist.artistProfile.tos,
+      rating: artist.artistProfile.rating,
+      pricingInfo: artist.artistProfile.pricingInfo,
+      numCommissions: artist.artistProfile.createdCommissions.length
+  };
+  let cardCollection = await cards(); 
+  const updatedCard = await cardCollection.findOneAndUpdate(
+      {_id: new ObjectId(artist.artistProfile.cid)}, 
+      {$set: {"artistProfile": newArtistProfile}},
+      {returnDocument: "after"}
+  ); 
+  if(!updatedCard) throw 'Error: no card exists with given id.'; 
+  updatedCard._id = updatedCard._id.toString(); 
+  return updatedCard;
+}

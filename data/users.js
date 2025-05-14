@@ -30,6 +30,7 @@ import {
   checkUsername,
   checkRole,
 } from "../helpers.js";
+import { createCard } from "./cards.js";
 
 /* exported const */
 export const usernameMinLength = 3;
@@ -87,6 +88,16 @@ export const createUser = async (role, username, email, password) => {
   const insertedUser = await userCollection.insertOne(newUser);
   if (insertedUser.acknowledged != true || !insertedUser.insertedId) {
     throw `Error: could not create user ${username}.`;
+  }
+  if(role === "artist" ) {
+    let cid = await createCard(username, [], [], false, insertedUser.insertedId.toString()); 
+    const userCollection = await users();
+    const updateInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(insertedUser.insertedId) },
+      { $set: { "artistProfile.cid": cid } },
+      {returnDocument: "after"}
+    );
+    return updateInfo._id.toString(); 
   }
   return insertedUser.insertedId.toString();
 };

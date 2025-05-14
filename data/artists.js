@@ -9,13 +9,14 @@
     rating -> float
     createdCommissions -> an array of commission ids that the user is creating/ed for someone else 
     reviewsReceived -> an array of review ids that the artist has received 
+    cid -> card id 
     }
 */
 import { ObjectId } from "mongodb";
 import { users } from '../config/mongoCollection.js';
 import {throwWrongTypeError, checkId, checkPricingInfoItem, checkPriceValue, checkTag, checkBio, checkTos, checkImageUrl, checkTagList} from '../helpers.js'; 
 import { getAllUsers, getUserById } from "./users.js";
-import { createCard } from "./cards.js";
+import { createCard, updateCardArtistProfile } from "./cards.js";
 
 //exported variables:
 export const bioMinLength = 0; 
@@ -289,6 +290,7 @@ export const updateArtistProfile = async(aid, newProfile) => {
     ); 
     if(!updatedArtist) throw 'Error: could not update artist in database.'; 
     updatedArtist._id = updatedArtist._id.toString(); 
+    await updateCardArtistProfile(updatedArtist._id); 
     delete updatedArtist.password;
     return updatedArtist; 
 };

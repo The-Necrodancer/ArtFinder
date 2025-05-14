@@ -1,9 +1,10 @@
 import { ObjectId } from "mongodb";
-import { reviews, users } from '../config/mongoCollection.js';
+import { commissions, reviews, users } from '../config/mongoCollection.js';
 import { getArtistById } from "./artists.js";
 import { getUserById } from "./users.js";
 import {getCommissionById } from './commissions.js'; 
 import { checkComment, checkId, checkRating } from "../helpers.js";
+import { updateCardArtistProfile } from "./cards.js";
 
 export const commentMinLength = 10; 
 export const commentMaxLength = 512; 
@@ -79,6 +80,7 @@ export const createReview = async (cid, rating, comment) => {
 
     const a = await updateCommissionReviewStatus(cid, true);
 
+    await updateCardArtistProfile(aid); 
     return await getReviewById(insertedReview.insertedId.toString());
 };
 
@@ -139,7 +141,7 @@ export const updateReview = async(id, rating, comment) => {
     if (updatedArtist.matchedCount === 0 || updatedArtist.modifiedCount !== 1) {
         throw `Error: Could not update artist with ID ${aid}.`;
     }
-    
+    await updateCardArtistProfile(aid); 
     return await getReviewById(insertedReview.insertedId.toString()); 
 }
 

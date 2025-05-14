@@ -87,7 +87,7 @@ const testGetAllUsers = async (userList, totalNumUsers) => {
     for(let i=0; i<returnedList.length; i++) {
         if(!userList.find((usr) => {return lodash.isMatch(usr, returnedList[i]);} )) {
             console.log("FAILURE IN GETALLUSERS"); 
-            console.log("Extra user: ", usr); 
+            console.log("Extra user: "); 
             hasErrors=true;
         }
     }

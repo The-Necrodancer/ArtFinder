@@ -3,6 +3,7 @@ import { getArtistById } from "../data/artists.js";
 import { getUserById } from "../data/users.js";
 import { createReview, getReviewById } from "../data/reviews.js";
 import lodash from 'lodash'; 
+import { getCardById } from "../data/cards.js";
 const testReviewMethods = async(commissionList) => {
     let reviewList = await testCreateReview(commissionList); 
 }; 
@@ -70,6 +71,12 @@ const testCreateReview = async(commissionList) => {
                 ratingArr.push((await getReviewById(rev)).rating);
             }
             console.log("Ratings received: ", ratingArr)
+        }
+        let card = await getCardById(artist.artistProfile.cid); 
+        if(card.artistProfile.rating !== calcedAvg ) {
+            console.log("Error in create review "); 
+            console.log("Card not properly updated"); 
+            console.log("Card has rating ", String(card.artistProfile.rating), ", but expected rating ", String(calcedAvg)); 
         }
         if(!hasErrorThisTime) reviewList.push(insertedReview); 
     }
