@@ -37,18 +37,6 @@
       <a href="/messages" class="back-btn">Back to Messages</a>
     </div>
   </div>
-  <div class="message-container">
-    {{#if error}}
-      <div class="error-message">{{error}}</div>
-    {{/if}}
-
-    <div class="message-header">
-      <h2>{{message.subject}}</h2>
-      <div class="message-meta">
-        <p><strong>From:</strong> {{message.sender.username}}</p>
-        <p><strong>To:</strong> {{message.recipient.username}}</p>
-        <p><strong>Date:</strong> {{message.createdAt}}</p>
-      </div>
     </div>
 
     <div class="message-content">

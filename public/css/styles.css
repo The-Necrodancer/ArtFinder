@@ -1909,7 +1909,8 @@ section h3 {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.edit-btn, .edit-admin-btn,
+.edit-btn,
+.edit-admin-btn,
 .delete-btn {
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -1918,13 +1919,15 @@ section h3 {
   transition: all 0.2s ease;
 }
 
-.edit-btn , .edit-admin-btn{
+.edit-btn,
+.edit-admin-btn {
   background-color: var(--primary);
   color: white;
   border: none;
 }
 
-.edit-btn:hover , .edit-admin-btn:hover{
+.edit-btn:hover,
+.edit-admin-btn:hover {
   background-color: var(--primary-dark);
 }
 
@@ -1981,8 +1984,13 @@ section h3 {
   gap: 1rem;
 }
 
-.blog-post .admin-actions .edit-btn .edit-admin-btn
-.blog-post .admin-actions .delete-btn {
+.blog-post
+  .admin-actions
+  .edit-btn
+  .edit-admin-btn
+  .blog-post
+  .admin-actions
+  .delete-btn {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
@@ -2172,7 +2180,6 @@ button:hover {
   text-align: center;
 }
 
-
 .no-reports {
   text-align: center;
   color: #4a5568;
@@ -2186,7 +2193,7 @@ button:hover {
   left: 0;
   width: 250px;
   height: 80%;
-  background-color: var(--background); 
+  background-color: var(--background);
   padding: 30px;
   box-shadow: 0 2px 8px var(--shadow);
   /* z-index: 1000; */
@@ -2250,7 +2257,7 @@ button:hover {
   cursor: pointer;
   font-size: 2rem;
   display: flex;
-  align-items: center+1px;
+  align-items: center + 1px;
   justify-content: center;
   padding: 0;
   z-index: 1101;
@@ -2325,9 +2332,9 @@ button:hover {
   background-color: var(--danger);
 }
 .edit-admin-btn,
-.delete-user-btn{
+.delete-user-btn {
   margin-right: 0.5rem;
-  padding-bottom: .5rem;
+  padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
@@ -2339,4 +2346,136 @@ button:hover {
 .img-upload-img {
   max-width: 400px;
   height: auto;
+}
+
+/* Message Details Styles */
+.message-details-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.message-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+.message-header h2 {
+  color: var(--text);
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+}
+
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.message-participants p {
+  margin: 0.25rem 0;
+}
+
+.message-date {
+  font-style: italic;
+}
+
+.message-content {
+  padding: 1.5rem 0;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  min-height: 100px;
+  border-bottom: 1px solid var(--border);
+}
+
+.message-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.archive-btn,
+.reply-btn,
+.back-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.archive-btn {
+  background-color: var(--warning);
+  color: white;
+}
+
+.archive-btn:hover {
+  background-color: var(--warning-bg);
+  color: var(--warning);
+}
+
+.reply-btn {
+  background-color: var(--primary);
+  color: white;
+}
+
+.reply-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+.back-btn {
+  background-color: var(--text-light);
+  color: white;
+}
+
+.back-btn:hover {
+  background-color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .message-details-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .message-meta {
+    flex-direction: column;
+  }
+
+  .message-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .archive-btn,
+  .reply-btn,
+  .back-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Error message styling */
+.error-message {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+  padding: 1rem;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1rem;
+  text-align: center;
 }

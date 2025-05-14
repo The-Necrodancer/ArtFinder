@@ -116,9 +116,12 @@
               <div class="tags">
                 {{#each this.tags}}
                   <span class="tag">{{this}}</span>
-                {{/each}}
-              </div>
+                {{/each}}              </div>
             {{/if}}
+            
+            <div class="artist-actions">
+              <a href="/artist/{{this.uid}}" class="view-profile-btn">View Profile</a>
+            </div>
           </li>
         {{/each}}
       </ul>
