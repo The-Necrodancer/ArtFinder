@@ -14,13 +14,17 @@
           Commissions{{else}}Currently Unavailable{{/if}}</p>
       <div class="action-buttons">
         {{#if artist.artistProfile.availability}}
+          {{#if (ne user._id artist._id)}}
           <button
             class="commission-btn"
             onclick="requestCommission('{{artist._id}}')"
           >Request Commission</button>
+          {{/if}}
         {{/if}}
         {{#if user}}
+          {{#if (ne user._id artist._id)}}
           <a href="/messages/new/{{artist._id}}" class="message-btn">Send Message</a>
+          {{/if}}
         {{/if}}
       </div>
       <p class="rating">⭐
