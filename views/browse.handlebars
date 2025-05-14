@@ -67,7 +67,7 @@
         </div>
         <h3>Filter by Number of Commissions</h3> 
         <div>
-          <label for="">Min Number: <span id="min-commission-number-value">0</span></label>
+          <label>Min Number: <span id="min-commission-number-value">0</span></label>
           <input
             type="range"
             id="min-commission-number"
@@ -103,7 +103,7 @@
         <label for="style-select">Style:</label>
         <select data-placeholder="Begin typing a tag to filter..." multiple class="chosen-select" name="tags" id="style-select">
           <option value=""></option>
-          {{#each possibleTagsList}} 
+          {{#each possibleTagsList}}
             <option value="{{this}}">{{this}}</option>
           {{/each}}
         </select>
@@ -152,7 +152,7 @@
                 {{#if this.socialsLinks}}
                   <div class="social-links">
                     {{#each this.socialsLinks}}
-                      <a href="{{this}}" target="_blank" rel="noopener noreferrer">{{this.}}</a>
+                      <a href="{{this.}}" target="_blank" rel="noopener noreferrer">{{this.}}</a>
                     {{/each}}
                   </div>
                 {{/if}}
