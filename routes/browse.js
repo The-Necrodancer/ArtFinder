@@ -2,12 +2,13 @@ import { Router } from "express";
 import { getCardsByRating } from "../data/cards.js";
 import { userMiddleware } from "../middleware.js";
 import { checkCardList } from "../helpers.js";
+import { possibleTagsList } from "../data/artists.js";
 const router = Router(); 
 
 router
 .get("/", userMiddleware, async (req, res) => {
     let featuredCards; 
-    if(req.body.cardList) 
+    if(req.body && req.body.cardList) 
         featuredCards = checkCardList(req.body.cardList);
      else 
         featuredCards = await getCardsByRating();
@@ -16,7 +17,9 @@ router
         if (Array.isArray(elem.socialsLinks)) {
         elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
         }
-        res.render("browse", {
+        
+    });  
+    res.render("browse", {
             pageTitle: "Browse Artists",
             headerTitle: "Browse Artists",
             navLink: [
@@ -25,8 +28,7 @@ router
             ],
             cards: featuredCards,
             possibleTagsList: possibleTagsList
-        });
-    });   
+        }); 
 })
 .post("/", userMiddleware, async(req, res) => {
     console.log(req.body)
