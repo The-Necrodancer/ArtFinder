@@ -17,6 +17,7 @@ import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from './api.js';
 import artistDashboardRoutes from "./artistDashboard.js"
+import browseRoutes from './browse.js'
 import { getCardsByRating, getNewestCards } from "../data/cards.js";
 
 
@@ -134,25 +135,8 @@ const constructorMethod = (app) => {
   app.use("/comments", commentRoutes);
 
   //app.use("/", authRoutes); // This will handle both /signout and /logout routes
-  app.get("/browse", userMiddleware, async (req, res) => {
-  let featuredCards = await getCardsByRating();
-  featuredCards = featuredCards.slice(0, 50);
-  featuredCards.forEach((elem) => {
-    if (Array.isArray(elem.socialsLinks)) {
-      elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
-    }
-  });
-  res.render("browse", {
-    pageTitle: "Browse Artists",
-    headerTitle: "Browse Artists",
-    navLink: [
-      { link: "/", text: "Home" },
-      { link: "/cards/create", text: "Add Artist" },
-    ],
-    cards: featuredCards,
-    possibleTagsList: possibleTagsList
-  });
-});
+  app.use("/browse", browseRoutes);
+
   app.get("/search", userMiddleware, async (req, res) => {
     // Parse query parameters
     const {
