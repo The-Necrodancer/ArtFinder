@@ -104,7 +104,8 @@
           <p>Status: {{this.status}}</p>
           <p>Client: {{this.client}}</p>
           <p>Price: ${{this.price}}</p>
-          <form action="/commission/update-status" method="POST">
+          <form action="/commission/{{this._id}}" method="GET">
+            <!--
             <input type="hidden" name="commissionId" value="{{this._id}}">
             <select name="status">
               <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
@@ -112,7 +113,8 @@
               <option value="Completed" {{#if (equals this.status "Completed")}}selected{{/if}}>Completed</option>
               <option value="Cancelled" {{#if (equals this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
             </select>
-            <button type="submit">Update</button>
+            -->
+            <button type="submit">Update Commission</button>
           </form>
         </div>
       {{/each}}
