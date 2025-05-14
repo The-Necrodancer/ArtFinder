@@ -50,12 +50,17 @@ document
     const maxPriceInput = document.getElementById("max-price");
     const minRatingInput = document.getElementById("min-rating");
     const maxRatingInput = document.getElementById("max-rating");
+    const minCommissionInput = document.getElementById("min-commission-number");
+    const maxCommissionInput = document.getElementById("max-commission-number");
     const availability = document.getElementById("availability-select").value.trim();
+    const sortMethodInput = document.getElementById("sorting-method-select").value.trim();
 
     const lowPrice = minPriceInput.value.trim();
     const highPrice = maxPriceInput.value.trim();
     const lowRating = minRatingInput.value.trim();
     const highRating = maxRatingInput.value.trim();
+    const minCommission = minCommissionInput.value.trim();
+    const maxCommission = maxCommissionInput.value.trim();
     // https:stackoverflow.com/questions/21937353/javascript-passing-an-encoded-url-to-window-location-href/21937720
     // Redirect to the search results page with the search input and type as query parameters
     const params = new URLSearchParams();
@@ -68,7 +73,9 @@ document
     params.append("low-rating", lowRating);
     params.append("high-rating", highRating);
     params.append("available", availability);
-
+    params.append("min-commission", minCommission);
+    params.append("max-commission", maxCommission);
+    params.append("sort", sortMethodInput);
     // Redirect with all query parameters
     window.location.href = `/search?${params.toString()}`;
   });
@@ -167,6 +174,7 @@ document
 
     minCommissionValue.textContent = minVal;
     maxCommissionValue.textContent = maxVal;
+    toggleSearchButton()
   }
   function toggleSearchButton() {
     const artist = searchInput.value.trim();
@@ -176,12 +184,17 @@ document
     const lowRating = minRatingInput.value.trim();
     const highRating = maxRatingInput.value.trim();
     const available = availability.value.trim();
-    searchButton.disabled = artist === "" && styles.length === 0 && lowPrice === "0" && highPrice === "1000" && lowRating === "0" && highRating === "5" && available === "";
+    const minCommission = minCommissionInput.value.trim();
+    const maxCommission = maxCommissionInput.value.trim();
+    const sortMethodInput = document.getElementById("sorting-method-select").value.trim();
+    searchButton.disabled = artist === "" && styles.length === 0 && lowPrice === "0" && highPrice === "1000" && lowRating === "0" && highRating === "5" && available === ""
+    && minCommission === 0 && maxCommission === 100 && sortMethodInput === "";
   }
   // Activate on startup
   updatePriceLabels();
   updateRatingLabels();
   updateCommissionLabels();
+  toggleSearchButton()
 
   searchInput.addEventListener("input", toggleSearchButton);
   styleSelect.addEventListener("change", toggleSearchButton);
