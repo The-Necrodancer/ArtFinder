@@ -73,14 +73,9 @@ export const createReview = async (cid, rating, comment) => {
         { $set: { reviewsGiven: user.reviewsGiven } }
     );
 
-<<<<<<< HEAD
-    // Debug: Output the result of the update operation
-    //console.log("Update result:", updatedUser);
-=======
     if (updatedUser.matchedCount === 0 || updatedUser.modifiedCount !== 1) {
         throw "Error: Could not add review to user.";
     }
->>>>>>> 2bf20d3aa23abd884b548637d1d8a4bf0ed3dec0
 
     const a = await updateCommissionReviewStatus(cid, true);
 
