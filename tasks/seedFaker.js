@@ -3,8 +3,8 @@
  * quickly seed the database with some initial data for testing purposes.
  */
 
-import { dbConnection, closeConnection } from "./config/mongoConnection.js";
-import { createUser } from "./data/users.js";
+import { dbConnection, closeConnection } from "../config/mongoConnection.js";
+import { createUser } from "../data/users.js";
 import { faker } from "@faker-js/faker";
 
 const NUM_ADMINS = 10;
@@ -20,7 +20,7 @@ const seed = async () => {
   for (let i = 0; i < NUM_ADMINS; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
-    const username = faker.internet.userName({ firstName, lastName }).toLowerCase();
+    const username = faker.internet.username({ firstName, lastName }).toLowerCase();
     const email = faker.internet.email({ firstName, lastName }).toLowerCase();
     const password = "Admin@123";
 
@@ -36,7 +36,7 @@ const seed = async () => {
   for (let i = 0; i < NUM_USERS; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
-    const username = faker.internet.userName({ firstName, lastName }).toLowerCase();
+    const username = faker.internet.username({ firstName, lastName }).toLowerCase();
     const email = faker.internet.email({ firstName, lastName }).toLowerCase();
     const password = "User@123";
 
@@ -52,7 +52,7 @@ const seed = async () => {
   for (let i = 0; i < NUM_ARTISTS; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
-    const username = faker.internet.userName({ firstName, lastName }).toLowerCase();
+    const username = faker.internet.username({ firstName, lastName }).toLowerCase();
     const email = faker.internet.email({ firstName, lastName }).toLowerCase();
     const password = "Artist@123";
 
