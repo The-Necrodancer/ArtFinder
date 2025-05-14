@@ -69,7 +69,11 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
     console.log(req.body);
 
     // Destructure inputs
-    const { name, socials, portfolio, tags } = req.body;
+    // const { name, socials, portfolio, tags } = req.body;
+    const { name, socials, tags} = req.body;
+    const tagsArray = JSON.parse(tags);
+    console.log(tagsArray);
+    console.log("tags:", typeof tagsArray);
 
     const cleanedName = xss(name);
 
@@ -79,12 +83,14 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
         cleanedSocials.push(xss(socials[i]));
       }
     }
+    /*
     let cleanedPortfolio = [];
     if (Array.isArray(portfolio)) {
       for (let i = 0; i < portfolio.length; i++) {
         cleanedPortfolio.push(xss(portfolio[i]));
       }
     }
+    */
     let cleanedTags = [];
     if (Array.isArray(tags)) {
       for (let i = 0; i < tags.length; i++) {
@@ -100,12 +106,13 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
       }));
 
     // Create the card
+    const isUserRecommended = true
     const card = await createCard(
       cleanedName,
       socialLinks,
-      cleanedPortfolio,
+      /*cleanedPortfolio,*/
       cleanedTags,
-      true,
+      isUserRecommended,
       req.session.user._id
     );
 

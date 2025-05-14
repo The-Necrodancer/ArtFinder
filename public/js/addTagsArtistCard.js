@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tagElem.appendChild(removeBtn);
       selectedTagsDiv.appendChild(tagElem);
     });
-    tagsHiddenInput.value = selectedTags.join(',');
+    tagsHiddenInput.value = JSON.stringify(selectedTags);
   }
 
   addTagButton.onclick = function() {
