@@ -8,6 +8,7 @@ import {
   likeComment,
 } from "../data/comments.js";
 import { userMiddleware } from "../middleware.js";
+import xss from "xss";
 
 const router = Router();
 
@@ -27,11 +28,17 @@ router.get("/:targetId", async (req, res) => {
 router.post("/", userMiddleware, async (req, res) => {
   try {
     const { content, targetId, targetType } = req.body;
+
+    // Sanitize inputs
+    const cleanedContent = xss(content);
+    const cleanedTargetId = xss(targetId);
+    const cleanedTargetType = xss(targetType);
+
     const comment = await createComment(
-      content,
+      cleanedContent,
       req.session.user._id,
-      targetId,
-      targetType
+      cleanedTargetId,
+      cleanedTargetType
     );
     res.json(comment);
   } catch (e) {
@@ -43,7 +50,8 @@ router.post("/", userMiddleware, async (req, res) => {
 router.put("/:id", userMiddleware, async (req, res) => {
   try {
     const { content } = req.body;
-    const comment = await updateComment(req.params.id, content);
+    const cleanedContent = xss(content)
+    const comment = await updateComment(req.params.id, cleanedContent);
     res.json(comment);
   } catch (e) {
     res.status(400).json({ error: e.toString() });
