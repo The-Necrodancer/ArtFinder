@@ -14,8 +14,9 @@ import {
   superuserMiddleware,
   signoutMiddleware,
 } from "./middleware.js";
+import logoutRoutes from "./routes/logout.js";
 
-/************************************************************************************/ 
+/************************************************************************************/
 // Adding hanblebars helpers
 import handlebarsHelpers from "handlebars-helpers";
 import Handlebars from "handlebars";
@@ -46,7 +47,7 @@ app.use(
     name: "AuthenticationState",
     secret: "some secret string!",
     resave: false,
-  saveUninitialized: false,
+    saveUninitialized: false,
   })
 );
 app.use(rewriteUnsupportedBrowserMethods);
@@ -68,8 +69,8 @@ app.use("/reports", userMiddleware);
 // Protect admin routes
 app.use("/dashboard/admin", superuserMiddleware);
 
-// Add signout middleware
-app.use("/logout", signoutMiddleware);
+// Configure signout/logout routes
+app.use("/", logoutRoutes);
 
 app.engine(
   "handlebars",
