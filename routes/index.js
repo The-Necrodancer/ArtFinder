@@ -1,4 +1,4 @@
-import { getArtistById } from "../data/artists.js";
+import { getArtistById, possibleTagsList } from "../data/artists.js";
 import registerRoutes from "./register.js";
 import loginRoutes from "./login.js";
 import reportRoutes from "./reports.js";
@@ -150,6 +150,7 @@ const constructorMethod = (app) => {
       { link: "/cards/create", text: "Add Artist" },
     ],
     cards: featuredCards,
+    possibleTagsList: possibleTagsList
   });
 });
   app.get("/search", userMiddleware, async (req, res) => {

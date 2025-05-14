@@ -2181,7 +2181,7 @@ button:hover {
 
 /* Filter Sidebar Used: https://www.w3schools.com/howto/howto_js_rangeslider.asp*/
 #sidebar-filter {
-  position: fixed;
+  /* position: fixed; */
   top: 163px;
   left: 0;
   width: 250px;
@@ -2189,9 +2189,45 @@ button:hover {
   background-color: var(--background); 
   padding: 30px;
   box-shadow: 0 2px 8px var(--shadow);
-  z-index: 1000;
+  /* z-index: 1000; */
   transition: width 0.3s, min-width 0.3s;
-  overflow: hidden;
+ /*  overflow: hidden; */
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#browse-page-body {
+  display: flex;
+}
+
+#browse-main {
+  flex-grow: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+#artists {
+  list-style: none;
+}
+
+#filter-form-submit-div {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+#browse-search-form-div {
+  width: 100%;
+}
+#card-list-div {
+  width: 100%;
+  flex-grow: 100%;
+  align-items: center;
+}
+#card-list-title {
+  text-align: center;
 }
 
 #sidebar-filter.collapsed {

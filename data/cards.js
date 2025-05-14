@@ -368,3 +368,33 @@ export const updateCardArtistProfile = async(aid) => {
   updatedCard._id = updatedCard._id.toString(); 
   return updatedCard;
 }
+
+const isCardList = (cardList) => {
+  if(!Array.isArray(cardList)) 
+    throwWrongTypeError("card list", "Array", typeof cardList); 
+  for(const card of cardList) {
+    if(typeof card !== 'object')
+      throwWrongTypeError("card", "Object", typeof card); 
+    if(card.constructor !== Object)
+      throwWrongTypeError("card", "Object", String(card.constructor)); 
+    checkName(card.name); 
+    checkTagList(card.tags); 
+    checkId(card.uid); 
+    if(!card.artistProfile) {
+      checkSocialsLinks(card.socialsLinks);
+    } else {
+      checkBio(card.artistProfile.bio); 
+      checkTos(card.artistProfile.tos); 
+      if(typeof card.artistProfile.rating !== 'number' 
+        || card.artistProfile.rating < 0 
+        || card.artistProfile.rating > 5) 
+        throw "Error: rating is not valid";
+      if(typeof card.artistProfile.numCommissions !== "number" 
+        || card.artistProfile.numCommissions < 0
+      )
+      throw "Error: numCommissions is not valid"; 
+      if(!card.socialsLinks) 
+        checkSocialsLinks(card.socialsLinks);
+    }
+  }
+}
