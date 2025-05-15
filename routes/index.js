@@ -18,7 +18,8 @@ import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from "./api.js";
 import artistDashboardRoutes from "./artistDashboard.js";
 import browseRoutes from "./browse.js";
-import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
+import {getMinMaxPriceString} from "../helpers.js";
+import { getCardsByRating, getNewestCards, filterCards, getCardsByCommissions} from "../data/cards.js";
 import { el } from "@faker-js/faker";
 
 const constructorMethod = (app) => {
@@ -188,14 +189,22 @@ const constructorMethod = (app) => {
     cards = await filterCards(filters);
     if (sortMethod === "byRating") {
       cards = await getCardsByRating(cards);
+    } else if (sortMethod === "byNewest") {
+      cards = await getNewestCardsInput(cards);
     } else if (sortMethod === "byCommissions") {
       cards = await getCardsByCommissions(cards);
     }
   } catch (e) {
     throw(e || e.message);
   }
-
-  cards = cards.slice(0, 50)
+  
+  cards = cards.slice(0, 50);
+  cards.forEach((elem) => {
+          if (Array.isArray(elem.socialsLinks)) {
+              elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
+          }
+          elem.priceRange = getMinMaxPriceString(elem);
+        });
   res.render("search", {
     pageTitle: "Search Artists",
     headerTitle: "Search Artists",

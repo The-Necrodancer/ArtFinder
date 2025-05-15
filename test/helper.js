@@ -116,7 +116,7 @@ export const createRandomArtistProfile = () => {
     //maybe randomly generate tags 
     const numTags = faker.number.int({min: 1, max: 10}); 
     profileObj.tags = []; 
-    while(profileObj.length < numTags) {
+    while(profileObj.tags.length < numTags) {
         let tag = faker.helpers.arrayElement(possibleTagsList); 
         if(!profileObj.tags.includes(tag))
             profileObj.tags.push(tag); 
@@ -167,9 +167,9 @@ export const createRandomCard = async(userList) => {
         if(!tags.includes(tag)) 
             tags.push(tag); 
     }
-
     let uid = faker.helpers.arrayElement(userList)._id; 
-    return await createCard(name, socialsLinks, tags, true, uid); 
+    let createdCard = await createCard(name, socialsLinks, tags, true, uid); 
+    return createdCard;
 }
 
 
