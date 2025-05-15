@@ -14,6 +14,7 @@ import { getCardById } from "../data/cards.js";
 import { createReview } from "../data/reviews.js";
 import { createReport } from "../data/reports.js";
 import { createBlog } from "../data/blogs.js";
+import { createMessage } from "../data/messages.js";
 
 const NUM_ADMINS = 10;
 const NUM_USERS = 100;
@@ -194,8 +195,23 @@ const seed = async () => {
     }
   }
 
-
-  
+  for(let i=0; i<30; i++) {
+    let sid = faker.helpers.arrayElement(userList)._id;
+    let rid = faker.helpers.arrayElement(userList)._id;
+    while(rid===sid)
+      faker.helpers.arrayElement(userList);
+    try {
+      await createMessage(
+        sid, 
+        rid, 
+        faker.lorem.words({min: 10, max:12}),
+       faker.lorem.words({min: 30, max:50}),
+      )
+      console.log("Successfully created message: "); 
+    } catch (e) {
+      console.log("Error in creating message: ", String(e));
+    }
+  }
   await closeConnection();
 };
 
