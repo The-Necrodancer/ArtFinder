@@ -175,7 +175,7 @@ export const containsEmail = async (email) => {
     throw "Error: ${email} is not a valid email address.";
   const userCollection = await users();
   return !(await userCollection.findOne({ 
-    username: { $regex: new RegExp(`^${email}$`, 'i') }
+    email: { $regex: new RegExp(`^${email}$`, 'i') }
   })) ? false : true;
 };
 
