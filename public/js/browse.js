@@ -195,14 +195,15 @@ document
   updateRatingLabels();
   updateCommissionLabels();
   toggleSearchButton()
-
+  const sortMethodInput = document.getElementById("sorting-method-select");
   searchInput.addEventListener("input", toggleSearchButton);
   styleSelect.addEventListener("change", toggleSearchButton);
   minPriceInput.addEventListener("input", updatePriceLabels);
   maxPriceInput.addEventListener("input", updatePriceLabels);
   minRatingInput.addEventListener("input", updateRatingLabels);
   maxRatingInput.addEventListener("input", updateRatingLabels);
-  availability.addEventListener("input", toggleSearchButton);
+  availability.addEventListener("change", toggleSearchButton);
+  sortMethodInput.addEventListener("change", toggleSearchButton);
   minCommissionInput.addEventListener("input", updateCommissionLabels);
   maxCommissionInput.addEventListener("input", updateCommissionLabels);
 });
