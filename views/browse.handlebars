@@ -67,19 +67,19 @@
         </div>
         <h3>Filter by Number of Commissions</h3> 
         <div>
-          <label for="">Min Number: <span id="min-commission-number-value">0</span></label>
+          <label>Min Number: <span id="min-commission-number-value">0</span></label>
           <input
             type="range"
             id="min-commission-number"
             name="min-commission-number"
             min="0"
-            max="5"
-            step=".1"
+            max="100"
+            step="5"
             value="0"
           />
         </div>
         <div>
-          <label>Max Number: <span id="max-rating-value">100</span></label>
+          <label>Max Number: <span id="max-commission-number-value">100</span></label>
           <input
             type="range"
             id="max-commission-number"
@@ -100,10 +100,11 @@
         </div>
         <!-- modified from https://stackoverflow.com/questions/30190588/html-select-multiple-as-dropdown -->
         <h3>Tags</h3>
-          <select data-placeholder="Begin typing a tag to filter..." multiple class="chosen-select" name="tags">
+        <label for="style-select">Style:</label>
+        <select data-placeholder="Begin typing a tag to filter..." multiple class="chosen-select" name="tags" id="style-select">
           <option value=""></option>
-          {{#each possibleTagsList}} 
-          <option> {{this}} </option>
+          {{#each possibleTagsList}}
+            <option value="{{this}}">{{this}}</option>
           {{/each}}
         </select>
         <h3>Sort Method</h3> 
@@ -113,9 +114,6 @@
             <option value="newest">By Newest First</option>
             <option value="byCommissions">By Number of Commissions</option>
           </select>
-        </div>
-        <div id="filter-form-submit-div">
-          <button type="submit">Filter</button>
         </div>
       </form>
     </div>
@@ -155,7 +153,7 @@
                 {{#if this.socialsLinks}}
                   <div class="social-links">
                     {{#each this.socialsLinks}}
-                      <a href="{{this}}" target="_blank" rel="noopener noreferrer">{{this.}}</a>
+                      <a href="{{this.}}" target="_blank" rel="noopener noreferrer">{{this.}}</a>
                     {{/each}}
                   </div>
                 {{/if}}
