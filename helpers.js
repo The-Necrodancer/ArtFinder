@@ -135,14 +135,14 @@ export const checkTagList = (tags) => {
     if(!Array.isArray(tags)) {
         throwWrongTypeError("tag list", "Array", typeof tags); 
     }
-    const checktedTags = []; 
+    const checkedTags = []; 
     for(let tag of tags) {
         tag = checkTag(tag); 
-        if(checktedTags.includes(tag)) 
+        if(checkedTags.includes(tag)) 
             throw `Error: cannot have duplicate tags`; 
-        checktedTags.push(tag); 
+        checkedTags.push(tag); 
     }
-    return checktedTags; 
+    return checkedTags; 
 }
 
 export const throwWrongTypeError = (varName, expected, received) => {

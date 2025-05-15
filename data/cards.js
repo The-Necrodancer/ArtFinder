@@ -33,7 +33,7 @@ fields:
 */
 export const cardKeys = ['name', 'socialsLinks',  'artistProfile', 'tags']; 
 export const cardArtistProfileKeys = ['availability', 'bio', 'tos', 'rating', 'portfolio', 'pricingInfo'];
-export const filterKeys = ['priceRange', 'tags', 'rating', 'availability', 'numCommissions'];  
+export const filterKeys = ['priceRange', 'tags', 'rating', 'availability', 'numCommissions', 'name'];  
 //min max 
 
 export const nameMinLength = 2;
@@ -62,6 +62,8 @@ export const createCard = async (
 ) => {
   name = checkName(name);
   tags = checkTagList(tags);
+
+
   if (typeof isUserRecommended !== "boolean")
     throwWrongTypeError(
       "is-user-recommended",
@@ -70,10 +72,10 @@ export const createCard = async (
     );
   socialsLinks = checkSocialsLinks(socialsLinks, isUserRecommended);
   let newCard = {
-    name,
-    socialsLinks,
-    tags,
-    isUserRecommended,
+    name: name,
+    socialsLinks: socialsLinks,
+    tags: tags,
+    isUserRecommended: isUserRecommended,
   };
 
   if (isUserRecommended) {
@@ -91,7 +93,6 @@ export const createCard = async (
       numCommissions: artist.artistProfile.createdCommissions.length
     };
   }
-
   let cardCollection = await cards();
   const insertedCard = await cardCollection.insertOne(newCard);
   if (insertedCard.acknowledged != true || !insertedCard.insertedId) {
@@ -248,17 +249,17 @@ export const filterCards = async(filters) => {
     if(typeof filters.availability !== 'boolean')
       throwWrongTypeError("availability", 'boolean', typeof filters.availability); 
   }
-  if ('name' in filters) {
-    cards = cards.filter(card => card.name.toLowerCase().includes(filters.name.toLowerCase()));
-  }
 
   let isOfficial = ('rating' in filters) || ('priceRange' in filters) || ('availability' in filters); 
 
   let cards = await getAllCards();
   let result = [];
+  if ('name' in filters) {
+        cards = cards.filter(card => card.name.toLowerCase().includes(filters.name.trim().toLowerCase()));
+  }
   for (let card of cards) {
     if(isOfficial) {
-      if(card.isUserRecommended) continue; 
+      if(card.isUserRecommended) continue;
       if('priceRange' in filters) {
         let hasMatch = false; 
         for(const price of Object.values(card.artistProfile.pricingInfo)) {
