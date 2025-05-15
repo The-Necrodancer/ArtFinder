@@ -1,19 +1,27 @@
-<main>
-  <h2>Edit Artist Profile</h2>
+<div class="edit-artist-profile-container">
+  <h1>Edit Artist Profile</h1>
   {{#if error}}
     <div class="error-message">{{error}}</div>
   {{/if}}
   <form action="/dashboard/admin/user/{{user._id}}/edit-artist" method="POST">
-    <label for="bio">Bio:</label>
-    <textarea id="bio" name="bio">{{user.artistProfile.bio}}</textarea>
+    <div class="form-group">
+      <label for="bio">Bio:</label>
+      <textarea id="bio" name="bio" rows="5">{{user.artistProfile.bio}}</textarea>
+    </div>
 
-    <label for="tos">Terms of Service:</label>
-    <textarea id="tos" name="tos">{{user.artistProfile.tos}}</textarea>
+    <div class="form-group">
+      <label for="tos">Terms of Service:</label>
+      <textarea id="tos" name="tos" rows="5">{{user.artistProfile.tos}}</textarea>
+    </div>
 
-    <label for="availability">Available for Commissions:</label>
-    <input type="checkbox" id="availability" name="availability" value="true" {{#if user.artistProfile.availability}}checked{{/if}}>
+    <div class="form-group">
+      <label for="availability">Available for Commissions:</label>
+      <input type="checkbox" id="availability" name="availability" value="true" {{#if user.artistProfile.availability}}checked{{/if}}>
+    </div>
 
-    <button type="submit">Update Profile</button>
-    <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+    <div class="form-actions">
+      <button type="submit">Update Profile</button>
+      <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+    </div>
   </form>
-</main>
+</div>
