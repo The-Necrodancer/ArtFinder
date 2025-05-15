@@ -9,7 +9,7 @@ const router = Router();
 
 router
 .get("/", userMiddleware, async (req, res) => {
-    console.log(await getAllArtists());
+    //console.log(await getAllArtists());
     //console.log("TEST: ", await getUserById('68251032fcba73f9d09823df')); 
     let featuredCards; 
     if(req.body && req.body.cardList) 
