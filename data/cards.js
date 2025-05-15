@@ -330,20 +330,6 @@ export const getNewestCards = async () => {
   return cardList;
 };
 
-export const getNewestCardsInput = async (cardList) => {
-  cards = checkCardList(cardList);
-  let result = [];
-  for (let card of cards) {
-      let count = card._id.toString();
-      result.push({
-          object: artist,
-          id: count
-      });
-  }
-  result.sort((a, b) => a.id.localeCompare(b.id));
-  return result; 
-};
-
 /**
  * Gets cards in an ordered list based on rating.
  * @returns {Array} An ordered array of cards by their ratings.
