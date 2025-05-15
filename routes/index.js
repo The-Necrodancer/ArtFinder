@@ -19,7 +19,7 @@ import apiRoutes from "./api.js";
 import artistDashboardRoutes from "./artistDashboard.js";
 import browseRoutes from "./browse.js";
 import {getMinMaxPriceString} from "../helpers.js";
-import { getCardsByRating, getNewestCards, filterCards, getCardsByCommissions} from "../data/cards.js";
+import { getCardsByRating, getNewestCardsInput, filterCards, getCardsByCommissions} from "../data/cards.js";
 import { el } from "@faker-js/faker";
 
 const constructorMethod = (app) => {
@@ -203,7 +203,11 @@ const constructorMethod = (app) => {
           if (Array.isArray(elem.socialsLinks)) {
               elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
           }
-          elem.priceRange = getMinMaxPriceString(elem);
+          if (elem.artistProfile && elem.artistProfile.pricingInfo) {
+            elem.priceRange = getMinMaxPriceString(elem);
+          } else {
+            elem.priceRange = "No Range Found";
+          }
         });
   res.render("search", {
     pageTitle: "Search Artists",

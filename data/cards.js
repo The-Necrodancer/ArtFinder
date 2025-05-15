@@ -345,26 +345,27 @@ export const getCardsByCommissions = async(cards) => {
     for (let card of cards) {
         let count = card.artistProfile.numCommissions;
         result.push({
-            object: artist,
+            object: card,
             numCommissions: count
         });
     }
+
     result.sort((a, b) => b.numCommissions - a.numCommissions);
-    return result; 
+    return result.map(entry => entry.object); 
 }
 
 export const getNewestCardsInput = async (cardList) => {
-  cards = checkCardList(cardList);
+  const checkedList = checkCardList(cardList);
   let result = [];
-  for (let card of cards) {
+  for (let card of checkedList) {
       let count = card._id.toString();
       result.push({
-          object: artist,
+          object: card,
           id: count
       });
   }
   result.sort((a, b) => a.id.localeCompare(b.id));
-  return result; 
+  return result.map(entry => entry.object); 
 };
 
 export const updateCardArtistProfile = async(aid) => {
