@@ -1,12 +1,12 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const commentForm = document.querySelector(".comment-form");
-  const statusForm = document.querySelector(".status-form");
-  const resolveForm = document.querySelector(".resolve-form");
-  const deleteBtn = document.querySelector(".delete-report-btn");
+$(document).ready(function () {
+  const commentForm = $(".comment-form");
+  const statusForm = $(".status-form");
+  const resolveForm = $(".resolve-form");
+  const deleteBtn = $(".delete-report-btn");
 
   // Handle delete button
-  if (deleteBtn) {
-    deleteBtn.addEventListener("click", async function (e) {
+  if (deleteBtn.length) {
+    deleteBtn.on("click", function (e) {
       e.preventDefault();
 
       if (
@@ -19,143 +19,134 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const reportId = window.location.pathname.split("/")[2];
 
-      try {
-        const response = await fetch(`/reports/${reportId}`, {
-          method: "DELETE",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to delete report");
-        }
-
-        window.location.href = "/reports";
-      } catch (error) {
-        console.error("Error:", error);
-        alert(error.message || "Failed to delete report. Please try again.");
-      }
+      $.ajax({
+        url: `/reports/${reportId}`,
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+        },
+        success: function () {
+          window.location.href = "/reports";
+        },
+        error: function (xhr) {
+          const errorMsg =
+            xhr.responseJSON?.error ||
+            "Failed to delete report. Please try again.";
+          console.error("Error:", errorMsg);
+          alert(errorMsg);
+        },
+      });
     });
   }
-
   // Handle comment submission
-  if (commentForm) {
-    commentForm.addEventListener("submit", async function (e) {
+  if (commentForm.length) {
+    commentForm.on("submit", function (e) {
       e.preventDefault();
       const reportId = window.location.pathname.split("/")[2];
-      const commentText = this.querySelector("#comment").value;
+      const commentText = $(this).find("#comment").val();
 
-      try {
-        const response = await fetch(`/reports/${reportId}/comment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ comment: commentText }),
-        });
+      $.ajax({
+        url: `/reports/${reportId}/comment`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ comment: commentText }),
+        success: function (result) {
+          // Add new comment to the page
+          const commentsSection = $(".comments-section");
+          const newComment = $("<div>").addClass("comment").html(`
+            <div class="comment-content">${commentText}</div>
+            <div class="comment-meta">
+                By ${result.username} on ${new Date().toLocaleString()}
+            </div>
+          `);
 
-        if (!response.ok) throw new Error("Failed to submit comment");
-
-        const result = await response.json();
-
-        // Add new comment to the page
-        const commentsSection = document.querySelector(".comments-section");
-        const newComment = document.createElement("div");
-        newComment.className = "comment";
-        newComment.innerHTML = `
-                    <div class="comment-content">${commentText}</div>
-                    <div class="comment-meta">
-                        By ${result.username} on ${new Date().toLocaleString()}
-                    </div>
-                `;
-
-        commentsSection.insertBefore(newComment, commentForm);
-        this.reset();
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Failed to submit comment. Please try again.");
-      }
+          commentsSection.prepend(newComment);
+          commentForm[0].reset();
+        },
+        error: function (xhr) {
+          const errorMsg =
+            xhr.responseJSON?.error ||
+            "Failed to submit comment. Please try again.";
+          console.error("Error:", errorMsg);
+          alert(errorMsg);
+        },
+      });
     });
   }
-
   // Handle status updates
-  if (statusForm) {
-    statusForm.addEventListener("submit", async function (e) {
+  if (statusForm.length) {
+    statusForm.on("submit", function (e) {
       e.preventDefault();
       const reportId = window.location.pathname.split("/")[2];
-      const newStatus = this.querySelector("#status").value;
+      const newStatus = $(this).find("#status").val();
 
-      try {
-        const response = await fetch(`/reports/${reportId}/status`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        });
+      $.ajax({
+        url: `/reports/${reportId}/status`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ status: newStatus }),
+        success: function () {
+          // Update status badge
+          const statusBadge = $(".report-status");
+          statusBadge.text(newStatus);
+          statusBadge.attr("class", `report-status ${newStatus.toLowerCase()}`);
 
-        if (!response.ok) throw new Error("Failed to update status");
-
-        // Update status badge
-        const statusBadge = document.querySelector(".report-status");
-        statusBadge.textContent = newStatus;
-        statusBadge.className = `report-status ${newStatus.toLowerCase()}`;
-
-        // If status is Resolved, hide the forms
-        if (newStatus === "Resolved") {
-          document.querySelector(".admin-actions").style.display = "none";
-          if (commentForm) commentForm.style.display = "none";
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Failed to update status. Please try again.");
-      }
+          // If status is Resolved, hide the forms
+          if (newStatus === "Resolved") {
+            $(".admin-actions").hide();
+            commentForm.hide();
+          }
+        },
+        error: function (xhr) {
+          const errorMsg =
+            xhr.responseJSON?.error ||
+            "Failed to update status. Please try again.";
+          console.error("Error:", errorMsg);
+          alert(errorMsg);
+        },
+      });
     });
   }
-
   // Handle resolution submission
-  if (resolveForm) {
-    resolveForm.addEventListener("submit", async function (e) {
+  if (resolveForm.length) {
+    resolveForm.on("submit", function (e) {
       e.preventDefault();
       const reportId = window.location.pathname.split("/")[2];
-      const resolution = this.querySelector("#resolution").value;
+      const resolution = $(this).find("#resolution").val();
 
-      try {
-        const response = await fetch(`/reports/${reportId}/resolve`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ resolution }),
-        });
+      $.ajax({
+        url: `/reports/${reportId}/resolve`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ resolution }),
+        success: function () {
+          // Add resolution section
+          const reportDetails = $(".report-details");
+          const resolutionSection = $("<div>").addClass("resolution-section")
+            .html(`
+            <h3>Resolution</h3>
+            <div class="resolution-content">
+                ${resolution}
+            </div>
+            <p class="resolution-date"><strong>Resolved on:</strong> ${new Date().toLocaleString()}</p>
+          `);
 
-        if (!response.ok) throw new Error("Failed to submit resolution");
+          // Insert before comments section
+          const commentsSection = $(".comments-section");
+          resolutionSection.insertBefore(commentsSection);
 
-        // Add resolution section
-        const reportDetails = document.querySelector(".report-details");
-        const resolutionSection = document.createElement("div");
-        resolutionSection.className = "resolution-section";
-        resolutionSection.innerHTML = `
-                    <h3>Resolution</h3>
-                    <div class="resolution-content">
-                        ${resolution}
-                    </div>
-                    <p class="resolution-date"><strong>Resolved on:</strong> ${new Date().toLocaleString()}</p>
-                `;
-
-        // Insert before comments section
-        const commentsSection = document.querySelector(".comments-section");
-        reportDetails.insertBefore(resolutionSection, commentsSection);
-
-        // Hide admin actions and comment form
-        document.querySelector(".admin-actions").style.display = "none";
-        if (commentForm) commentForm.style.display = "none";
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Failed to submit resolution. Please try again.");
-      }
+          // Hide admin actions and comment form
+          $(".admin-actions").hide();
+          commentForm.hide();
+        },
+        error: function (xhr) {
+          const errorMsg =
+            xhr.responseJSON?.error ||
+            "Failed to submit resolution. Please try again.";
+          console.error("Error:", errorMsg);
+          alert(errorMsg);
+        },
+      });
     });
   }
 });

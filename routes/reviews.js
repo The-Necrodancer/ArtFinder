@@ -107,7 +107,7 @@ router.post("/create", async (req, res) => {
         res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
         });
     }
 });
@@ -129,7 +129,7 @@ router.post("/update", async (req, res) => {
         res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
         });
     }
 })

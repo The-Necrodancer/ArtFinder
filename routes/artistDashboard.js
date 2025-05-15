@@ -85,7 +85,7 @@ router
       return res.status(500).render("error", {
         pageTitle: "Error",
         headerTitle: "Error",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [{ link: "/", text: "Home" }],
       });
     }
@@ -123,7 +123,7 @@ router
       return res.status(400).render("error", {
         pageTitle: "Error",
         headerTitle: "Error: ",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [{ link: "/", text: "Home" }],
       });
     }
@@ -154,7 +154,7 @@ router
       return res.status(500).render("error", {
         pageTitle: "Error",
         headerTitle: "Error",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [{ link: "/", text: "Home" }],
       });
     }

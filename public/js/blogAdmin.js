@@ -1,62 +1,52 @@
-document.addEventListener("DOMContentLoaded", () => {
+$(document).ready(() => {
   // Edit blog functionality
-  const editBlogForm = document.getElementById("edit-blog-form");
-  if (editBlogForm) {
-    editBlogForm.addEventListener("submit", async (e) => {
+  const editBlogForm = $("#edit-blog-form");
+  if (editBlogForm.length) {
+    editBlogForm.on("submit", (e) => {
       e.preventDefault();
-      const blogId = editBlogForm.dataset.blogId;
-      const formData = new FormData(editBlogForm);
+      const blogId = editBlogForm.data("blogId");
+      const formData = new FormData(editBlogForm[0]);
 
-      try {
-        const response = await fetch(`/blogs/update/${blogId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: formData.get("title"),
-            content: formData.get("content"),
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update blog");
-        }
-        window.location.href = "/blogs";
-      } catch (error) {
-        alert(error.message);
-      }
+      $.ajax({
+        url: `/blogs/update/${blogId}`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          title: formData.get("title"),
+          content: formData.get("content"),
+        }),
+        success: () => {
+          window.location.href = "/blogs";
+        },
+        error: (xhr) => {
+          alert(xhr.responseJSON?.error || "Failed to update blog");
+        },
+      });
     });
   }
-
   // Delete blog functionality
-  const deleteBlogButtons = document.querySelectorAll(".delete-blog-btn");
-  deleteBlogButtons.forEach((button) => {
-    button.addEventListener("click", async (e) => {
-      e.preventDefault();
+  $(".delete-blog-btn").on("click", function (e) {
+    e.preventDefault();
 
-      if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) {
-        return;
-      }
+    if (
+      !confirm(
+        "Are you sure you want to delete this blog post? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
 
-      const blogId = button.dataset.blogId;
-      try {
-        const response = await fetch(`/blogs/delete/${blogId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to delete blog");
-        }
-        
-        // Redirect to blogs list
+    const blogId = $(this).data("blogId");
+    $.ajax({
+      url: `/blogs/delete/${blogId}`,
+      method: "POST",
+      contentType: "application/json",
+      success: () => {
         window.location.href = "/blogs";
-      } catch (error) {
-        alert(error.message);
-      }
+      },
+      error: (xhr) => {
+        alert(xhr.responseJSON?.error || "Failed to delete blog");
+      },
     });
   });
 

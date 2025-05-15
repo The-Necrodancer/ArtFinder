@@ -18,7 +18,8 @@ import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from "./api.js";
 import artistDashboardRoutes from "./artistDashboard.js";
 import browseRoutes from "./browse.js";
-import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
+import {getMinMaxPriceString} from "../helpers.js";
+import { getCardsByRating, getNewestCards, filterCards, getCardsByCommissions} from "../data/cards.js";
 import { el } from "@faker-js/faker";
 
 const constructorMethod = (app) => {
@@ -114,7 +115,7 @@ const constructorMethod = (app) => {
       return res.status(500).render("error", {
         pageTitle: "Error",
         headerTitle: "Error",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [{ link: "/", text: "Home" }],
       });
     }
@@ -188,14 +189,22 @@ const constructorMethod = (app) => {
     cards = await filterCards(filters);
     if (sortMethod === "byRating") {
       cards = await getCardsByRating(cards);
+    } else if (sortMethod === "byNewest") {
+      cards = await getNewestCardsInput(cards);
     } else if (sortMethod === "byCommissions") {
       cards = await getCardsByCommissions(cards);
     }
   } catch (e) {
     throw(e || e.message);
   }
-
-  cards = cards.slice(0, 50)
+  
+  cards = cards.slice(0, 50);
+  cards.forEach((elem) => {
+          if (Array.isArray(elem.socialsLinks)) {
+              elem.socialsLinks = elem.socialsLinks.map((linkObj) => linkObj.url || linkObj);
+          }
+          elem.priceRange = getMinMaxPriceString(elem);
+        });
   res.render("search", {
     pageTitle: "Search Artists",
     headerTitle: "Search Artists",
@@ -256,7 +265,7 @@ const constructorMethod = (app) => {
       return res.status(404).render("error", {
         pageTitle: "Artist Not Found",
         headerTitle: "Artist Not Found",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [
           { link: "/", text: "Home" },
           { link: "/browse", text: "Browse Artists" },
@@ -284,7 +293,7 @@ const constructorMethod = (app) => {
         res.status(400).render("error", {
           pageTitle: "Cannot Send Message",
           headerTitle: "Cannot Send Message",
-          error:
+          errorMessage:
             "You cannot send messages to yourself. Please select a different recipient.",
           navLink: [
             { link: "/messages", text: "Back to Messages" },
@@ -294,13 +303,12 @@ const constructorMethod = (app) => {
       }
     }
   );
-
-  // Catch-all route for invalid paths
+  // For invalid paths.
   app.use((req, res) => {
     res.status(404).render("error", {
       pageTitle: "404 - Page Not Found",
       headerTitle: "Page Not Found",
-      error: "The page you are looking for does not exist.",
+      errorMessage: `The page ${req.originalUrl} you are looking for does not exist.`,
       navLink: [
         { link: "/", text: "Home" },
         { link: "/browse", text: "Browse Artists" },
