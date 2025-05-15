@@ -19,6 +19,7 @@ import apiRoutes from "./api.js";
 import artistDashboardRoutes from "./artistDashboard.js";
 import browseRoutes from "./browse.js";
 import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
+import { el } from "@faker-js/faker";
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -185,10 +186,15 @@ const constructorMethod = (app) => {
   let cards = [];
   try {
     cards = await filterCards(filters);
+    if (sortMethod === "byRating") {
+      cards = await getCardsByRating(cards);
+    } else if (sortMethod === "byCommissions") {
+      cards = await getCardsByCommissions(cards);
+    }
   } catch (e) {
     throw(e || e.message);
   }
-  
+
   cards = cards.slice(0, 50)
   res.render("search", {
     pageTitle: "Search Artists",
