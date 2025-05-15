@@ -12,12 +12,16 @@ import { createCommission } from "../data/commissions.js";
 import { createRandomArtistProfile, createRandomCard } from "../test/helper.js";
 import { getCardById } from "../data/cards.js";
 import { createReview } from "../data/reviews.js";
+import { createReport } from "../data/reports.js";
+import { createBlog } from "../data/blogs.js";
 
 const NUM_ADMINS = 10;
 const NUM_USERS = 100;
 const NUM_ARTISTS = 50;
 const NUM_COMMISSIONS = 30; 
 const NUM_CARDS = 25; 
+const NUM_REPORTS = 5; 
+const NUM_BLOGS = 5; 
 
 const seed = async () => {
   const db = await dbConnection();
@@ -31,6 +35,7 @@ const seed = async () => {
     "admin@artfinder.com",
     "Admin@123" 
   );
+  let adminList = []; 
   for (let i = 0; i < NUM_ADMINS; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
@@ -41,7 +46,8 @@ const seed = async () => {
     const password = "Admin@123";
 
     try {
-      await createUser("admin", username, email, password);
+      let admin = await createUser("admin", username, email, password);
+      adminList.push(admin);
       console.log(`Admin created: ${username}`);
     } catch (e) {
       console.error(`Error creating admin ${username}:`, e);
@@ -135,12 +141,19 @@ const seed = async () => {
             rating: faker.number.int({min:1, max:5}), 
             comment: faker.lorem.words({min: 10, max:50})
         }
-
-        let insertedReview = await createReview(
-            review.cid, 
-            review.rating, 
-            review.comment
-        ); 
+        let insertedReview;
+        try{
+          insertedReview = await createReview(
+              review.cid, 
+              review.rating, 
+              review.comment
+          ); 
+        } catch(e) {
+          if(e === "Error: You have already reviewed this artist. Please update your existing review.")
+            i--; 
+          else
+            console.log("Error in creating review: ", e.toString());
+        }
         reviewList.push(insertedReview); 
     }
 
@@ -153,6 +166,22 @@ const seed = async () => {
     }
     
   }
+
+  for(let i=0; i<NUM_REPORTS; i++) {
+    try {
+      let report = await createReport(
+      userList[i]._id, 
+      artistList[i]._id, 
+      faker.lorem.words({min: 10, max:12}),
+      faker.lorem.words({min: 30, max:50})
+    )
+      console.log("Successfully created report: ", report.subject); 
+    } catch (e) {
+      console.log("Error in creating report: ", String(e));
+    }
+  }
+
+
 
   
   await closeConnection();
