@@ -89,6 +89,9 @@ app.engine(
       equals: function (a, b) {
         return a === b;
       },
+      ne: function (a, b) {
+        return a !== b;
+      },
       length: function (array) {
         return array ? array.length : 0;
       },

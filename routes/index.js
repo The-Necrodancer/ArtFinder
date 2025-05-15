@@ -15,11 +15,10 @@ import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
 import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
-import apiRoutes from './api.js';
-import artistDashboardRoutes from "./artistDashboard.js"
-import browseRoutes from './browse.js'
+import apiRoutes from "./api.js";
+import artistDashboardRoutes from "./artistDashboard.js";
+import browseRoutes from "./browse.js";
 import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
-
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -60,9 +59,8 @@ const constructorMethod = (app) => {
     res.render("home", renderObj);
   });
 
-  
   app.use("/api", apiRoutes);
-  app.use("/dashboard/artist", artistDashboardRoutes); 
+  app.use("/dashboard/artist", artistDashboardRoutes);
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {
@@ -130,13 +128,16 @@ const constructorMethod = (app) => {
   app.use("/commission", commissionRoutes);
   app.use("/cards", cardRoutes);
   app.use("/reviews", reviewRoutes);
-
   app.use("/blogs", blogRoutes);
   app.use("/comments", commentRoutes);
 
   //app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.use("/browse", browseRoutes);
 
+  // All API routes should come before the catch-all route
+  app.use("/api", apiRoutes);
+
+  // Place remaining routes before the catch-all
   app.get("/search", userMiddleware, async (req, res) => {
   // Parse query parameters
   const {
@@ -187,7 +188,8 @@ const constructorMethod = (app) => {
   } catch (e) {
     throw(e || e.message);
   }
-
+  
+  cards = cards.slice(0, 50)
   res.render("search", {
     pageTitle: "Search Artists",
     headerTitle: "Search Artists",
@@ -218,12 +220,14 @@ const constructorMethod = (app) => {
         throw new Error("Artist not found");
       }
       console.log("Artist data:", JSON.stringify(artist, null, 2));
-      let newPricingInfo = []; 
-      for(const [key, value] of Object.entries(artist.artistProfile.pricingInfo)) {
-        newPricingInfo.push({type: key, price: value});
+      let newPricingInfo = [];
+      for (const [key, value] of Object.entries(
+        artist.artistProfile.pricingInfo
+      )) {
+        newPricingInfo.push({ type: key, price: value });
       }
       artist.artistProfile.pricingInfo = newPricingInfo;
-      console.log("NEW PRICING: " , artist.artistProfile.pricingInfo);
+      console.log("NEW PRICING: ", artist.artistProfile.pricingInfo);
       let toRender = {
         pageTitle: `${artist.username}'s Profile`,
         headerTitle: `${artist.username}'s Profile`,
@@ -272,9 +276,14 @@ const constructorMethod = (app) => {
         res.redirect("/dashboard/artist");
       } catch (e) {
         res.status(400).render("error", {
-          pageTitle: "Error",
-          headerTitle: "Error",
-          error: e.toString(),
+          pageTitle: "Cannot Send Message",
+          headerTitle: "Cannot Send Message",
+          error:
+            "You cannot send messages to yourself. Please select a different recipient.",
+          navLink: [
+            { link: "/messages", text: "Back to Messages" },
+            { link: "/browse", text: "Browse Artists" },
+          ],
         });
       }
     }
