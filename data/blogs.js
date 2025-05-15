@@ -18,7 +18,7 @@ export const createBlog = async (title, content, authorId) => {
     updatedAt: new Date(),
   };
   const { insertedId } = await blogCollection.insertOne(newBlog);
-  console.log(insertedId);
+
   return { ...newBlog, _id: insertedId };
 };
 

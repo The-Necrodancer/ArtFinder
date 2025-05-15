@@ -181,6 +181,18 @@ const seed = async () => {
     }
   }
 
+  for(let i=0; i<NUM_BLOGS; i++) {
+    try {
+      let blog = await createBlog(
+        faker.lorem.words({min: 10, max:12}),
+       faker.lorem.words({min: 30, max:50}),
+        faker.helpers.arrayElement(adminList)
+      )
+      console.log("Successfully created blog post: ", blog._id); 
+    } catch (e) {
+      console.log("Error in creating blog post: ", String(e));
+    }
+  }
 
 
   
