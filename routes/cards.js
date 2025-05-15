@@ -106,7 +106,7 @@ router.post("/create", userMiddleware, async (req, res) => {
 });
 
 // Get card by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", userMiddleware, async (req, res) => {
   try {
     const card = await getCardById(req.params.id);
     res.render("cardDetails", {
