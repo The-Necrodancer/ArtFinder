@@ -18,7 +18,7 @@ import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from "./api.js";
 import artistDashboardRoutes from "./artistDashboard.js";
 import browseRoutes from "./browse.js";
-import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
+import { getCardsByRating, getNewestCards, filterCards, getCardsByCommissions} from "../data/cards.js";
 import { el } from "@faker-js/faker";
 
 const constructorMethod = (app) => {
