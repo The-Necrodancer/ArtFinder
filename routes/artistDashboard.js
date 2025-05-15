@@ -10,6 +10,7 @@ import { roleMiddleware } from "../middleware.js";
 import { commissions } from "../config/mongoCollection.js";
 import { getUnreadCount, getUserMessages } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
+import { getCommissionById } from "../data/commissions.js";
 
 router
   .get("/", roleMiddleware(["artist"]), async (req, res) => {
@@ -23,7 +24,24 @@ router
           status: { $in: ["Pending", "In Progress"] },
         })
         .toArray();
+        const pastCommissions = await commissionCollection
+        .find({
+          aid: artist._id,
+          status: { $in: ["Completed"] },
+        })
+        .toArray();
 
+        const cancelledCommissions = await commissionCollection
+        .find({
+          aid: artist._id,
+          status: { $in: ["Cancelled"] },
+        })
+        .toArray();
+
+        let requestedCommisions = []; 
+        for(const cid of artist.requestedCommissions) {
+            requestedCommisions.push(await getCommissionById(cid));
+        }
       // Get recent messages and user details
       const allMessages = await getUserMessages(req.session.user._id);
       const recentMessages = allMessages
@@ -56,8 +74,11 @@ router
         ],
         artist: artist,
         commissions: activeCommissions,
+        pastCommissions,
+        cancelledCommissions,
         recentMessages,
-        unreadCount,
+        requestedCommisions,
+        unreadCount
       });
     } catch (e) {
       return res.status(500).render("error", {

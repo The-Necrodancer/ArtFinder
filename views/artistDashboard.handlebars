@@ -120,6 +120,106 @@
       {{/each}}
     </div>
   </section>
+  <section class="commissions-section">
+    <h3>Past Commissions</h3>
+    <div class="commission-list">
+      {{#each pastCommissions}}
+        <div class="commission-card">
+          <h4>{{this.title}}</h4>
+          <p>Status: {{this.status}}</p>
+          <p>Client: {{this.client}}</p>
+          <p>Price: ${{this.price}}</p>
+          <form action="/commission/{{this._id}}" method="GET">
+            <!--
+            <input type="hidden" name="commissionId" value="{{this._id}}">
+            <select name="status">
+              <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
+              <option value="In Progress" {{#if (equals this.status "In Progress")}}selected{{/if}}>In Progress</option>
+              <option value="Completed" {{#if (equals this.status "Completed")}}selected{{/if}}>Completed</option>
+              <option value="Cancelled" {{#if (equals this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+            </select>
+            -->
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+  <section class="commissions-section">
+    <h3>Cancelled Commissions</h3>
+    <div class="commission-list">
+      {{#each cancelledCommissions}}
+        <div class="commission-card">
+          <h4>{{this.title}}</h4>
+          <p>Status: {{this.status}}</p>
+          <p>Client: {{this.client}}</p>
+          <p>Price: ${{this.price}}</p>
+          <form action="/commission/{{this._id}}" method="GET">
+            <!--
+            <input type="hidden" name="commissionId" value="{{this._id}}">
+            <select name="status">
+              <option value="Pending" {{#if (equals this.status "Pending")}}selected{{/if}}>Pending</option>
+              <option value="In Progress" {{#if (equals this.status "In Progress")}}selected{{/if}}>In Progress</option>
+              <option value="Completed" {{#if (equals this.status "Completed")}}selected{{/if}}>Completed</option>
+              <option value="Cancelled" {{#if (equals this.status "Cancelled")}}selected{{/if}}>Cancelled</option>
+            </select>
+            -->
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+  <section class="active-commissions">
+    <h3>Commissions I've Requested</h3>
+    {{#each requestedCommissions}}
+      <div class="commission-card">
+        <h4>{{this.title}}</h4>
+        <p>Artist: {{this.artist}}</p>
+        <p>Status: {{this.status}}</p>
+        <p>Price: ${{this.price}}</p>
+        {{#if (equals this.status "Completed")}}
+          {{#if this.reviewed}}
+            <form action="/reviews/update" method="POST">
+              <input type="hidden" name="reviewId" value="{{this.reviewId}}" />
+              <div class="form-group">
+                <label for="rating">Rating:</label>
+                <select name="rating" required>
+                  <option value="1" {{#if (equals this.rating 1)}}selected{{/if}}>1</option>
+                  <option value="2" {{#if (equals this.rating 2)}}selected{{/if}}>2</option>
+                  <option value="3" {{#if (equals this.rating 3)}}selected{{/if}}>3</option>
+                  <option value="4" {{#if (equals this.rating 4)}}selected{{/if}}>4</option>
+                  <option value="5" {{#if (equals this.rating 5)}}selected{{/if}}>5</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="comment">Review:</label>
+                <textarea name="comment" required>{{this.comment}}</textarea>
+              </div>
+              <button type="submit">Update Review</button>
+            </form>
+          {{else}}
+            <form action="/reviews/create" method="POST">
+              <input type="hidden" name="commissionId" value="{{this._id}}" />
+              <div class="form-group">
+                <label for="rating">Rating:</label>
+                <select name="rating" required>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="comment">Review:</label>
+                <textarea name="comment" required></textarea>
+              </div>
+              <button type="submit">Submit Review</button>
+            </form>
+          {{/if}}
+        {{/if}}
+      </div>
+    {{/each}}
+  </section>
 </main>
 <!-- cloudinary upload widget -->
 <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>

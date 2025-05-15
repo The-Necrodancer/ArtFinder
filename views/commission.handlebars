@@ -1,10 +1,10 @@
 <main>
   <h2>{{#if commission}}Commission Details{{else}}Request Commission from {{artist.username}}{{/if}}</h2>
   {{#if error}}
-    <div class="error-message">{{error}}</div>
+    <div class="error-message"><p>{{error}}</p></div>
   {{/if}}
 
-  {{#if commission}}
+  {{#if commissiosn}}
     <div class="commission-details">
       <h3>Commission Details</h3>
       <p><strong>Title:</strong> {{commission.title}}</p>
@@ -42,7 +42,7 @@
                 <option value="Cancelled" {{#if (equals commission.status "Cancelled")}}selected{{/if}}>Cancelled</option>
               </select>
               <button type="submit">Update Status</button>
-              <a href="/dashboard/artist" class="cancel-btn">Cancel</a>
+              <a href="/dashboard/artist" class="cancel-btn">Return to Dashboard</a>
             </form>
           {{/if}}
         </div>
