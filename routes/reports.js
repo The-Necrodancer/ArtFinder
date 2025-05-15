@@ -153,7 +153,7 @@ router.get("/:id", userMiddleware, async (req, res) => {
     return res.status(404).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/reports", text: "Back to Reports" }],
     });
   }
@@ -211,7 +211,7 @@ router.post("/:id/status", superuserMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -233,7 +233,7 @@ router.post("/:id/resolve", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -257,7 +257,7 @@ router.delete("/:id", userMiddleware, async (req, res) => {
     res.status(403).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });

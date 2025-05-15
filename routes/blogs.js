@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
     res.status(500).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -50,7 +50,7 @@ router.get("/:id", async (req, res) => {
     res.status(404).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -71,7 +71,7 @@ router.post("/", roleMiddleware(["admin"]), async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -97,7 +97,7 @@ router.post("/update/:id", roleMiddleware(["admin"]), async (req, res) => {
     return res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -112,7 +112,7 @@ router.post("/delete/:id", roleMiddleware(["admin"]), async (req, res) => {
     return res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }

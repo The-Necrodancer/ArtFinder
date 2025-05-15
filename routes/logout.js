@@ -17,7 +17,7 @@ router.get("/signout", signoutMiddleware, async (req, res) => {
     return res.status(500).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: "Could not load signout page",
+      errorMessage: "Could not load signout page",
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -43,7 +43,7 @@ router.get("/signout/confirm", signoutMiddleware, async (req, res) => {
     return res.status(500).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: "An error occurred during sign out. Please try again.",
+      errorMessage: "An error occurred during sign out. Please try again.",
       navLink: [{ link: "/", text: "Home" }],
     });
   }

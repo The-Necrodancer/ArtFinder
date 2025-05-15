@@ -42,25 +42,25 @@ router.get("/request/:artistId", /*ensureAuthenticated,*/ async (req, res) => {
             return res.status(404).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         if(typeof e === 'string' && e == "Error: invalid object ID") 
             return res.status(400).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: String(e)
+            errorMessage: String(e)
         });
     }
 
     try {
         // console.log("Artist ID:", req.params.artistId);
         if(req.session.user._id === artistId) {
-            return res.status(403).render("error", {error: "You cannot request a commmission for yourself."});
+            return res.status(403).render("error", {errorMessage: "You cannot request a commmission for yourself."});
         }
         res.render("commission", { 
             pageTitle: "Request Commission",
@@ -117,18 +117,18 @@ router.post("/request", async (req, res) => {
             return res.status(404).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         if(typeof e === 'string' && e == "Error: invalid object ID") 
             return res.status(400).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: String(e)
+            errorMessage: String(e)
         });
     }
 
@@ -159,7 +159,7 @@ router.post("/request", async (req, res) => {
             ],
             artist, 
             hasError: true,
-            error: e.toString()
+            errorMessage: e.toString()
         });
     }
 
@@ -184,7 +184,7 @@ router.post("/request", async (req, res) => {
         return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: String(e),
+            errorMessage: String(e),
         });
     }
 })
@@ -205,7 +205,7 @@ router.get("/:id", async (req, res) => {
             return res.status(401).render("login", {
                 pageTitle: "Login Required",
                 headerTitle: "Login Required",
-                error: "You must be logged in to access this page",
+                errorMessage: "You must be logged in to access this page",
                 navLink: [{ link: "/", text: "Home" }],
             });
 
@@ -227,7 +227,7 @@ router.get("/:id", async (req, res) => {
         return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
         });
     }
 });
@@ -253,7 +253,7 @@ router.post("/update-status", async (req, res) => {
             return res.status(403).render("error", {
                 pageTitle: "Access Denied",
                 headerTitle: "Access Denied",
-                error: "You do not have permission to view this page",
+                errorMessage: "You do not have permission to view this page",
                 navLink: [
                 { link: "/", text: "Home" },
                 { link: `/dashboard/${req.session.user.role}`, text: "Dashboard" },
@@ -271,7 +271,7 @@ router.post("/update-status", async (req, res) => {
         return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
         });
     }
 })

@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
     res.status(500).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -44,7 +44,7 @@ router.get("/new", async (req, res) => {
     res.status(500).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -120,7 +120,7 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
     res.redirect(`/cards/${card._id}`);
   } catch (e) {
     console.log("Error creating card:", e);
-    res.status(500).render("error", { error: e.toString() });
+    res.status(500).render("error", { errorMessage: e.toString() });
   }
 })
 
@@ -138,7 +138,7 @@ router.get("/:id", async (req, res) => {
     res.status(404).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
