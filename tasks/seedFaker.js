@@ -23,19 +23,7 @@ const seed = async () => {
   const db = await dbConnection();
   await db.dropDatabase();
   console.log("Database dropped successfully!");
-  await createUser(
-    "admin",
-    "admin",
-    "admin@artfinder.com",
-    "Admin@123" // bcrypt.hash is handled inside createUser
-  );
   // Create Admin Users
-   await createUser(
-    "admin",
-    "admin",
-    "admin@artfinder.com",
-    "Admin@123" 
-  );
   for (let i = 0; i < NUM_ADMINS; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
