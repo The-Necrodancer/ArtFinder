@@ -62,6 +62,7 @@ export const createCard = async (
 ) => {
   name = checkName(name);
   tags = checkTagList(tags);
+  console.log("UID:",uid);
 
 
   if (typeof isUserRecommended !== "boolean")
@@ -95,9 +96,10 @@ export const createCard = async (
   }
   let cardCollection = await cards();
   const insertedCard = await cardCollection.insertOne(newCard);
-  if (insertedCard.acknowledged != true || !insertedCard.insertedId) {
-    throw `Error: could not create user.`;
+  if (!insertedCard.acknowledged || !insertedCard.insertedId) {
+    throw `Error: could not create card.`;
   }
+  console.log("HERES' THE ID ITS COOL", insertedCard.insertedId);
   return insertedCard.insertedId.toString();
 };
 

@@ -77,12 +77,16 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
 
     const cleanedName = xss(name);
 
+    let cleanedSocials = socials;
+    /*
+    console.log("socials:", socials);
     let cleanedSocials = [];
     if (Array.isArray(socials)) {
       for (let i = 0; i < socials.length; i++) {
         cleanedSocials.push(xss(socials[i]));
       }
     }
+      */
     /*
     let cleanedPortfolio = [];
     if (Array.isArray(portfolio)) {
@@ -92,9 +96,9 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
     }
     */
     let cleanedTags = [];
-    if (Array.isArray(tags)) {
-      for (let i = 0; i < tags.length; i++) {
-        cleanedTags.push(xss(tags[i]));
+    if (Array.isArray(tagsArray)) {
+      for (let i = 0; i < tagsArray.length; i++) {
+        cleanedTags.push(xss(tagsArray[i]));
       }
     }
 
@@ -105,6 +109,8 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
         url: xss(url), // Sanitize URL
       }));
 
+      console.log("socialLinks", socialLinks)
+      console.log("Tags", cleanedTags)
     // Create the card
     const isUserRecommended = true
     const card = await createCard(
@@ -117,7 +123,7 @@ router.post("/create", /*userMiddleware,*/ async (req, res) => {
     );
 
     // Redirect to the card details page after creation
-    res.redirect(`/cards/${card._id}`);
+    res.redirect(`/cards/${card}`);
   } catch (e) {
     console.log("Error creating card:", e);
     res.status(500).render("error", { errorMessage: e.toString() });
