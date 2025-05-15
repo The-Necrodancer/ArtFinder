@@ -1,67 +1,103 @@
-{{#if hasError}}
-  <p class="error_message"> {{loginError}} </p>
-{{/if}}
-<main>
+<main class="register-container">
+  <h1>Register</h1>
+  {{#if hasError}}
+    <div class="error-message">{{loginError}}</div>
+  {{/if}}
   <form id="register_form" action="/register" method="post">
-    <div class="form_control">
-      <label id="username_label" for="username_input"> Username</label>
-      <input type="text" name="username_input" id="username_input" />
+    <div class="form-group">
+      <label for="username_input">Username</label>
+      <input
+        type="text"
+        name="username_input"
+        id="username_input"
+        required
+        minlength="3"
+        maxlength="50"
+      />
     </div>
-    <div class="form_control">
-      <label id="email_label" for="email_input"> Email </label>
-      <input type="text" name="email_input" id="email_input" />
+    <div class="form-group">
+      <label for="email_input">Email</label>
+      <input type="email" name="email_input" id="email_input" required />
     </div>
-    <div class="form_control">
-      <label id="password_label" for="password_input"> Password </label>
+    <div class="form-group">
+      <label for="password_input">Password</label>
       <div class="password-container">
-        <input type="password" name="password_input" id="password_input" />
+        <input
+          type="password"
+          name="password_input"
+          id="password_input"
+          required
+          minlength="8"
+          autocomplete="new-password"
+          aria-describedby="password-requirements"
+        />
         <button
           type="button"
           class="password-toggle"
-          aria-label="Toggle password visibility"
+          aria-label="Show password"
+          aria-controls="password_input"
+          aria-pressed="false"
         >
-          <i class="far fa-eye"></i>
+          <i class="far fa-eye" aria-hidden="true"></i>
         </button>
+        <span id="password-requirements" class="visually-hidden">
+          Password must be at least 8 characters long
+        </span>
       </div>
     </div>
-    <div class="form_control">
-      <label id="confirm_password_label" for="confirm_password_input">
-        Confirm Password
-      </label>
+    <div class="form-group">
+      <label for="confirm_password_input">Confirm Password</label>
       <div class="password-container">
         <input
           type="password"
           name="confirm_password_input"
           id="confirm_password_input"
+          required
+          minlength="8"
+          autocomplete="new-password"
+          aria-describedby="confirm-password-requirements"
         />
         <button
           type="button"
           class="password-toggle"
-          aria-label="Toggle password visibility"
+          aria-label="Show confirm password"
+          aria-controls="confirm_password_input"
+          aria-pressed="false"
         >
-          <i class="far fa-eye"></i>
+          <i class="far fa-eye" aria-hidden="true"></i>
         </button>
+        <span id="confirm-password-requirements" class="visually-hidden">
+          Please confirm your password
+        </span>
       </div>
     </div>
-    <div class="form_control">
-      <p> Are you an artist? </p>
-      <label id="is_artist_label" for="is_artist_input_yes"> Yes </label>
-      <input
-        type="radio"
-        name="is_artist_input"
-        id="is_artist_input_yes"
-        value="Yes"
-      />
-      <label id="is_artist_label" for="is_artist_input_no"> No </label>
-      <input
-        type="radio"
-        name="is_artist_input"
-        id="is_artist_input_no"
-        value="No"
-      />
-    </div>
-    <div class="form_control">
-      <button class="submit_button" type="submit"> Create Account </button>
+    <fieldset class="form-group">
+      <legend>Are you an artist?</legend>
+      <div class="radio-group">
+        <div class="radio-item">
+          <input
+            type="radio"
+            name="is_artist_input"
+            id="is_artist_input_yes"
+            value="Yes"
+            required
+          />
+          <label for="is_artist_input_yes">Yes</label>
+        </div>
+        <div class="radio-item">
+          <input
+            type="radio"
+            name="is_artist_input"
+            id="is_artist_input_no"
+            value="No"
+            required
+          />
+          <label for="is_artist_input_no">No</label>
+        </div>
+      </div>
+    </fieldset>
+    <div class="form-actions">
+      <button type="submit" class="submit-button">Create Account</button>
     </div>
   </form>
 </main>

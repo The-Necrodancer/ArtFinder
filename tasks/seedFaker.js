@@ -28,15 +28,7 @@ const seed = async () => {
   const db = await dbConnection();
   await db.dropDatabase();
   console.log("Database dropped successfully!");
-
   // Create Admin Users
-   await createUser(
-    "admin",
-    "admin",
-    "admin@artfinder.com",
-    "Admin@123" 
-  );
-  let adminList = []; 
   for (let i = 0; i < NUM_ADMINS; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();

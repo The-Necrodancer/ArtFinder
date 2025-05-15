@@ -1,15 +1,14 @@
-<main>
-  <div class="error-container">
-    <h2>Error</h2>
-    {{#if errorMessage}}
-      <div class="error-message">
-        {{errorMessage}}
-      </div>
-    {{else}}
-      <div class="error-message">
-        An unknown error occurred.
-      </div>
-    {{/if}}
+<main class="error-container">
+  <h1>Error</h1>
+  {{#if errorMessage}}
+    <div class="error-message" role="alert">
+      {{errorMessage}}
+    </div>
+  {{else}}
+    <div class="error-message" role="alert">
+      An unknown error occurred.
+    </div>
+  {{/if}}
 
     <div class="error-actions">
       {{#each navLink}}

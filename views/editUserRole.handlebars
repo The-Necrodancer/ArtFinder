@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 <main>
   <h2>Edit User Role</h2>
   {{#if errorMessage}}
     <div class="error-message">{{errorMessage}}</div>
+=======
+<div class="edit-role-container">
+  <h1>Edit User Role</h1>
+  {{#if error}}
+    <div class="error-message">{{error}}</div>
+>>>>>>> ef5d1c2f1d209bb3111954b727d25ded1d4fbba3
   {{/if}}
   <form action="/dashboard/admin/user/{{user._id}}/edit-role" method="POST">
     <label for="newRole">Role:</label>
@@ -9,8 +16,9 @@
       <option value="user" {{#if (eq user.role "user")}}selected{{/if}}>User</option>
       <option value="artist" {{#if (eq user.role "artist")}}selected{{/if}}>Artist</option>
       <option value="admin" {{#if (eq user.role "admin")}}selected{{/if}}>Admin</option>
-    </select>
-    <button type="submit">Update Role</button>
-    <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+    </select>    <div class="form-actions">
+      <button type="submit">Update Role</button>
+      <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+    </div>
   </form>
-</main>
+</div>

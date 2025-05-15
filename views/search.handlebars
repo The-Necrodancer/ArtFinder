@@ -1,16 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search Artists</title>
-  <link rel="stylesheet" href="/css/styles.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
-  <script src="/js/card-filter-tags.js"></script>
-  <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
-</head>
-<body>
+{{! Add CSS and script refs to the main layout instead }}
+<main>
   <div id="search-page-body">
     <!-- Sidebar -->
     <div id="sidebar-filter">
@@ -111,7 +100,7 @@
         <div>
           <select name="sorting-method" id="sorting-method-select">
             <option value="byRating" {{#if (eq filters.sortMethod "byRating")}}selected{{/if}}>By Rating</option>
-            <option value="byNewest" {{#if (eq filters.sortMethod "byNewest")}}>By Newest Commissions{{/if}}</option>
+            <option value="byNewest" {{#if (eq filters.sortMethod "byNewest")}}selected{{/if}}>By Newest Cards</option>
             <option value="byCommissions" {{#if (eq filters.sortMethod "byCommissions")}}selected{{/if}}>By Number of Commissions</option>
           </select>
         </div>
@@ -172,8 +161,6 @@
           </ul>
         </section>
       </div>
-    </main>
-  </div>
-  <script type="module" src="/js/browse.js"></script>
-</body>
-</html>
+    </main>  </div>
+</main>
+<script type="module" src="/js/browse.js"></script>

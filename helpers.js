@@ -357,6 +357,7 @@ export const checkSocialsLinks = (socialsLinks, isUserRecommended) => {
     if(socialsLinks.length === 0 && isUserRecommended)
         throw `Error: at least one social link must be provided.`; 
     let keyArr = []; 
+    console.log(socialsLinks);
     for(let i=0; i<socialsLinks.length; i++) {
         let link = socialsLinks[i]; 
         if(Object.keys(link).length !==2 || !link.site || !link.url) {

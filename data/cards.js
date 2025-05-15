@@ -62,6 +62,7 @@ export const createCard = async (
 ) => {
   name = checkName(name);
   tags = checkTagList(tags);
+  console.log("UID:",uid);
 
 
   if (typeof isUserRecommended !== "boolean")
@@ -95,9 +96,10 @@ export const createCard = async (
   }
   let cardCollection = await cards();
   const insertedCard = await cardCollection.insertOne(newCard);
-  if (insertedCard.acknowledged != true || !insertedCard.insertedId) {
-    throw `Error: could not create user.`;
+  if (!insertedCard.acknowledged || !insertedCard.insertedId) {
+    throw `Error: could not create card.`;
   }
+  console.log("HERES' THE ID ITS COOL", insertedCard.insertedId);
   return insertedCard.insertedId.toString();
 };
 
@@ -343,26 +345,27 @@ export const getCardsByCommissions = async(cards) => {
     for (let card of cards) {
         let count = card.artistProfile.numCommissions;
         result.push({
-            object: artist,
+            object: card,
             numCommissions: count
         });
     }
+
     result.sort((a, b) => b.numCommissions - a.numCommissions);
-    return result; 
+    return result.map(entry => entry.object); 
 }
 
 export const getNewestCardsInput = async (cardList) => {
-  cards = checkCardList(cardList);
+  const checkedList = checkCardList(cardList);
   let result = [];
-  for (let card of cards) {
+  for (let card of checkedList) {
       let count = card._id.toString();
       result.push({
-          object: artist,
+          object: card,
           id: count
       });
   }
   result.sort((a, b) => a.id.localeCompare(b.id));
-  return result; 
+  return result.map(entry => entry.object); 
 };
 
 export const updateCardArtistProfile = async(aid) => {
