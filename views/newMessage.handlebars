@@ -1,8 +1,8 @@
 <main>
   <div class="form-container">
     <h2>New Message</h2>
-    {{#if error}}
-      <div class="error-message">{{error}}</div>
+    {{#if errorMessage}}
+      <div class="error-message">{{errorMessage}}</div>
     {{/if}}
 
     <form id="message-form" action="/messages" method="POST">

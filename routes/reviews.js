@@ -14,7 +14,7 @@ const ensureAuthenticated = (req, res, next) => {
       return res.status(401).render("login", {
         pageTitle: "Login Required",
         headerTitle: "Login Required",
-        error: "You must be logged in to access this page",
+        errorMessage: "You must be logged in to access this page",
       });
     }
     next();
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
         res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
             navLink: [{ link: "/", text: "Home" }],
           });
     }
@@ -65,7 +65,7 @@ router.get("/artist/:artistId", async (req, res) => {
         res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
             navLink: [{ link: "/", text: "Home" }],
         });
     }

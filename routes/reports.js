@@ -31,7 +31,7 @@ router.get("/", userMiddleware, async (req, res) => {
     return res.status(400).render("reports", {
       pageTitle: "My Reports",
       headerTitle: "My Reports",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -65,7 +65,7 @@ router.get("/new", userMiddleware, async (req, res) => {
     return res.status(400).render("submitReport", {
       pageTitle: "Submit Report",
       headerTitle: "Submit Report",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -98,7 +98,7 @@ router.post("/", userMiddleware, async (req, res) => {
       pageTitle: "Submit Report",
       headerTitle: "Submit Report",
       hasError: true,
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -184,7 +184,7 @@ router.post("/:id/comment", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: `/reports/${req.params.id}`, text: "Back to Report" }],
     });
   }

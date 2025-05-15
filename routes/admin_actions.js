@@ -70,7 +70,7 @@ router.post("/user/:id/edit-username", roleMiddleware(["admin"]), async (req, re
     await updateUsername(req.params.id, req.body.newUsername);
     res.redirect("/dashboard/admin?search=" + encodeURIComponent(req.body.newUsername));
   } catch (e) {
-    res.status(400).render("editUsername", { error: e.toString(), user: { _id: req.params.id, username: req.body.newUsername } });
+    res.status(400).render("editUsername", { errorMessage: e.toString(), user: { _id: req.params.id, username: req.body.newUsername } });
   }
 });
 
@@ -80,7 +80,7 @@ router.get("/user/:id/edit-role", roleMiddleware(["admin"]), async (req, res) =>
     const user = await getUserById(req.params.id);
     res.render("editUserRole", { user });
   } catch (e) {
-    res.status(404).render("error", { error: e.toString() });
+    res.status(404).render("error", { errorMessage: e.toString() });
   }
 });
 
@@ -90,7 +90,7 @@ router.post("/user/:id/edit-role", roleMiddleware(["admin"]), async (req, res) =
     await updateUserRole(req.params.id, req.body.newRole);
     res.redirect("/dashboard/admin?search=" + encodeURIComponent(req.body.newRole));
   } catch (e) {
-    res.status(400).render("editUserRole", { error: e.toString(), user: { _id: req.params.id, role: req.body.newRole } });
+    res.status(400).render("editUserRole", { errorMessage: e.toString(), user: { _id: req.params.id, role: req.body.newRole } });
   }
 });
 
@@ -101,7 +101,7 @@ router.get("/user/:id/edit-artist", roleMiddleware(["admin"]), async (req, res) 
     if (user.role !== "artist") throw "User is not an artist";
     res.render("editArtistProfile", { user });
   } catch (e) {
-    res.status(404).render("error", { error: e.toString() });
+    res.status(404).render("error", { errorMessage: e.toString() });
   }
 });
 
@@ -113,7 +113,7 @@ router.post("/user/:id/edit-artist", roleMiddleware(["admin"]), async (req, res)
     await updateArtistProfile(req.params.id, req.body);
     res.redirect("/dashboard/admin");
   } catch (e) {
-    res.status(400).render("editArtistProfile", { error: e.toString(), user: { _id: req.params.id, ...req.body } });
+    res.status(400).render("editArtistProfile", { errorMessage: e.toString(), user: { _id: req.params.id, ...req.body } });
   }
 });
 

@@ -1,7 +1,7 @@
 <main>
   <h2>Edit User Role</h2>
-  {{#if error}}
-    <div class="error-message">{{error}}</div>
+  {{#if errorMessage}}
+    <div class="error-message">{{errorMessage}}</div>
   {{/if}}
   <form action="/dashboard/admin/user/{{user._id}}/edit-role" method="POST">
     <label for="newRole">Role:</label>
