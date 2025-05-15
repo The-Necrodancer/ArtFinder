@@ -15,11 +15,11 @@ import commentRoutes from "./comments.js";
 import commissionRoutes from "./commissions.js";
 import reviewRoutes from "./reviews.js";
 import adminActionsRouter from "./admin_actions.js";
-import apiRoutes from './api.js';
-import artistDashboardRoutes from "./artistDashboard.js"
-import browseRoutes from './browse.js'
-import { getCardsByRating, getNewestCards } from "../data/cards.js";
-
+import apiRoutes from "./api.js";
+import artistDashboardRoutes from "./artistDashboard.js";
+import browseRoutes from "./browse.js";
+import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
+import { el } from "@faker-js/faker";
 
 const constructorMethod = (app) => {
   app.get("/", async (req, res) => {
@@ -60,9 +60,8 @@ const constructorMethod = (app) => {
     res.render("home", renderObj);
   });
 
-  
   app.use("/api", apiRoutes);
-  app.use("/dashboard/artist", artistDashboardRoutes); 
+  app.use("/dashboard/artist", artistDashboardRoutes);
 
   app.get("/dashboard/user", roleMiddleware(["user"]), async (req, res) => {
     try {
@@ -130,81 +129,95 @@ const constructorMethod = (app) => {
   app.use("/commission", commissionRoutes);
   app.use("/cards", cardRoutes);
   app.use("/reviews", reviewRoutes);
-
   app.use("/blogs", blogRoutes);
   app.use("/comments", commentRoutes);
 
   //app.use("/", authRoutes); // This will handle both /signout and /logout routes
   app.use("/browse", browseRoutes);
 
+  // All API routes should come before the catch-all route
+  app.use("/api", apiRoutes);
+
+  // Place remaining routes before the catch-all
   app.get("/search", userMiddleware, async (req, res) => {
-    // Parse query parameters
-    const {
-      query = "",
-      style = "",
-      minPrice = 0,
-      maxPrice = 1000,
-      minRating = 0,
-      maxRating = 5,
-      available = ""
-    } = req.query;
+  // Parse query parameters
+  const {
+    query = req.query.artist || "",
+    styles = req.query.style || [],
+    minPrice = req.query['low-price'] || 0,
+    maxPrice = req.query['high-price'] || 1000,
+    minRating = req.query['low-rating'] || 0,
+    maxRating = req.query['high-rating'] || 5,
+    available = req.query.available || "",
+    minCommission = req.query['min-commission'] || 0,
+    maxCommission = req.query['max-commission'] || 100,
+    sortMethod = req.query.sort || ""
+  } = req.query;
+  const updatedStyles = Array.isArray(styles) ? styles : [styles];
 
-    // Build filters object for filterCards
-    const filters = {};
+  const filters = {};
 
-    // Artist name search (if implemented in filterCards)
-    if (query.trim()) {
-      filters.name = query.trim();
+  if (query.trim()) {
+    filters.name = query.trim();
+  }
+
+  if (styles.length > 0) {
+    filters.tags = styles;
+  }
+
+  filters.priceRange = {
+    min: Number(minPrice),
+    max: Number(maxPrice)
+  };
+
+  filters.rating = {
+    min: Number(minRating),
+    max: Number(maxRating)
+  };
+
+  filters.numCommissions = {
+    min: Number(minCommission),
+    max: Number(maxCommission)
+  };
+
+  if (available === "true") filters.availability = true;
+  else if (available === "false") filters.availability = false;
+
+  let cards = [];
+  try {
+    cards = await filterCards(filters);
+    if (sortMethod === "byRating") {
+      cards = await getCardsByRating(cards);
+    } else if (sortMethod === "byCommissions") {
+      cards = await getCardsByCommissions(cards);
     }
+  } catch (e) {
+    throw(e || e.message);
+  }
 
-    // Style/tag filter
-    if (style) {
-      filters.tags = [style];
-    }
-
-    // Price range filter
-    filters.priceRange = {
-      min: Number(minPrice),
-      max: Number(maxPrice)
-    };
-
-    // Rating filter
-    filters.rating = {
-      min: Number(minRating),
-      max: Number(maxRating)
-    };
-
-    // Availability filter
-    if (available === "true") filters.availability = true;
-    else if (available === "false") filters.availability = false;
-
-    // Get filtered cards
-    let cards = [];
-    try {
-      cards = await filterCards(filters);
-    } catch (e) {
-      // handle error if needed
-    }
-
-    res.render("search", {
-      pageTitle: "Search Artists",
-      headerTitle: "Search Artists",
-      navLink: [
-        { link: "/", text: "Home" },
-        { link: "/browse", text: "Browse Artists" }
-      ],
-      filters: {
-        artist: query,
-        style,
-        minPrice,
-        maxPrice,
-        minRating,
-        maxRating,
-        available
-      },
-      cards
-    });
+  cards = cards.slice(0, 50)
+  res.render("search", {
+    pageTitle: "Search Artists",
+    headerTitle: "Search Artists",
+    navLink: [
+      { link: "/", text: "Home" },
+      { link: "/browse", text: "Browse Artists" }
+    ],
+    filters: {
+      artist: query,
+      styles: updatedStyles,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      minRating: minRating,
+      maxRating: maxRating,
+      available: available,
+      minCommission: minCommission,
+      maxCommission: maxCommission,
+      sortMethod: sortMethod,
+    },
+    cards
   });
+});
   app.get("/artist/:id", async (req, res) => {
     let artist;
     try {
@@ -213,12 +226,14 @@ const constructorMethod = (app) => {
         throw new Error("Artist not found");
       }
       console.log("Artist data:", JSON.stringify(artist, null, 2));
-      let newPricingInfo = []; 
-      for(const [key, value] of Object.entries(artist.artistProfile.pricingInfo)) {
-        newPricingInfo.push({type: key, price: value});
+      let newPricingInfo = [];
+      for (const [key, value] of Object.entries(
+        artist.artistProfile.pricingInfo
+      )) {
+        newPricingInfo.push({ type: key, price: value });
       }
       artist.artistProfile.pricingInfo = newPricingInfo;
-      console.log("NEW PRICING: " , artist.artistProfile.pricingInfo);
+      console.log("NEW PRICING: ", artist.artistProfile.pricingInfo);
       let toRender = {
         pageTitle: `${artist.username}'s Profile`,
         headerTitle: `${artist.username}'s Profile`,
@@ -267,9 +282,14 @@ const constructorMethod = (app) => {
         res.redirect("/dashboard/artist");
       } catch (e) {
         res.status(400).render("error", {
-          pageTitle: "Error",
-          headerTitle: "Error",
-          error: e.toString(),
+          pageTitle: "Cannot Send Message",
+          headerTitle: "Cannot Send Message",
+          error:
+            "You cannot send messages to yourself. Please select a different recipient.",
+          navLink: [
+            { link: "/messages", text: "Back to Messages" },
+            { link: "/browse", text: "Browse Artists" },
+          ],
         });
       }
     }

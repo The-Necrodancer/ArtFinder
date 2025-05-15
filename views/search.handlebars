@@ -4,129 +4,174 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search Artists</title>
-  <link rel="stylesheet" href="/public/css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+  <script src="/js/card-filter-tags.js"></script>
+  <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div id="sidebar-filter">
-    <button id="sidebar-toggle" aria-label="Hide sidebar">&#8592;</button>
-    <h3>Filter by Price Range</h3>
-    <div>
-      <label>Min Budget: $<span id="min-price-value">{{filters.minPrice}}</span></label>
-      <input
-        type="range"
-        id="min-price"
-        name="minPrice"
-        min="0"
-        max="1000"
-        step="10"
-        value="{{filters.minPrice}}"
-      />
+  <div id="search-page-body">
+    <!-- Sidebar -->
+    <div id="sidebar-filter">
+      <form id="filter-form" action="/browse" method="post">
+        <h3>Filter by Price Range</h3>
+        <div>
+          <label for="min-price">Min Budget: $<span id="min-price-value">{{filters.minPrice}}</span></label>
+          <input
+            type="range"
+            id="min-price"
+            name="min-price"
+            min="0"
+            max="1000"
+            step="10"
+            value="{{filters.minPrice}}"
+          />
+        </div>
+        <div>
+          <label for="max-price">Max Budget: $<span id="max-price-value">{{filters.maxPrice}}</span></label>
+          <input
+            type="range"
+            id="max-price"
+            name="max-price"
+            min="0"
+            max="1000"
+            step="10"
+            value="{{filters.maxPrice}}"
+          />
+        </div>
+        <h3>Filter by Rating</h3>
+        <div>
+          <label for="min-rating">Min Rating: <span id="min-rating-value">{{filters.minRating}}</span></label>
+          <input
+            type="range"
+            id="min-rating"
+            name="min-rating"
+            min="0"
+            max="5"
+            step=".1"
+            value="{{filters.minRating}}"
+          />
+        </div>
+        <div>
+          <label for="max-rating">Max Rating: <span id="max-rating-value">{{filters.maxRating}}</span></label>
+          <input
+            type="range"
+            id="max-rating"
+            name="max-rating"
+            min="0"
+            max="5"
+            step=".1"
+            value="{{filters.maxRating}}"
+          />
+        </div>
+        <h3>Filter by Number of Commissions</h3> 
+        <div>
+          <label>Min Number: <span id="min-commission-number-value">{{filters.minCommission}}</span></label>
+          <input
+            type="range"
+            id="min-commission-number"
+            name="min-commission-number"
+            min="0"
+            max="100"
+            step="5"
+            value="{{filters.minCommission}}"
+          />
+        </div>
+        <div>
+          <label>Max Number: <span id="max-commission-number-value">{{filters.maxCommission}}</span></label>
+          <input
+            type="range"
+            id="max-commission-number"
+            name="max-commission-number"
+            min="0"
+            max="100"
+            step="5"
+            value="{{filters.maxCommission}}"
+          />
+        </div>
+        <h3>Availability</h3>
+        <div>
+          <select name="availability" id="availability-select">
+             <option value="" {{#if (eq filters.available "")}}selected{{/if}}>Any Availability</option>
+            <option value="true" {{#if (eq filters.available "true")}}selected{{/if}}>Open For Commissions</option>
+            <option value="false" {{#if (eq filters.available "false")}}selected{{/if}}>Not Open For Commissions</option>
+          </select>
+        </div>
+        <!-- modified from https://stackoverflow.com/questions/30190588/html-select-multiple-as-dropdown -->
+        <h3>Tags</h3>
+        <label for="style-select">Style:</label>
+        <select data-placeholder="Begin typing a tag to filter..." multiple class="chosen-select" name="tags" id="style-select">
+          <option value=""></option>
+          {{#each possibleTagsList}}
+            <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+        <h3>Sort Method</h3> 
+        <div>
+          <select name="sorting-method" id="sorting-method-select">
+            <option value="byRating" {{#if (eq filters.sortMethod "byRating")}}selected{{/if}}>By Rating</option>
+            <option value="byCommissions" {{#if (eq filters.sortMethod "byCommissions")}}selected{{/if}}>By Number of Commissions</option>
+          </select>
+        </div>
+      </form>
     </div>
-    <div>
-      <label>Max Budget: $<span id="max-price-value">{{filters.maxPrice}}</span></label>
-      <input
-        type="range"
-        id="max-price"
-        name="maxPrice"
-        min="0"
-        max="1000"
-        step="10"
-        value="{{filters.maxPrice}}"
-      />
-    </div>
-    <h3>Filter by Rating</h3>
-    <div>
-      <label>Min Rating: <span id="min-rating-value">{{filters.minRating}}</span></label>
-      <input
-        type="range"
-        id="min-rating"
-        name="minRating"
-        min="0"
-        max="5"
-        step=".1"
-        value="{{filters.minRating}}"
-      />
-    </div>
-    <div>
-      <label>Max Rating: <span id="max-rating-value">{{filters.maxRating}}</span></label>
-      <input
-        type="range"
-        id="max-rating"
-        name="maxRating"
-        min="0"
-        max="5"
-        step=".1"
-        value="{{filters.maxRating}}"
-      />
-    </div>
-    <h3>Availability</h3>
-    <div>
-      <select name="available" id="availability-select">
-        <option value="" {{#unless filters.available}}selected{{/unless}}>Any Availability</option>
-        <option value="true" {{#if (eq filters.available "true")}}selected{{/if}}>Open For Commissions</option>
-        <option value="false" {{#if (eq filters.available "false")}}selected{{/if}}>Not Open For Commissions</option>
-      </select>
-    </div>
-  </div>  
-  <main>
-    <form id="search-form" action="/search" method="GET">
-      <input
-        type="text"
-        id="search-input"
-        name="query"
-        value="{{filters.artist}}"
-        text="{{filters.artist}}"
-        placeholder="Search for an artist..."
-      />
-      <select name="style" id="style-select">
-        {{#each styles}}
-          <option value="{{this.value}}" {{#if (eq this.value ../filters.style)}}selected{{/if}}>{{this.name}}</option>
-        {{/each}}
-      </select>
-      <button type="submit" id="search-button">Search</button>
-    </form>
-    <section id="artist-list">
-      <h2>Found Artists</h2>
-      <ul id="artists">
-        {{#each cards}}
-          <li class="artist-card">
-            <h3>{{this.name}}</h3>
-            {{#if this.isOfficial}}
-              <span class="recommended-badge">Verified</span>
-            {{else}}
-              <span class="recommended-badge">Fan Profile</span>
-            {{/if}}
+    <main id="search-main">
+      <div id="search-search-form-div">
+        <form id="search-form" action="/search" method="GET">
+          <input 
+            type="text"
+            id="search-input"
+            name="query"
+            placeholder="Search for an artist..."
+            value="{{filters.artist}}"
+          />
+          <button type="submit" id="search-button">Search</button>
+        </form>
+      </div>
+      <div id = "card-list-div">
+        <section id="artist-list">
+          <h2 id="card-list-title">Recommended Artists</h2>
+          <ul id="artists">
+            {{#each cards}}
+              <li class="artist-card">
+                <h3>{{this.name}}</h3>
+                
+                {{#if this.isUserRecommended}}
+                  <span class="recommended-badge">Fan Profile</span>
+                {{else}}
+                  <span class="recommended-badge">Verified</span>
+                {{/if}}
 
-            {{#if this.artistProfile}}
-              <p>Rating: {{this.artistProfile.rating}}</p>
-              <p>Availability: {{#if this.artistProfile.availability}}Open{{else}}Closed{{/if}}</p>
-              <p>Price Range: {{this.artistProfile.MinPrice}} - {{this.artistProfile.HighPrice}}</p>
-            {{/if}}
+                {{#if this.artistProfile}}
+                  <p>Rating: {{this.artistProfile.rating}}</p>
+                  <p>Availability: {{#if this.artistProfile.availability}}Open{{else}}Closed{{/if}}</p>
+                  <p>Price Range: {{this.priceRange}} </p>
+                  <p><a href="/artist/{{this.uid}}"> Click here to see profile! </a> </p>
+                {{/if}}
 
-            {{#if this.socialLinks}}
-              <div class="social-links">
-                {{#each this.socialLinks}}
-                  <a href="{{this}}" target="_blank" rel="noopener noreferrer">{{this}}</a>
-                {{/each}}
-              </div>
-            {{/if}}
+                {{#if this.socialsLinks}}
+                  <div class="social-links">
+                    {{#each this.socialsLinks}}
+                      <a href="{{this.}}" target="_blank" rel="noopener noreferrer">{{this.}}</a>
+                    {{/each}}
+                  </div>
+                {{/if}}
 
-            {{#if this.tags}}
-              <div class="tags">
-                {{#each this.tags}}
-                  <span class="tag">{{this}}</span>
-                {{/each}}              </div>
-            {{/if}}
-            
-            <div class="artist-actions">
-              <a href="/artist/{{this.uid}}" class="view-profile-btn">View Profile</a>
-            </div>
-          </li>
-        {{/each}}
-      </ul>
-    </section>
-  </main>
+                {{#if this.tags}}
+                  <div class="tags">
+                    {{#each this.tags}}
+                      <span class="tag">{{this}}</span>
+                    {{/each}}
+                  </div>
+                {{/if}}
+              </li>
+            {{/each}}
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
   <script type="module" src="/js/browse.js"></script>
 </body>
 </html>
