@@ -4,6 +4,14 @@ import { getArtistById } from "../data/artists.js";
 const router = Router();
 
 import xss from "xss";
+import { checkId } from "../helpers.js";
+
+const statusValues = [
+    "Pending", 
+    "In Progress", 
+    "Completed", 
+    "Cancelled"
+];
 
 // Middleware to check if user is logged in
 /*const ensureAuthenticated = (req, res, next) => {
@@ -18,40 +26,145 @@ import xss from "xss";
 };*/
 
 // Request
+    
 
 // GET route to render the commission request form
 // Ensure user is logged in to view the form.
 router.get("/request/:artistId", /*ensureAuthenticated,*/ async (req, res) => {
+    let artistId; 
+    let artist; 
+    
+    try {
+        artistId = req.params.artistId; 
+        artist = await getArtistById(artistId); 
+    } catch (e) {
+        if(typeof e === 'string' && (e == "Error: user is not an artist" || e == "Error: user not found."))
+            return res.status(404).render("error", {
+                pageTitle: "Error",
+                headerTitle: "Error",
+                error: e
+            });
+        if(typeof e === 'string' && e == "Error: invalid object ID") 
+            return res.status(400).render("error", {
+                pageTitle: "Error",
+                headerTitle: "Error",
+                error: e
+            });
+        return res.status(500).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: String(e)
+        });
+    }
+
     try {
         // console.log("Artist ID:", req.params.artistId);
-
-        const artistId = req.params.artistId;
-        const artist = await getArtistById(artistId);
-        res.render("commission", { artist });
+        if(req.session.user._id === artistId) {
+            return res.status(403).render("error", {error: "You cannot request a commmission for yourself."});
+        }
+        res.render("commission", { 
+            pageTitle: "Request Commission",
+            headerTitle: "Request Commission",
+            navLink: [
+                { link: "/", text: "Home" },
+                { link: "/browse", text: "Browse" },
+                { link: "/blogs", text: "DevLog" },
+            ],
+            artist 
+        });
     } catch (e) {
         console.log("Error rendering commission form:", e);
-        res.status(500).render("error", {error: e.toString()});
+        return res.status(500).render("error", {error: e.toString()});
     }
 });
 
 // POST route to handle commission request submission
 router.post("/request", async (req, res) => {
+    let cleanedArtistId; 
+    let cleanedTitle; 
+    let cleanedDetails; 
+    let cleanedPrice; 
+    let artist; 
+
     try {
-        console.log(req.body);
-
-        // Sanitize inputs
-        const cleanedArtistId = xss(req.body.artistId);
-        const cleanedTitle = xss(req.body.title);
-        const cleanedDetails = xss(req.body.details);
-        const cleanedPrice = xss(req.body.price);
-
+        cleanedArtistId = xss(req.body.artistId);
+        cleanedTitle = xss(req.body.title);
+        cleanedDetails = xss(req.body.details);
+        cleanedPrice = xss(req.body.price);
         if (!cleanedTitle || !cleanedDetails || !cleanedPrice) {
+            console.log("A");
             throw `All fields are required.`;
         }
+    } catch (e) {
+        console.log(e);
+        return res.status(400).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            navLink: [
+                { link: "/", text: "Home" },
+                { link: "/browse", text: "Browse" },
+                { link: "/blogs", text: "DevLog" },
+            ],
+            error: String(e)
+        });
+    }
+    
 
-        // Convert price to a number
+    try {
+        artist = await getArtistById(cleanedArtistId);
+    } catch (e) {
+        if(typeof e === 'string' && (e == "Error: user is not an artist" || e == "Error: user not found."))
+            return res.status(404).render("error", {
+                pageTitle: "Error",
+                headerTitle: "Error",
+                error: e
+            });
+        if(typeof e === 'string' && e == "Error: invalid object ID") 
+            return res.status(400).render("error", {
+                pageTitle: "Error",
+                headerTitle: "Error",
+                error: e
+            });
+        return res.status(500).render("error", {
+            pageTitle: "Error",
+            headerTitle: "Error",
+            error: String(e)
+        });
+    }
+
+    try {
+        console.log("C")
+        cleanedTitle = cleanedTitle.trim(); 
+        console.log("C1")
+        cleanedDetails = cleanedDetails.trim(); 
+        console.log("C2")
+        if(cleanedTitle.length < 5 || cleanedTitle.length > 128) throw "Error: title must be between 5 and 128 characters"; 
+        console.log("C3")
+        if(cleanedDetails.length < 32 || cleanedDetails.length > 1024) throw "Error: details must be between 32 and 1024 characters"; 
+        console.log("C4")
         const priceNum = parseFloat(cleanedPrice);
+        if(isNaN(priceNum)) throw "Error: price must be a number.";
+        if(priceNum<3 || priceNum > 150) throw "Error: price must be between 3 and 150 dollars";
+    } catch (e) {
+        console.log("D")
+        console.log(e);
+        console.log(e.toString());
+        return res.render("commission", { 
+            pageTitle: "Request Commission",
+            headerTitle: "Request Commission",
+            navLink: [
+                { link: "/", text: "Home" },
+                { link: "/browse", text: "Browse" },
+                { link: "/blogs", text: "DevLog" },
+            ],
+            artist, 
+            hasError: true,
+            error: e.toString()
+        });
+    }
 
+    try {
+        console.log("F")
         // Create a commission request
         const commission = await createCommission(
             cleanedArtistId,
@@ -61,17 +174,17 @@ router.post("/request", async (req, res) => {
             priceNum
         );
 
-        console.log("Commission id:", commission._id);
-        console.log("Commission created:", commission);
+        //console.log("Commission id:", commission._id);
+        //console.log("Commission created:", commission);
 
         // Redirect to the commission page after creation
         return res.redirect(`/commission/${commission._id}`);
     } catch (e) {
         console.log("Error creating commission:", e);
-        res.status(400).render("error", {
+        return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            error: String(e),
         });
     }
 })
@@ -86,15 +199,32 @@ router.get("/:id", async (req, res) => {
         if (!commission) {
             throw `Commission not found with id: ${commissionId}`;
         }
+        let isArtist = req.session.user.role === 'artist';
+        //aid, uid
+        if(!((isArtist && req.session.user._id === commission.aid) || (req.session.user._id === commission.uid)))
+            return res.status(401).render("login", {
+                pageTitle: "Login Required",
+                headerTitle: "Login Required",
+                error: "You must be logged in to access this page",
+                navLink: [{ link: "/", text: "Home" }],
+            });
 
         // Render the commission.handlebars view with the commission data
-        res.render("commission", {
+        return res.render("commission", {
             commission,
+            isArtist, 
+            pageTitle: "View Commission",
+            headerTitle: "View Commission",
+            navLink: [
+                { link: "/", text: "Home" },
+                { link: "/browse", text: "Browse" },
+                { link: "/blogs", text: "DevLog" },
+            ],
             user: req.session.user, // Pass the logged-in user for conditional rendering
         });
     } catch (e) {
         console.log("Error viewing commission:", e);
-        res.status(400).render("error", {
+        return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
             error: e.toString(),
@@ -113,6 +243,23 @@ router.post("/update-status", async (req, res) => {
         if (!cleanedCommissionId || !cleanedStatus) {
             throw `All fields are required.`;
         }
+        if(!statusValues.includes(cleanedStatus))
+            throw `${cleanedStatus} is not a valid status.`;
+
+        let commission = await getCommissionById(cleanedCommissionId); 
+        if(req.session.user._id === commission.uid) {
+            if(cleanedStatus !== 'Cancelled') throw "Error: users can only cancel commissions."; 
+        } else if (req.session.user._id !== commission.aid) {
+            return res.status(403).render("error", {
+                pageTitle: "Access Denied",
+                headerTitle: "Access Denied",
+                error: "You do not have permission to view this page",
+                navLink: [
+                { link: "/", text: "Home" },
+                { link: `/dashboard/${req.session.user.role}`, text: "Dashboard" },
+                ],
+            });
+        }
 
         // Update the commission status
         await updateCommissionStatus(cleanedCommissionId, cleanedStatus);
@@ -121,7 +268,7 @@ router.post("/update-status", async (req, res) => {
         res.redirect(`/commission/${cleanedCommissionId}`);
     } catch (e) {
         console.log("Error updating commission status:", e);
-        res.status(400).render("error", {
+        return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
             error: e.toString(),
