@@ -54,7 +54,7 @@ router.get("/", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -67,7 +67,7 @@ router.get("/new/:recipientId", userMiddleware, async (req, res) => {
       return res.status(400).render("error", {
         pageTitle: "Cannot Send Message",
         headerTitle: "Cannot Send Message",
-        error:
+        errorMessage:
           "You cannot send messages to yourself. Please select a different recipient.",
         navLink: [
           { link: "/messages", text: "Back to Messages" },
@@ -89,7 +89,7 @@ router.get("/new/:recipientId", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -108,7 +108,7 @@ router.post("/", userMiddleware, async (req, res) => {
       return res.status(400).render("error", {
         pageTitle: "Cannot Send Message",
         headerTitle: "Cannot Send Message",
-        error:
+        errorMessage:
           "You cannot send messages to yourself. Please select a different recipient.",
         navLink: [
           { link: "/messages", text: "Back to Messages" },
@@ -127,7 +127,7 @@ router.post("/", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -171,7 +171,7 @@ router.get("/:id", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -192,7 +192,7 @@ router.post("/:id/archive", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });
@@ -212,7 +212,7 @@ router.delete("/:id", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
     });
   }
 });

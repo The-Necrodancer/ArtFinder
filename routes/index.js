@@ -115,7 +115,7 @@ const constructorMethod = (app) => {
       return res.status(500).render("error", {
         pageTitle: "Error",
         headerTitle: "Error",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [{ link: "/", text: "Home" }],
       });
     }
@@ -265,7 +265,7 @@ const constructorMethod = (app) => {
       return res.status(404).render("error", {
         pageTitle: "Artist Not Found",
         headerTitle: "Artist Not Found",
-        error: e.toString(),
+        errorMessage: e.toString(),
         navLink: [
           { link: "/", text: "Home" },
           { link: "/browse", text: "Browse Artists" },
@@ -293,7 +293,7 @@ const constructorMethod = (app) => {
         res.status(400).render("error", {
           pageTitle: "Cannot Send Message",
           headerTitle: "Cannot Send Message",
-          error:
+          errorMessage:
             "You cannot send messages to yourself. Please select a different recipient.",
           navLink: [
             { link: "/messages", text: "Back to Messages" },
@@ -303,13 +303,12 @@ const constructorMethod = (app) => {
       }
     }
   );
-
-  // Catch-all route for invalid paths
+  // For invalid paths.
   app.use((req, res) => {
     res.status(404).render("error", {
       pageTitle: "404 - Page Not Found",
       headerTitle: "Page Not Found",
-      error: "The page you are looking for does not exist.",
+      errorMessage: `The page ${req.originalUrl} you are looking for does not exist.`,
       navLink: [
         { link: "/", text: "Home" },
         { link: "/browse", text: "Browse Artists" },

@@ -48,7 +48,7 @@ router.get("/", roleMiddleware(["admin"]), async (req, res) => {
     res.status(500).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString(),
+      errorMessage: e.toString(),
       navLink: [{ link: "/", text: "Home" }],
     });
   }
@@ -60,7 +60,7 @@ router.get("/user/:id/edit-username", roleMiddleware(["admin"]), async (req, res
     const user = await getUserById(req.params.id);
     res.render("editUsername", { user });
   } catch (e) {
-    res.status(404).render("error", { error: e.toString() });
+    res.status(404).render("error", { errorMessage: e.toString() });
   }
 });
 
@@ -123,7 +123,7 @@ router.post("/user/:id/delete", roleMiddleware(["admin"]), async (req, res) => {
     await deleteUser(req.params.id);
     res.redirect("/dashboard/admin");
   } catch (e) {
-    res.status(400).render("error", { error: e.toString() });
+    res.status(400).render("error", { errorMessage: e.toString() });
   }
 });
 

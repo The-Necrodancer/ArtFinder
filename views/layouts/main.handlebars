@@ -1,29 +1,28 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <title>{{{pageTitle}}}</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="header_title_div">
-            <h1 class="header_title"> {{{headerTitle}}}</h1>
-        </div>
-        <div class="header_nav_links">
-            <ul id="header_link_list">
-                {{#each navLink}} 
-                <li><a href={{{link}}}> {{{text}}}</a></li>
-                {{/each}}
-            </ul>
-        </div>
-    </header>    {{{body}}}
-    <script src="/js/password-toggle.js"></script>
-    {{#if isAdmin}}
-    <script src="/js/blogAdmin.js"></script>
-    {{/if}}
-    {{#each bodyScriptLinks}} 
-        <script src={{{this}}} type="text/javascript"></script>
-    {{/each}}
-</body>
+      <div class="header_title_div">
+        <h1 class="header_title"> {{{headerTitle}}}</h1>
+      </div>
+      <div class="header_nav_links">
+        <ul id="header_link_list">
+          {{#each navLink}}
+            <li><a href={{{link}}}> {{{text}}}</a></li>
+          {{/each}}
+        </ul>
+      </div>
+    </header>
+    {{{body}}}
+  </body>
+</html>
