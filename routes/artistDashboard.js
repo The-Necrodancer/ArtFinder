@@ -38,10 +38,11 @@ router
         })
         .toArray();
 
-        let requestedCommisions = []; 
+        let requestedCommissions = []; 
         for(const cid of artist.requestedCommissions) {
-            requestedCommisions.push(await getCommissionById(cid));
+            requestedCommissions.push(await getCommissionById(cid));
         }
+        //console.log("REQUESTED COMMISSIONS: ", requestedCommisions);
       // Get recent messages and user details
       const allMessages = await getUserMessages(req.session.user._id);
       const recentMessages = allMessages
@@ -77,7 +78,7 @@ router
         pastCommissions,
         cancelledCommissions,
         recentMessages,
-        requestedCommisions,
+        requestedCommissions,
         unreadCount
       });
     } catch (e) {

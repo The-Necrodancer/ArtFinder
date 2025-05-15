@@ -1,7 +1,12 @@
 <main>
-  <h2>{{#if commission}}Commission Details{{else}}Request Commission from {{artist.username}}{{/if}}</h2>
-  {{#if error}}
-    <div class="error-message"><p>{{error}}</p></div>
+  {{#if commission}}
+  <h2>Commission Details</h2>
+  {{else}}
+  <h2>Request Commission from {{artist.username}} </h2>
+  {{/if}}
+
+  {{#if errorMessage}}
+    <div class="error-message"><p> {{errorMessage}}</p></div>
   {{/if}}
 
   {{#if commissiosn}}

@@ -19,7 +19,7 @@ const statusValues = [
       return res.status(401).render("login", {
         pageTitle: "Login Required",
         headerTitle: "Login Required",
-        error: "You must be logged in to access this page",
+        errorMessage: "You must be logged in to access this page",
       });
     }
     next();
@@ -42,25 +42,25 @@ router.get("/request/:artistId", /*ensureAuthenticated,*/ async (req, res) => {
             return res.status(404).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         if(typeof e === 'string' && e == "Error: invalid object ID") 
             return res.status(400).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: String(e)
+            errorMessage: String(e)
         });
     }
 
     try {
         // console.log("Artist ID:", req.params.artistId);
         if(req.session.user._id === artistId) {
-            return res.status(403).render("error", {error: "You cannot request a commmission for yourself."});
+            return res.status(403).render("error", {errorMessage: "You cannot request a commmission for yourself."});
         }
         res.render("commission", { 
             pageTitle: "Request Commission",
@@ -74,7 +74,7 @@ router.get("/request/:artistId", /*ensureAuthenticated,*/ async (req, res) => {
         });
     } catch (e) {
         console.log("Error rendering commission form:", e);
-        return res.status(500).render("error", {error: e.toString()});
+        return res.status(500).render("error", {errorMessage: e.toString()});
     }
 });
 
@@ -87,6 +87,7 @@ router.post("/request", async (req, res) => {
     let artist; 
 
     try {
+        console.log("A")
         cleanedArtistId = xss(req.body.artistId);
         cleanedTitle = xss(req.body.title);
         cleanedDetails = xss(req.body.details);
@@ -105,33 +106,35 @@ router.post("/request", async (req, res) => {
                 { link: "/browse", text: "Browse" },
                 { link: "/blogs", text: "DevLog" },
             ],
-            error: String(e)
+            errorMessage: String(e)
         });
     }
     
 
     try {
+        console.log("B")
         artist = await getArtistById(cleanedArtistId);
     } catch (e) {
+        console.log(cleanedArtistId);
         if(typeof e === 'string' && (e == "Error: user is not an artist" || e == "Error: user not found."))
             return res.status(404).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         if(typeof e === 'string' && e == "Error: invalid object ID") 
             return res.status(400).render("error", {
                 pageTitle: "Error",
                 headerTitle: "Error",
-                error: e
+                errorMessage: e
             });
         return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: String(e)
+            errorMessage: String(e)
         });
     }
-
+    let priceNum;
     try {
         console.log("C")
         cleanedTitle = cleanedTitle.trim(); 
@@ -142,13 +145,10 @@ router.post("/request", async (req, res) => {
         console.log("C3")
         if(cleanedDetails.length < 32 || cleanedDetails.length > 1024) throw "Error: details must be between 32 and 1024 characters"; 
         console.log("C4")
-        const priceNum = parseFloat(cleanedPrice);
+        priceNum = parseFloat(cleanedPrice);
         if(isNaN(priceNum)) throw "Error: price must be a number.";
         if(priceNum<3 || priceNum > 150) throw "Error: price must be between 3 and 150 dollars";
     } catch (e) {
-        console.log("D")
-        console.log(e);
-        console.log(e.toString());
         return res.render("commission", { 
             pageTitle: "Request Commission",
             headerTitle: "Request Commission",
@@ -159,7 +159,7 @@ router.post("/request", async (req, res) => {
             ],
             artist, 
             hasError: true,
-            error: e.toString()
+            errorMessage: e.toString()
         });
     }
 
@@ -174,17 +174,18 @@ router.post("/request", async (req, res) => {
             priceNum
         );
 
-        //console.log("Commission id:", commission._id);
-        //console.log("Commission created:", commission);
+        console.log("Commission id:", commission._id);
+        console.log("Commission created:", commission);
 
         // Redirect to the commission page after creation
+        console.log("Z")
         return res.redirect(`/commission/${commission._id}`);
     } catch (e) {
         console.log("Error creating commission:", e);
         return res.status(500).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: String(e),
+            errorMessage: String(e),
         });
     }
 })
@@ -205,7 +206,7 @@ router.get("/:id", async (req, res) => {
             return res.status(401).render("login", {
                 pageTitle: "Login Required",
                 headerTitle: "Login Required",
-                error: "You must be logged in to access this page",
+                errorMessage: "You must be logged in to access this page",
                 navLink: [{ link: "/", text: "Home" }],
             });
 
@@ -227,7 +228,7 @@ router.get("/:id", async (req, res) => {
         return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
         });
     }
 });
@@ -239,28 +240,29 @@ router.post("/update-status", async (req, res) => {
         // Sanitize
         const cleanedCommissionId = xss(req.body.commissionId);
         const cleanedStatus = xss(req.body.status);
-
+        console.log("L")
         if (!cleanedCommissionId || !cleanedStatus) {
             throw `All fields are required.`;
         }
         if(!statusValues.includes(cleanedStatus))
             throw `${cleanedStatus} is not a valid status.`;
-
+        console.log("M")
         let commission = await getCommissionById(cleanedCommissionId); 
         if(req.session.user._id === commission.uid) {
             if(cleanedStatus !== 'Cancelled') throw "Error: users can only cancel commissions."; 
+        console.log("N")
         } else if (req.session.user._id !== commission.aid) {
             return res.status(403).render("error", {
                 pageTitle: "Access Denied",
                 headerTitle: "Access Denied",
-                error: "You do not have permission to view this page",
+                errorMessage: "You do not have permission to view this page",
                 navLink: [
                 { link: "/", text: "Home" },
                 { link: `/dashboard/${req.session.user.role}`, text: "Dashboard" },
                 ],
             });
         }
-
+        console.log("O")
         // Update the commission status
         await updateCommissionStatus(cleanedCommissionId, cleanedStatus);
 
@@ -271,7 +273,7 @@ router.post("/update-status", async (req, res) => {
         return res.status(400).render("error", {
             pageTitle: "Error",
             headerTitle: "Error",
-            error: e.toString(),
+            errorMessage: e.toString(),
         });
     }
 })
