@@ -1,9 +1,12 @@
 # Artfinder
 ## To Run
 1. Install Dependencies
-2. Poupluate Data by running: 
 ```
-node tasks/seedFaker.js'
+npm install
+```
+2. Populate Data
+```
+node tasks/seedFaker.js
 ```
 3. Run Program
 ```

@@ -1,12 +1,24 @@
-<main>
-  <h2>Edit Username</h2>
+<div class="edit-username-container">
+  <h1>Edit Username</h1>
   {{#if error}}
     <div class="error-message">{{error}}</div>
   {{/if}}
   <form action="/dashboard/admin/user/{{user._id}}/edit-username" method="POST">
-    <label for="newUsername">New Username:</label>
-    <input type="text" id="newUsername" name="newUsername" value="{{user.username}}" required>
-    <button type="submit">Update Username</button>
-    <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+    <div class="form-group">
+      <label for="newUsername">New Username:</label>
+      <input
+        type="text"
+        id="newUsername"
+        name="newUsername"
+        value="{{user.username}}"
+        required
+        minlength="3"
+        maxlength="50"
+      />
+    </div>
+    <div class="form-actions">
+      <button type="submit">Update Username</button>
+      <a href="/dashboard/admin" class="cancel-btn">Cancel</a>
+    </div>
   </form>
-</main>
+</div>

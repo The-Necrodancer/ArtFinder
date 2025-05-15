@@ -1,0 +1,14 @@
+<main>
+    <h1>{{headerTitle}}</h1>
+    <div>
+        <h2>Card Details</h2>
+        <p><strong>Name:</strong> {{card.name}}</p>
+        <p><strong>Tags:</strong> {{#each card.tags}}{{this}}, {{/each}}</p>
+        <p><strong>Social Links:</strong></p>
+        <ul>
+            {{#each card.socialsLinks}}
+                <li><a href="{{this.url}}" target="_blank">{{this.site}}</a></li>
+            {{/each}}
+        </ul>
+    </div>
+</main>
