@@ -68,7 +68,7 @@ export const createCard = async (
       "boolean",
       typeof isUserRecommended
     );
-    socialsLinks = checkSocialsLinks(socialsLinks, isUserRecommended);
+  socialsLinks = checkSocialsLinks(socialsLinks, isUserRecommended);
   let newCard = {
     name,
     socialsLinks,
@@ -318,7 +318,6 @@ export const getCardsByRating = async (cards ) => {
   return cards;
 };
 
-
 export const getNewestCards = async () => {
   let maxElements = 50;
   let cardCollection = await cards();
@@ -350,6 +349,20 @@ export const getCardsByCommissions = async(cards) => {
     result.sort((a, b) => b.numCommissions - a.numCommissions);
     return result; 
 }
+
+export const getNewestCardsInput = async (cardList) => {
+  cards = checkCardList(cardList);
+  let result = [];
+  for (let card of cards) {
+      let count = card._id.toString();
+      result.push({
+          object: artist,
+          id: count
+      });
+  }
+  result.sort((a, b) => a.id.localeCompare(b.id));
+  return result; 
+};
 
 export const updateCardArtistProfile = async(aid) => {
   let artist = await getArtistById(aid); 

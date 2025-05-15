@@ -111,6 +111,7 @@
         <div>
           <select name="sorting-method" id="sorting-method-select">
             <option value="byRating" {{#if (eq filters.sortMethod "byRating")}}selected{{/if}}>By Rating</option>
+            <option value="byNewest" {{#if (eq filters.sortMethod "byNewest")}}>By Newest Commissions</option>
             <option value="byCommissions" {{#if (eq filters.sortMethod "byCommissions")}}selected{{/if}}>By Number of Commissions</option>
           </select>
         </div>
@@ -147,6 +148,7 @@
                   <p>Rating: {{this.artistProfile.rating}}</p>
                   <p>Availability: {{#if this.artistProfile.availability}}Open{{else}}Closed{{/if}}</p>
                   <p>Price Range: {{this.priceRange}} </p>
+                  <p>Number of Commissions: {{this.artistProfile.numCommissions}} </p>
                   <p><a href="/artist/{{this.uid}}"> Click here to see profile! </a> </p>
                 {{/if}}
 
