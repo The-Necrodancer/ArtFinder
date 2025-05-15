@@ -2203,11 +2203,23 @@ button:hover {
   overflow-y: scroll;
 }
 
-#browse-page-body {
+#browse-page-body{
   display: flex;
 }
 
-#browse-main {
+#search-page-body {
+  display: flex;
+}
+
+#browse-main{
+  flex-grow: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+#search-main{
   flex-grow: 100%;
   width: 100%;
   display: flex;
@@ -2225,7 +2237,10 @@ button:hover {
   padding-top: 1rem;
 }
 
-#browse-search-form-div {
+#browse-search-form-div{
+  width: 100%;
+}
+#search-search-form-div{
   width: 100%;
 }
 #card-list-div {

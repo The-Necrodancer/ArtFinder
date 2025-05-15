@@ -18,7 +18,7 @@ import adminActionsRouter from "./admin_actions.js";
 import apiRoutes from './api.js';
 import artistDashboardRoutes from "./artistDashboard.js"
 import browseRoutes from './browse.js'
-import { getCardsByRating, getNewestCards } from "../data/cards.js";
+import { getCardsByRating, getNewestCards, filterCards} from "../data/cards.js";
 
 
 const constructorMethod = (app) => {
@@ -138,73 +138,78 @@ const constructorMethod = (app) => {
   app.use("/browse", browseRoutes);
 
   app.get("/search", userMiddleware, async (req, res) => {
-    // Parse query parameters
-    const {
-      query = "",
-      style = "",
-      minPrice = 0,
-      maxPrice = 1000,
-      minRating = 0,
-      maxRating = 5,
-      available = ""
-    } = req.query;
+  // Parse query parameters
+  const {
+    query = req.query.artist || "",
+    styles = req.query.style || [],
+    minPrice = req.query['low-price'] || 0,
+    maxPrice = req.query['high-price'] || 1000,
+    minRating = req.query['low-rating'] || 0,
+    maxRating = req.query['high-rating'] || 5,
+    available = req.query.available || "",
+    minCommission = req.query['min-commission'] || 0,
+    maxCommission = req.query['max-commission'] || 100,
+    sortMethod = req.query.sort || ""
+  } = req.query;
+  const updatedStyles = Array.isArray(styles) ? styles : [styles];
 
-    // Build filters object for filterCards
-    const filters = {};
+  const filters = {};
 
-    // Artist name search (if implemented in filterCards)
-    if (query.trim()) {
-      filters.name = query.trim();
-    }
+  if (query.trim()) {
+    filters.name = query.trim();
+  }
 
-    // Style/tag filter
-    if (style) {
-      filters.tags = [style];
-    }
+  if (styles.length > 0) {
+    filters.tags = styles;
+  }
 
-    // Price range filter
-    filters.priceRange = {
-      min: Number(minPrice),
-      max: Number(maxPrice)
-    };
+  filters.priceRange = {
+    min: Number(minPrice),
+    max: Number(maxPrice)
+  };
 
-    // Rating filter
-    filters.rating = {
-      min: Number(minRating),
-      max: Number(maxRating)
-    };
+  filters.rating = {
+    min: Number(minRating),
+    max: Number(maxRating)
+  };
 
-    // Availability filter
-    if (available === "true") filters.availability = true;
-    else if (available === "false") filters.availability = false;
+  filters.numCommissions = {
+    min: Number(minCommission),
+    max: Number(maxCommission)
+  };
 
-    // Get filtered cards
-    let cards = [];
-    try {
-      cards = await filterCards(filters);
-    } catch (e) {
-      // handle error if needed
-    }
+  if (available === "true") filters.availability = true;
+  else if (available === "false") filters.availability = false;
 
-    res.render("search", {
-      pageTitle: "Search Artists",
-      headerTitle: "Search Artists",
-      navLink: [
-        { link: "/", text: "Home" },
-        { link: "/browse", text: "Browse Artists" }
-      ],
-      filters: {
-        artist: query,
-        style,
-        minPrice,
-        maxPrice,
-        minRating,
-        maxRating,
-        available
-      },
-      cards
-    });
+  let cards = [];
+  try {
+    cards = await filterCards(filters);
+  } catch (e) {
+    throw(e || e.message);
+  }
+
+  res.render("search", {
+    pageTitle: "Search Artists",
+    headerTitle: "Search Artists",
+    navLink: [
+      { link: "/", text: "Home" },
+      { link: "/browse", text: "Browse Artists" }
+    ],
+    filters: {
+      artist: query,
+      styles: updatedStyles,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      minRating: minRating,
+      maxRating: maxRating,
+      available: available,
+      minCommission: minCommission,
+      maxCommission: maxCommission,
+      sortMethod: sortMethod,
+    },
+    cards
   });
+});
   app.get("/artist/:id", async (req, res) => {
     let artist;
     try {

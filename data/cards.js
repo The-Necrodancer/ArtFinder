@@ -197,38 +197,35 @@ export const updateCardById = async(cid, updates) => {
 
 
 export const filterCards = async(filters) => {
-    if ('name' in filters) {
-      cards = cards.filter(card => card.name.toLowerCase().includes(filters.name.toLowerCase()));
-    }
-    if(!filters || typeof filters !== 'object')
-        throwWrongTypeError("card filters", 'Object', typeof filters)
-    if(filters.constructor !== Object)
-        throwWrongTypeError("card filters", "Object", String(filters.constructor)); 
-    if(Object.keys(filters).length<1)   
-        throw `Error: at least one filter must be provided.`; 
-    for(const key of Object.keys(filters)) 
-        if(!filterKeys.includes(key))
-            throw `Error: ${key} is not a valid filter key.`; 
-    if('tags' in filters) {
-        filters.tags = checkTagList(filters.tags);
-    }
-    if('priceRange' in filters) {
-      if(!filters.priceRange || typeof filters.priceRange !== 'object') 
-        throwWrongTypeError("price range", "object", typeof filters.priceRange); 
-      if(filters.priceRange.constructor !== Object) 
-        throwWrongTypeError("price range", "object", filters.priceRange.constructor); 
-      if(Object.keys(filters.priceRange).length<1 || Object.keys(filters.priceRange).length> 2) 
-        throw "Error: max price range must either one or two keys."; 
-      for(const key of Object.keys(filters.priceRange)) {
-        if(key !== 'min' && key !== 'max') 
-          throw `Error: ${key} is an unacceptable key value (must be either 'min' or 'max')`; 
-        if(typeof filters.priceRange[key] !== 'number') 
-          throwWrongTypeError('price', 'number', typeof filters.priceRange[key]); 
-        if(filters.priceRange[key] < 0) 
-          throw "Error: cannot have negative price"; 
-        filters.priceRange[key] = Math.trunc(filters.priceRange[key] * 100) / 100; 
-      } 
-    }
+  if(!filters || typeof filters !== 'object')
+      throwWrongTypeError("card filters", 'Object', typeof filters)
+  if(filters.constructor !== Object)
+      throwWrongTypeError("card filters", "Object", String(filters.constructor)); 
+  if(Object.keys(filters).length<1)   
+      throw `Error: at least one filter must be provided.`; 
+  for(const key of Object.keys(filters)) 
+      if(!filterKeys.includes(key))
+          throw `Error: ${key} is not a valid filter key.`; 
+  if('tags' in filters) {
+      filters.tags = checkTagList(filters.tags);
+  }
+  if('priceRange' in filters) {
+    if(!filters.priceRange || typeof filters.priceRange !== 'object') 
+      throwWrongTypeError("price range", "object", typeof filters.priceRange); 
+    if(filters.priceRange.constructor !== Object) 
+      throwWrongTypeError("price range", "object", filters.priceRange.constructor); 
+    if(Object.keys(filters.priceRange).length<1 || Object.keys(filters.priceRange).length> 2) 
+      throw "Error: max price range must either one or two keys."; 
+    for(const key of Object.keys(filters.priceRange)) {
+      if(key !== 'min' && key !== 'max') 
+        throw `Error: ${key} is an unacceptable key value (must be either 'min' or 'max')`; 
+      if(typeof filters.priceRange[key] !== 'number') 
+        throwWrongTypeError('price', 'number', typeof filters.priceRange[key]); 
+      if(filters.priceRange[key] < 0) 
+        throw "Error: cannot have negative price"; 
+      filters.priceRange[key] = Math.trunc(filters.priceRange[key] * 100) / 100; 
+    } 
+  }
   if ('numCommissions' in filters) {
     if (!filters.numCommissions || typeof filters.numCommissions !== 'object')
       throwWrongTypeError("numCommissions", "object", typeof filters.numCommissions);
@@ -251,9 +248,8 @@ export const filterCards = async(filters) => {
     if(typeof filters.availability !== 'boolean')
       throwWrongTypeError("availability", 'boolean', typeof filters.availability); 
   }
-
-  if('numCommissions' in filters) {
-
+  if ('name' in filters) {
+    cards = cards.filter(card => card.name.toLowerCase().includes(filters.name.toLowerCase()));
   }
 
   let isOfficial = ('rating' in filters) || ('priceRange' in filters) || ('availability' in filters); 
