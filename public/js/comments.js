@@ -1,48 +1,54 @@
 // Comments management
-document.addEventListener("DOMContentLoaded", () => {
-  const commentsSection = document.querySelector(".comments-section");
-  if (!commentsSection) return;
+$(document).ready(() => {
+  const commentsSection = $(".comments-section");
+  if (!commentsSection.length) return;
 
-  const targetId = commentsSection.dataset.targetId;
-  const targetType = commentsSection.dataset.targetType;
+  const targetId = commentsSection.data("targetId");
+  const targetType = commentsSection.data("targetType");
 
   // Load comments
   loadComments();
 
   // Comment form submission
-  const commentForm = document.getElementById("comment-form");
-  if (commentForm) {
-    commentForm.addEventListener("submit", async (e) => {
+  const commentForm = $("#comment-form");
+  if (commentForm.length) {
+    commentForm.on("submit", (e) => {
       e.preventDefault();
-      const content = commentForm.querySelector("textarea").value;
-      try {
-        const response = await fetch("/comments", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ content, targetId, targetType }),
-        });
-        if (!response.ok) throw new Error("Failed to post comment");
-        commentForm.reset();
-        await loadComments();
-      } catch (err) {
-        console.error("Error posting comment:", err);
-      }
+      const content = commentForm.find("textarea").val();
+
+      $.ajax({
+        url: "/comments",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ content, targetId, targetType }),
+        success: () => {
+          commentForm[0].reset();
+          loadComments();
+        },
+        error: (xhr) => {
+          console.error(
+            "Error posting comment:",
+            xhr.responseJSON?.error || xhr.statusText
+          );
+        },
+      });
     });
   }
-
   // Load comments function
-  async function loadComments() {
-    try {
-      const response = await fetch(
-        `/comments/${targetId}?targetType=${targetType}`
-      );
-      const comments = await response.json();
-      renderComments(comments);
-    } catch (err) {
-      console.error("Error loading comments:", err);
-    }
+  function loadComments() {
+    $.ajax({
+      url: `/comments/${targetId}?targetType=${targetType}`,
+      method: "GET",
+      success: (comments) => {
+        renderComments(comments);
+      },
+      error: (xhr) => {
+        console.error(
+          "Error loading comments:",
+          xhr.responseJSON?.error || xhr.statusText
+        );
+      },
+    });
   }
 
   // Render comments
@@ -157,36 +163,38 @@ async function likeComment(commentId) {
   }
 }
 
-async function editComment(commentId) {
-  const comment = document.querySelector(`[data-comment-id="${commentId}"]`);
-  const content = comment.querySelector(".comment-content");
-  const currentText = content.textContent;
+function editComment(commentId) {
+  const comment = $(`[data-comment-id="${commentId}"]`);
+  const content = comment.find(".comment-content");
+  const currentText = content.text();
 
-  content.innerHTML = `
+  content.html(`
     <form class="edit-form">
       <textarea required>${currentText}</textarea>
       <button type="submit">Save</button>
       <button type="button" onclick="cancelEdit('${commentId}', '${currentText}')">Cancel</button>
     </form>
-  `;
+  `);
 
-  const form = content.querySelector("form");
-  form.addEventListener("submit", async (e) => {
+  content.find("form").on("submit", function (e) {
     e.preventDefault();
-    const newContent = form.querySelector("textarea").value;
-    try {
-      const response = await fetch(`/comments/${commentId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: newContent }),
-      });
-      if (!response.ok) throw new Error("Failed to update comment");
-      await loadComments();
-    } catch (err) {
-      console.error("Error updating comment:", err);
-    }
+    const newContent = $(this).find("textarea").val();
+
+    $.ajax({
+      url: `/comments/${commentId}`,
+      method: "PUT",
+      contentType: "application/json",
+      data: JSON.stringify({ content: newContent }),
+      success: () => {
+        loadComments();
+      },
+      error: (xhr) => {
+        console.error(
+          "Error updating comment:",
+          xhr.responseJSON?.error || xhr.statusText
+        );
+      },
+    });
   });
 }
 
