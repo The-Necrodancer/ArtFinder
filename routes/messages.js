@@ -6,7 +6,7 @@ import {
   markMessageRead,
   archiveMessage,
   getUnreadCount,
-  deleteMessage
+  deleteMessage,
 } from "../data/messages.js";
 import { getUserById } from "../data/users.js";
 import xss from "xss";
@@ -19,19 +19,16 @@ router.get("/", userMiddleware, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
-    
-    const { messages: messageList, pagination } = await getPaginatedUserMessages(
-      req.session.user._id,
-      page,
-      limit
-    );
+
+    const { messages: messageList, pagination } =
+      await getPaginatedUserMessages(req.session.user._id, page, limit);
     const unreadCount = await getUnreadCount(req.session.user._id);
 
     // Get user details for displayed messages only
-    const userDetailsPromises = messageList.map(async message => {
+    const userDetailsPromises = messageList.map(async (message) => {
       const [sender, recipient] = await Promise.all([
         getUserById(message.senderId.toString()),
-        getUserById(message.recipientId.toString())
+        getUserById(message.recipientId.toString()),
       ]);
       message.sender = sender;
       message.recipient = recipient;
@@ -50,14 +47,14 @@ router.get("/", userMiddleware, async (req, res) => {
       navLink: [
         { link: "/", text: "Home" },
         { link: "/dashboard/" + req.session.user.role, text: "Dashboard" },
-        { link: "/signout", text: "Sign Out" }
-      ]
+        { link: "/signout", text: "Sign Out" },
+      ],
     });
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString()
+      error: e.toString(),
     });
   }
 });
@@ -65,6 +62,19 @@ router.get("/", userMiddleware, async (req, res) => {
 // Get new message form
 router.get("/new/:recipientId", userMiddleware, async (req, res) => {
   try {
+    // Prevent sending messages to self
+    if (req.params.recipientId === req.session.user._id.toString()) {
+      return res.status(400).render("error", {
+        pageTitle: "Cannot Send Message",
+        headerTitle: "Cannot Send Message",
+        error:
+          "You cannot send messages to yourself. Please select a different recipient.",
+        navLink: [
+          { link: "/messages", text: "Back to Messages" },
+          { link: "/browse", text: "Browse Artists" },
+        ],
+      });
+    }
     const recipient = await getUserById(req.params.recipientId);
     res.render("newMessage", {
       pageTitle: "New Message",
@@ -72,14 +82,14 @@ router.get("/new/:recipientId", userMiddleware, async (req, res) => {
       recipient,
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/messages", text: "Messages" }
-      ]
+        { link: "/messages", text: "Messages" },
+      ],
     });
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString()
+      error: e.toString(),
     });
   }
 });
@@ -90,14 +100,34 @@ router.post("/", userMiddleware, async (req, res) => {
     const { recipientId, subject, content } = req.body;
     const cleanedRecipientId = xss(recipientId);
     const cleanedSubject = xss(subject);
-    const cleanedContent = xss(content);
-    await createMessage(req.session.user._id, cleanedRecipientId, cleanedSubject, cleanedContent);
+    const cleanedContent = xss(content); // Prevent sending messages to self by comparing string versions of IDs
+    if (
+      new ObjectId(cleanedRecipientId).toString() ===
+      req.session.user._id.toString()
+    ) {
+      return res.status(400).render("error", {
+        pageTitle: "Cannot Send Message",
+        headerTitle: "Cannot Send Message",
+        error:
+          "You cannot send messages to yourself. Please select a different recipient.",
+        navLink: [
+          { link: "/messages", text: "Back to Messages" },
+          { link: "/browse", text: "Browse Artists" },
+        ],
+      });
+    }
+    await createMessage(
+      req.session.user._id,
+      cleanedRecipientId,
+      cleanedSubject,
+      cleanedContent
+    );
     res.redirect("/messages");
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString()
+      error: e.toString(),
     });
   }
 });
@@ -134,14 +164,14 @@ router.get("/:id", userMiddleware, async (req, res) => {
       user: req.session.user,
       navLink: [
         { link: "/", text: "Home" },
-        { link: "/messages", text: "Messages" }
-      ]
+        { link: "/messages", text: "Messages" },
+      ],
     });
   } catch (e) {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString()
+      error: e.toString(),
     });
   }
 });
@@ -162,7 +192,7 @@ router.post("/:id/archive", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString()
+      error: e.toString(),
     });
   }
 });
@@ -182,7 +212,7 @@ router.delete("/:id", userMiddleware, async (req, res) => {
     res.status(400).render("error", {
       pageTitle: "Error",
       headerTitle: "Error",
-      error: e.toString()
+      error: e.toString(),
     });
   }
 });
