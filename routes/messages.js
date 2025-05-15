@@ -182,7 +182,7 @@ router.post("/:id/archive", userMiddleware, async (req, res) => {
     const message = await getMessageById(req.params.id);
 
     // Check if user has permission to archive this message
-    if (message.recipientId.toString() !== req.session.user._id) {
+    if (message.recipientId.toString() !== req.session.user._id.toString()) {
       throw "Access denied";
     }
 
